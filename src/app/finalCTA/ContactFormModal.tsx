@@ -17,10 +17,9 @@ type Props = {
   onClose: () => void;
 };
 
-// Campos del formulario
 type FormData = {
   name: string;
-  email: string;
+  phoneNumber: string;
   message: string;
 };
 
@@ -32,22 +31,21 @@ const ContactFormModal = ({ isOpen, onClose }: Props) => {
     formState: { errors },
   } = useForm<FormData>();
 
-  // Número de WhatsApp del dueño
-  const phoneNumber = "51933075200"; // <-- cámbialo al real
+  // Número de WhatsApp del negocio
+  const businessNumber = "51933075200";
 
   const onSubmit = (data: FormData) => {
-    // Mensaje personalizado
     const message = encodeURIComponent(
-      `Hola, soy ${data.name}.\nMi correo: ${data.email}\nMensaje: ${data.message}`
+      `👋 Hola, soy ${data.name}.\n📱 Mi número es: ${data.phoneNumber}\n💬 ${data.message}`
     );
 
-    // Opción 1️⃣: enviar por WhatsApp
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
-    window.open(whatsappUrl, "_blank");
+    // Detectar si el usuario está en móvil o escritorio
+    const isMobile = /iPhone|Android|iPad/i.test(navigator.userAgent);
+    const whatsappUrl = isMobile
+      ? `https://api.whatsapp.com/send?phone=${businessNumber}&text=${message}`
+      : `https://web.whatsapp.com/send?phone=${businessNumber}&text=${message}`;
 
-    // Opción 2️⃣: enviar por correo (descomenta si prefieres)
-    // const mailto = `mailto:contacto@davision.com?subject=Consulta desde la web&body=${message}`;
-    // window.location.href = mailto;
+    window.open(whatsappUrl, "_blank");
 
     onClose();
     reset();
@@ -57,11 +55,11 @@ const ContactFormModal = ({ isOpen, onClose }: Props) => {
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader className="mb-4">
-          <DialogTitle className="text-2xl text-blue-700">
-            Contáctanos
+          <DialogTitle className="text-2xl text-green-700 font-semibold">
+            Contáctanos por WhatsApp
           </DialogTitle>
-          <DialogDescription>
-            Completa el formulario y te responderemos por WhatsApp o correo.
+          <DialogDescription className="text-gray-600">
+            Déjanos tus datos y te responderemos lo antes posible 🕓
           </DialogDescription>
         </DialogHeader>
 
@@ -77,22 +75,22 @@ const ContactFormModal = ({ isOpen, onClose }: Props) => {
             )}
           </div>
 
-          {/* Correo */}
+          {/* Número de WhatsApp */}
           <div>
             <Input
-              type="email"
-              placeholder="Correo electrónico"
-              {...register("email", {
+              type="tel"
+              placeholder="Tu número de WhatsApp"
+              {...register("phoneNumber", {
                 required: "Este campo es obligatorio",
                 pattern: {
-                  value: /^[^@]+@[^@]+\.[^@]+$/,
-                  message: "Correo no válido",
+                  value: /^[0-9]{9,15}$/,
+                  message: "Número no válido",
                 },
               })}
             />
-            {errors.email && (
+            {errors.phoneNumber && (
               <p className="text-sm text-red-600 mt-1">
-                {errors.email.message}
+                {errors.phoneNumber.message}
               </p>
             )}
           </div>
@@ -113,13 +111,13 @@ const ContactFormModal = ({ isOpen, onClose }: Props) => {
             )}
           </div>
 
-          {/* Botón de envío */}
+          {/* Botón */}
           <div className="text-right">
             <Button
               type="submit"
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-green-600 hover:bg-green-700 text-white"
             >
-              Enviar mensaje
+              Enviar por WhatsApp
             </Button>
           </div>
         </form>
