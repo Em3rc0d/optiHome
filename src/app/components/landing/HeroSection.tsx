@@ -1,15 +1,28 @@
 "use client";
 import Image from "next/image";
-import Link from "next/link";
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle } from "lucide-react";
 import ContactFormModal from "@/app/finalCTA/ContactFormModal";
+
 export const HeroSection = () => {
   const [openModal, setOpenModal] = useState(false);
+
+  // --- imágenes del slider ---
+  const images = ["/family1.png", "/family2.png", "/family4.jpeg", "/family5.jpeg"];
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % images.length);
+    }, 4000); // cambia cada 4 segundos
+    return () => clearInterval(interval);
+  }, [images.length]);
+
   return (
     <>
-      <section className="flex flex-col-reverse md:flex-row items-center justify-between gap-8 py-16 px-6 md:px-12 bg-gradient-to-r from-blue-50 via-white to-green-50 rounded-b-3xl">
+      <section className="flex flex-col-reverse md:flex-row items-center justify-between gap-8 py-16 px-6 md:px-12 bg-gradient-to-r from-blue-50 via-white to-green-50 rounded-b-3xl overflow-hidden">
+        {/* Texto */}
         <motion.div
           initial={{ opacity: 0, x: -40 }}
           animate={{ opacity: 1, x: 0 }}
@@ -34,24 +47,37 @@ export const HeroSection = () => {
           </button>
         </motion.div>
 
+        {/* Slider de imágenes */}
         <motion.div
           initial={{ opacity: 0, x: 40 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.7 }}
-          className="relative"
+          className="relative w-[360px] h-[360px]"
         >
-          <Image
-            src="/modelo.png"
-            alt="Mujer con lentes"
-            width={360}
-            height={360}
-            className="rounded-2xl shadow-xl"
-          />
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={images[index]}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.8 }}
+              className="absolute inset-0"
+            >
+              <Image
+                src={images[index]}
+                alt="Familia feliz con lentes"
+                fill
+                className="rounded-2xl shadow-xl object-cover"
+              />
+            </motion.div>
+          </AnimatePresence>
+
           <div className="absolute -bottom-5 -left-5 bg-green-500 text-white px-4 py-2 rounded-xl shadow-md text-sm font-medium">
             Examen visual gratuito 👁️
           </div>
         </motion.div>
       </section>
+
       {openModal && (
         <ContactFormModal
           isOpen={openModal}

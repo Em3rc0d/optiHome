@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "OptiHome",
-  description: "Lentes, exámenes de vista y más en OptiHome.",
+  title: "DaVision",
+  description: "Lentes, exámenes de vista y más en DaVision.",
   authors: [{ name: "Eduardo Farid Merino Cordova" }],
   icons: "/favicon.ico",
 };

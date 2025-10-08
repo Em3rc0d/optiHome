@@ -52,7 +52,7 @@ export default function Services() {
           className="text-lg text-gray-700 max-w-3xl mx-auto mb-16 leading-relaxed"
         >
           <p className="text-gray-700 text-lg leading-relaxed">
-            En <strong className="text-green-600">OptiHome</strong> creemos que
+            En <strong className="text-green-600">DaVision</strong> creemos que
             la salud visual no debe ser complicada. Por eso llevamos nuestros
             equipos y experiencia directamente a tu hogar, combinando atención
             humana con tecnología moderna.

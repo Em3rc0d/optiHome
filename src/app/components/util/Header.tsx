@@ -27,14 +27,14 @@ export const Header = () => {
           className="flex items-center gap-2 text-blue-900 font-extrabold text-xl"
         >
           <Image
-            src="/optihome.png"
-            alt="OptiHome logo"
+            src="/davision.png"
+            alt="DaVision logo"
             width={36}
             height={36}
             className="rounded-md object-contain"
             priority
           />
-          <span className="tracking-tight">OptiHome</span>
+          <span className="tracking-tight">DaVision</span>
         </Link>
 
         {/* Desktop nav */}

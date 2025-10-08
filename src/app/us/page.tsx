@@ -30,7 +30,7 @@ const AboutUsSection = () => {
           </h2>
 
           <p className="text-gray-700 text-lg leading-relaxed mb-4">
-            En <strong className="text-green-600">OptiHome</strong> creemos que
+            En <strong className="text-green-600">DaVision</strong> creemos que
             ver bien no debería requerir desplazamientos. Llevamos a tu hogar
             tecnología óptica avanzada y atención profesional con{" "}
             <span className="text-blue-700 font-semibold">
@@ -56,8 +56,8 @@ const AboutUsSection = () => {
         >
           <div className="relative">
             <Image
-              src="/optihome.png"
-              alt="Especialista óptico de OptiHome realizando examen visual"
+              src="/davision.png"
+              alt="Especialista óptico de DaVision realizando examen visual"
               width={340}
               height={340}
               className="rounded-3xl shadow-xl object-cover border-4 border-white bg-white z-20"
