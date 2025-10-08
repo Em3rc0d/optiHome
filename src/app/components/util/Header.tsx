@@ -27,7 +27,7 @@ export const Header = () => {
           className="flex items-center gap-2 text-blue-900 font-extrabold text-xl"
         >
           <Image
-            src="/davision.png"
+            src="/davision.webp"
             alt="DaVision logo"
             width={36}
             height={36}

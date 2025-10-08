@@ -56,7 +56,7 @@ const AboutUsSection = () => {
         >
           <div className="relative">
             <Image
-              src="/davision.png"
+              src="/davision.webp"
               alt="Especialista óptico de DaVision realizando examen visual"
               width={340}
               height={340}

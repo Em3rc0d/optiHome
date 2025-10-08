@@ -46,7 +46,7 @@ const HomePage = () => {
             className="w-80 flex justify-center rounded-xl"
           >
             <Image
-              src="/david.png"
+              src="/david.webp"
               alt="Optometrista de Davision"
               width={400}
               height={400}
