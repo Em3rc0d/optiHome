@@ -8,7 +8,6 @@ import ContactFormModal from "@/app/finalCTA/ContactFormModal";
 export const HeroSection = () => {
   const [openModal, setOpenModal] = useState(false);
 
-  // --- Imágenes en formato webp para optimizar ---
   const images = [
     "/family1.webp",
     "/family2.webp",
@@ -17,16 +16,14 @@ export const HeroSection = () => {
   ];
   const [index, setIndex] = useState(0);
 
-  // --- Cambio automático cada 4 segundos ---
   useEffect(() => {
-    if (openModal) return; // pausa el cambio automático
+    if (openModal) return;
     const interval = setInterval(() => {
       setIndex((prev) => (prev + 1) % images.length);
     }, 4000);
     return () => clearInterval(interval);
   }, [openModal, images.length]);
 
-  // --- Precarga de imágenes siguientes ---
   useEffect(() => {
     if (typeof window !== "undefined") {
       const preloadNext = new window.Image();
@@ -36,8 +33,8 @@ export const HeroSection = () => {
 
   return (
     <>
-      <section className="flex flex-col-reverse md:flex-row items-center justify-between gap-8 py-12 px-4 sm:px-6 md:px-12 bg-gradient-to-r from-blue-50 via-white to-green-50 rounded-b-3xl overflow-hidden">
-        {/* Texto a la izquierda */}
+      <section className="flex flex-col-reverse md:flex-row items-center justify-between gap-6 sm:gap-8 py-8 sm:py-12 px-4 sm:px-6 md:px-12 bg-gradient-to-r from-blue-50 via-white to-green-50 rounded-b-3xl relative">
+        {/* Texto */}
         <motion.div
           initial={{ opacity: 0, x: -40 }}
           animate={{ opacity: 1, x: 0 }}
@@ -62,50 +59,52 @@ export const HeroSection = () => {
           </button>
         </motion.div>
 
-        {/* Imagen a la derecha */}
+        {/* Imagen */}
         <motion.div
           initial={{ opacity: 0, x: 40 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.7 }}
-          className="relative w-full sm:w-[280px] md:w-[340px] lg:w-[380px] aspect-square flex-shrink-0"
+          className="relative w-full sm:w-[280px] md:w-[340px] lg:w-[380px] flex-shrink-0"
         >
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={images[index]}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.6 }}
-              className="absolute inset-0"
-            >
-              <Image
-                src={images[index]}
-                alt="Familia feliz con lentes"
-                fill
-                className="rounded-2xl shadow-xl object-cover"
-                sizes="(max-width: 768px) 100vw, 380px"
-                priority={index === 0} // la primera imagen carga con prioridad
-                loading={index === 0 ? "eager" : "lazy"} // resto carga en diferido
-                quality={75} // reduce peso sin perder detalle
-              />
-            </motion.div>
-          </AnimatePresence>
+          <div className="relative w-full h-72 sm:h-80 md:h-96 lg:h-[380px]">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={images[index]}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.6 }}
+                className="absolute inset-0 rounded-2xl overflow-hidden shadow-xl"
+              >
+                <Image
+                  src={images[index]}
+                  alt="Familia feliz con lentes"
+                  fill
+                  className="object-cover w-full h-full"
+                  sizes="(max-width: 768px) 100vw, 380px"
+                  priority={index === 0}
+                  loading={index === 0 ? "eager" : "lazy"}
+                  quality={75}
+                />
+              </motion.div>
+            </AnimatePresence>
 
-          {/* Cartel verde, siempre visible y responsive */}
-          <motion.div
-            className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 bg-green-600/90 backdrop-blur-sm text-white px-2.5 py-1 sm:px-4 sm:py-2 rounded-lg shadow-lg text-[11px] sm:text-sm font-semibold tracking-tight"
-            animate={{
-              rotate: [0, 0.5, -0.5, 0.5, 0], // tambaleo más sutil
-              y: [0, -1, 1, -1, 0], // leve movimiento vertical opcional
-            }}
-            transition={{
-              duration: 2, // más suave y lento
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          >
-            👁️ Examen visual gratuito
-          </motion.div>
+            {/* Cartel verde animado */}
+            <motion.div
+              className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 bg-green-600/90 backdrop-blur-sm text-white px-2.5 py-1 sm:px-4 sm:py-2 rounded-lg shadow-lg text-[11px] sm:text-sm font-semibold tracking-tight"
+              animate={{
+                rotate: [0, 0.5, -0.5, 0.5, 0],
+                y: [0, -0.5, 0.5, -0.5, 0],
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            >
+              👁️ Examen visual gratuito
+            </motion.div>
+          </div>
         </motion.div>
       </section>
 
