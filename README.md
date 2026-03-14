@@ -1,7 +1,5 @@
 # 👓 OptiHome — La Óptica que va hacia ti
 
-![Banner OptiHome](public/products-hero.png)
-
 **OptiHome** es una plataforma moderna de salud visual diseñada para transformar la experiencia de adquirir lentes. Llevamos la clínica directamente a tu sala con tecnología de vanguardia y un enfoque centrado en la comodidad del usuario.
 
 ---
