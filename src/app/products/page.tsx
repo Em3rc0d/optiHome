@@ -4,6 +4,8 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Camera, ShoppingCart, Filter, X, ArrowLeft, Plus, Minus } from "lucide-react";
 import Link from "next/link";
+// import * as faceLandmarksDetection from '@tensorflow-models/face-landmarks-detection'; // Eliminado para importación dinámica
+// Los módulos de TensorFlow se cargan vía CDN dinámicamente para compatibilidad con Turbopack
 
 interface Product {
   id: number;
@@ -25,11 +27,93 @@ const productList: Product[] = [
   { id: 7, name: "Solar Try On", price: 299, category: "UV Protection", material: "Acetate", color: "Black", image: "/glasses.png" },
   { id: 8, name: "Sunglasses", price: 299, category: "UV Protection", material: "Titanium", color: "Black", image: "/sunglasses.png" },
   { id: 9, name: "Circle Glasses", price: 299, category: "Special", material: "Titanium", color: "Brown", image: "/img1.png" },
+  { id: 10, name: "Sunglasses Colorful", price: 100, category: "UV Protection", material: "Plastic", color: "Black", image: "/sunglasses1.png" },
 ];
+
+// LÓGICA DE PRECARGA GLOBAL DE IA (Solución para Turbopack + Celeridad)
+let globalDetector: any = null; // eslint-disable-line @typescript-eslint/no-explicit-any
+let iaPromise: Promise<any> | null = null; // eslint-disable-line @typescript-eslint/no-explicit-any
+
+const logSetters = new Set<(m: string) => void>();
+
+const loadIALibraries = async (setLog?: (m: string) => void) => {
+  if (setLog) logSetters.add(setLog);
+  const notify = (m: string) => { console.log(`[IA] ${m}`); logSetters.forEach(s => s(m)); };
+
+  if (globalDetector) {
+    if (setLog) setLog("IA Lista");
+    return globalDetector;
+  }
+  if (iaPromise) return iaPromise;
+  
+  iaPromise = (async () => {
+    notify("Iniciando IA...");
+
+    const loadScript = (src: string) => new Promise((resolve, reject) => {
+      if (typeof document === 'undefined') return resolve(null);
+      if (document.querySelector(`script[src="${src}"]`)) return resolve(null);
+      const script = document.createElement('script');
+      script.src = src;
+      script.async = true;
+      script.onload = resolve;
+      script.onerror = reject;
+      document.body.appendChild(script);
+    });
+
+    try {
+      // 1. Cargar TensorFlow.js completo
+      notify("Cargando Motores...");
+      if (!(window as any).tf) { // eslint-disable-line @typescript-eslint/no-explicit-any
+        await loadScript("https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js");
+      }
+      // 2. Cargar Face Landmarks Detection
+      await loadScript("https://cdn.jsdelivr.net/npm/@tensorflow-models/face-landmarks-detection@1.0.6/dist/face-landmarks-detection.min.js");
+
+      const tf = (window as any).tf; // eslint-disable-line @typescript-eslint/no-explicit-any
+      const faceLandmarksDetection = (window as any).faceLandmarksDetection; // eslint-disable-line @typescript-eslint/no-explicit-any
+
+      if (tf && faceLandmarksDetection) {
+        notify("Configurando WebGL...");
+        await tf.setBackend('webgl');
+        await tf.ready();
+        
+        const model = faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh;
+        const detectorConfig = {
+          runtime: 'tfjs',
+          refineLandmarks: true,
+          maxFaces: 5,
+        };
+        
+        notify("Creando Detector...");
+        const detector = await faceLandmarksDetection.createDetector(model, detectorConfig);
+        
+        // Forzar carga de modelos
+        notify("Descargando Modelos...");
+        if (detector.initialize) await detector.initialize();
+        
+        globalDetector = detector;
+        notify("IA Lista para detectar");
+        return globalDetector;
+      }
+    } catch (err) {
+      console.error("Error cargando IA:", err);
+      notify("Error de conexión");
+      iaPromise = null; // Permitir reintento si falla
+      throw err;
+    }
+    return null;
+  })();
+
+  return iaPromise;
+};
 
 export default function ProductsPage() {
   const [filter, setFilter] = useState("All");
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  // Precarga automática al montar la página
+  React.useEffect(() => {
+    loadIALibraries().catch(console.error);
+  }, []);
 
   const filteredProducts = filter === "All"
     ? productList
@@ -153,7 +237,13 @@ function VirtualTryOnModal({ product, onClose }: { product: Product, onClose: ()
   const [scale, setScale] = useState(1);
   const [currentProduct, setCurrentProduct] = useState(product);
   const videoRef = React.useRef<HTMLVideoElement>(null);
+  const imageRef = React.useRef<HTMLImageElement>(null);
+  const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const [error, setError] = useState<string | null>(null);
+  const [detector, setDetector] = useState<any>(globalDetector); // eslint-disable-line @typescript-eslint/no-explicit-any
+  const [faceData, setFaceData] = useState<{ x: number, y: number, scale: number, rotation: number } | null>(null);
+  const [isDetecting, setIsDetecting] = useState(false);
+  const [debugLog, setDebugLog] = useState<string>(globalDetector ? "IA Lista" : "Esperando IA...");
 
   // Lógica de transparencia mejorada
   React.useEffect(() => {
@@ -239,6 +329,134 @@ function VirtualTryOnModal({ product, onClose }: { product: Product, onClose: ()
     };
   }, []);
 
+  // Cargar Librerías IA (Usa la precarga global si existe)
+  React.useEffect(() => {
+    if (userPhoto || detector) return;
+
+    let isMounted = true;
+    const initIA = async () => {
+      try {
+        const det = await loadIALibraries(setDebugLog);
+        if (isMounted && det) {
+          setDetector(det);
+        }
+      } catch (err) {
+        if (isMounted) {
+          console.error("Error cargando IA en modal:", err);
+          setError("Error al cargar la IA. Revisa tu conexión.");
+        }
+      }
+    };
+
+    initIA();
+    return () => { isMounted = false; };
+  }, [userPhoto, detector]);
+
+  // Bucle de Detección (Funciona para Video y Foto)
+  React.useEffect(() => {
+    if (!detector) return;
+    if (!stream && !userPhoto) return;
+
+    let requestID: number;
+    const detect = async () => {
+      // Determinar la fuente (Video o Foto)
+      const source = userPhoto ? imageRef.current : videoRef.current;
+      if (!source) {
+        requestID = requestAnimationFrame(detect);
+        return;
+      }
+
+      // Validar si la fuente está lista
+      const isVideo = source instanceof HTMLVideoElement;
+      const isImage = source instanceof HTMLImageElement;
+      const isReady = isVideo ? (source.readyState === 4) : (isImage && source.complete && source.naturalWidth > 0);
+
+      if (isReady && detector) {
+        try {
+          let inputNode: any = source; // eslint-disable-line @typescript-eslint/no-explicit-any
+
+          // Fallback Canvas para Video: Algunos navegadores tienen problemas pasando el video stream directo
+          if (isVideo && canvasRef.current) {
+            const canvas = canvasRef.current;
+            canvas.width = source.videoWidth;
+            canvas.height = source.videoHeight;
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
+            if (ctx) {
+              ctx.drawImage(source, 0, 0);
+              inputNode = canvas;
+            }
+          }
+
+          const faces = await detector.estimateFaces(inputNode, { 
+            flipHorizontal: isVideo, // Que la IA maneje el espejo automáticamente en video
+            staticImage: isImage 
+          });
+          
+          if (faces && faces.length > 0) {
+            const face = faces[0];
+            const kps = face.keypoints || face.landmarks || (face as any).scaledMesh; // eslint-disable-line @typescript-eslint/no-explicit-any
+            
+            if (kps && kps.length > 0) {
+              if (!isDetecting) setIsDetecting(true);
+              setDebugLog(`IA: OK (${kps.length} pts)`);
+              
+              const findPt = (idx: number, name: string) => {
+                return kps.find((p: any) => p.name === name) || kps[idx]; // eslint-disable-line @typescript-eslint/no-explicit-any
+              };
+
+              const leftEye = findPt(33, 'left_eye');
+              const rightEye = findPt(263, 'right_eye');
+              const nose = findPt(168, 'nose_bridge') || findPt(1, 'nose');
+
+              if (leftEye && rightEye) {
+                const rect = source.getBoundingClientRect();
+                const sourceWidth = isVideo ? source.videoWidth : source.naturalWidth;
+                const sourceHeight = isVideo ? source.videoHeight : source.naturalHeight;
+                
+                const scaleX = rect.width / sourceWidth;
+                const scaleY = rect.height / sourceHeight;
+
+                const midX = (leftEye.x + rightEye.x) / 2;
+                let midY = (leftEye.y + rightEye.y) / 2;
+                if (nose) midY = (midY + nose.y) / 2;
+
+                const eyeDist = Math.sqrt(Math.pow(rightEye.x - leftEye.x, 2) + Math.pow(rightEye.y - leftEye.y, 2));
+                const angle = Math.atan2(rightEye.y - leftEye.y, rightEye.x - leftEye.x) * (180 / Math.PI);
+
+                setFaceData({
+                  x: midX * scaleX,
+                  y: midY * scaleY,
+                  scale: (eyeDist / (isVideo ? 140 : 160)) * 1.8,
+                  rotation: angle
+                });
+              }
+            } else {
+              setDebugLog("Cara detectada sin puntos");
+              if (isDetecting) setIsDetecting(false);
+            }
+          } else {
+            if (isDetecting) setIsDetecting(false);
+            const res = isVideo ? `${source.videoWidth}x${source.videoHeight}` : 'Foto';
+            setDebugLog(`Buscando cara... (${res})`);
+          }
+        } catch (err) {
+          console.error("Detección fallida:", err);
+          setDebugLog("Error de proceso IA");
+        }
+      } else {
+        setDebugLog("Preparando fuente...");
+      }
+
+      // Solo continuar el loop si es video o si no hemos detectado nada aún en la foto
+      if (!userPhoto || !isDetecting) {
+        requestID = requestAnimationFrame(detect);
+      }
+    };
+
+    detect();
+    return () => cancelAnimationFrame(requestID);
+  }, [detector, stream, userPhoto, isDetecting]);
+
   return (
     <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -247,7 +465,7 @@ function VirtualTryOnModal({ product, onClose }: { product: Product, onClose: ()
       {/* Video de fondo o Foto de usuario */}
       <div className="absolute inset-0 z-0">
         {userPhoto ? (
-          <img src={userPhoto} alt="User" className="w-full h-full object-cover" />
+          <img ref={imageRef} src={userPhoto} alt="User" className="w-full h-full object-cover" />
         ) : (
           <video
             ref={videoRef}
@@ -257,6 +475,7 @@ function VirtualTryOnModal({ product, onClose }: { product: Product, onClose: ()
             className="w-full h-full object-cover scale-x-[-1]"
           />
         )}
+        <canvas ref={canvasRef} className="hidden" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" />
       </div>
 
@@ -300,8 +519,10 @@ function VirtualTryOnModal({ product, onClose }: { product: Product, onClose: ()
           initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}
           className="glass-dark px-4 py-2 rounded-full border border-white/10 backdrop-blur-md flex items-center gap-3 w-fit"
         >
-          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-          <p className="text-[10px] font-black uppercase text-white tracking-widest">AR ACTIVE</p>
+          <div className={`w-2 h-2 rounded-full animate-pulse ${isDetecting ? 'bg-green-500' : 'bg-yellow-500'}`} />
+          <p className="text-[10px] font-black uppercase text-white tracking-widest">
+            {isDetecting ? 'IA TRACKING ACTIVE' : debugLog || 'SEARCHING FACE...'}
+          </p>
         </motion.div>
         <motion.div
           initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.1 }}
@@ -310,22 +531,30 @@ function VirtualTryOnModal({ product, onClose }: { product: Product, onClose: ()
           <h3 className="text-sm font-black text-blue-400 leading-none mb-1">{currentProduct.name}</h3>
           <p className="text-[11px] font-black text-white">S/ {currentProduct.price}</p>
         </motion.div>
+        {debugLog && !isDetecting && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+            className="bg-black/40 px-3 py-1 rounded-lg text-[8px] text-gray-400 font-mono w-fit border border-white/5"
+          >
+            {debugLog}
+          </motion.div>
+        )}
       </div>
 
       {/* CONTROLES DE ESCALA (UX Mejorada con Botones Tactiles) */}
       <div className="absolute right-4 md:right-10 top-1/2 -translate-y-1/2 z-20 flex flex-col items-center gap-6">
-        <button 
+        <button
           onClick={() => setScale(s => Math.min(1.4, s + 0.05))}
           className="w-14 h-14 bg-white/10 border border-white/20 rounded-2xl flex items-center justify-center backdrop-blur-xl active:scale-90 transition-all shadow-2xl hover:bg-blue-600 group"
           aria-label="Aumentar tamaño"
         >
           <Plus className="w-6 h-6 text-white group-hover:scale-125 transition-transform" />
         </button>
-        
+
         <div className="flex flex-col items-center gap-3">
           <div className="w-1.5 h-32 bg-white/10 rounded-full border border-white/5 overflow-hidden relative">
-            <motion.div 
-              className="absolute bottom-0 w-full bg-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.6)]" 
+            <motion.div
+              className="absolute bottom-0 w-full bg-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.6)]"
               style={{ height: `${((scale - 0.6) / (1.4 - 0.6)) * 100}%` }}
             />
           </div>
@@ -334,7 +563,7 @@ function VirtualTryOnModal({ product, onClose }: { product: Product, onClose: ()
           </div>
         </div>
 
-        <button 
+        <button
           onClick={() => setScale(s => Math.max(0.6, s - 0.05))}
           className="w-14 h-14 bg-white/10 border border-white/20 rounded-2xl flex items-center justify-center backdrop-blur-xl active:scale-90 transition-all shadow-2xl hover:bg-blue-600 group"
           aria-label="Disminuir tamaño"
@@ -372,13 +601,19 @@ function VirtualTryOnModal({ product, onClose }: { product: Product, onClose: ()
         </div>
       </div>
 
-      {/* Montura (AR Overlay) - CENTRO TOTALMENTE DESPEJADO */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-30">
+      {/* Montura (AR Overlay) - CON IA TRACKING */}
+      <div className="absolute inset-0 pointer-events-none z-30">
         <motion.div
           drag
-          dragConstraints={{ top: -250, bottom: 250, left: -200, right: 200 }}
-          style={{ scale }}
-          className="w-64 h-24 relative cursor-move pointer-events-auto group"
+          dragConstraints={{ top: -300, bottom: 300, left: -300, right: 300 }}
+          animate={faceData && !userPhoto ? {
+            x: faceData.x - (typeof window !== 'undefined' ? (window.innerWidth / 2) : 0),
+            y: faceData.y - (typeof window !== 'undefined' ? (window.innerHeight / 2) : 0),
+            scale: faceData.scale * scale,
+            rotate: faceData.rotation
+          } : {}}
+          style={!faceData || userPhoto ? { scale } : {}}
+          className="w-64 h-24 absolute left-1/2 top-1/2 -ml-32 -mt-12 cursor-move pointer-events-auto group"
         >
           {transparentImage && (
             <>
