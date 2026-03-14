@@ -31,7 +31,7 @@ const services = [
 
 export default function Services() {
   return (
-    <section className="relative py-24 px-6 bg-gradient-to-b from-white via-blue-50 to-green-50 overflow-hidden">
+    <section id="servicios" className="relative py-24 px-6 bg-gradient-to-b from-white via-blue-50 to-green-50 overflow-hidden">
       {/* Fondo decorativo suave */}
       <div className="absolute inset-0 opacity-10 bg-[url('/pattern-light.svg')] bg-cover bg-center"></div>
 

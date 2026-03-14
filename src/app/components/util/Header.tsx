@@ -10,8 +10,10 @@ import Image from "next/image";
 
 const navItems = [
   { name: "Inicio", url: "/" },
+  { name: "Servicios", url: "/#servicios" },
+  { name: "Colección", url: "/#productos" },
+  { name: "¿Cómo funciona?", url: "/#proceso" },
   { name: "¿Quiénes Somos?", url: "/us" },
-  { name: "Servicios", url: "/services" },
 ];
 
 export const Header = () => {
