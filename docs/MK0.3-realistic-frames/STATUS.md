@@ -1,0 +1,1 @@
+State: asset realism certification 58/58 PASS for the detailed transparent SVG layer (run 34514878709). Final photorealistic WebP replacement and warm model-cache certification are the remaining MK0.3 gates; do not merge until both are green.
