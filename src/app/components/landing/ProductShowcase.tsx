@@ -1,4 +1,5 @@
 "use client";
+
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
@@ -7,78 +8,72 @@ import Link from "next/link";
 const products = [
   {
     name: "Classic Acetate",
-    price: "S/ 189",
-    category: "Modern Style",
+    category: "Estilo moderno",
     image: "/products-hero.png",
   },
   {
     name: "Nordic Minimal",
-    price: "S/ 249",
-    category: "Premium Titan",
+    category: "Perfil ligero",
     image: "/products-hero.png",
   },
   {
     name: "Solar Elite",
-    price: "S/ 159",
-    category: "UV Protection",
+    category: "Estilo solar",
     image: "/products-hero.png",
   },
   {
     name: "Solar Try On",
-    price: "S/ 299",
-    category: "UV Protection",
+    category: "Compatible con prueba virtual",
     image: "/glasses.png",
   },
 ];
 
 export const ProductShowcase = () => {
   return (
-    <section id="productos" className="py-24 px-6 md:px-12 bg-white">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row items-center justify-between mb-16 gap-8">
-          <div>
-            <h2 className="text-3xl md:text-5xl font-extrabold text-gray-900 mb-4">
-              Nuestra <span className="text-blue-600">Colección</span>
+    <section id="productos" className="bg-white px-6 py-24 md:px-12">
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-14 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+          <div className="max-w-2xl">
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-brand">Monturas</p>
+            <h2 className="mt-3 text-3xl font-semibold text-ink md:text-5xl">
+              Explora estilos antes de continuar tu elección.
             </h2>
-            <p className="text-gray-600 text-lg max-w-xl">
-              Modelos seleccionados que combinan estilo, durabilidad y la mejor tecnología óptica.
+            <p className="mt-5 text-lg leading-8 text-ink-muted">
+              Estas referencias ayudan a orientar la exploración. La disponibilidad, condiciones y precio final deben confirmarse antes de una compra.
             </p>
           </div>
-          <Link href="/products" className="flex items-center gap-2 text-green-600 font-bold text-lg hover:gap-4 transition-all duration-300">
-            Ver catálogo completo <ArrowRight className="w-5 h-5" />
+
+          <Link
+            href="/products"
+            className="inline-flex min-h-11 items-center gap-2 self-start rounded-xl border border-border px-4 py-2.5 font-semibold text-brand transition-colors hover:border-brand hover:bg-surface-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 md:self-auto"
+          >
+            Ver experiencia de catálogo
+            <ArrowRight className="size-4" aria-hidden="true" />
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {products.map((product, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ delay: index * 0.1, duration: 0.5 }}
-              className="group cursor-pointer"
+            <motion.article
+              key={product.name}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.05, duration: 0.35 }}
+              className="group"
             >
-              <div className="relative aspect-[4/5] rounded-3xl overflow-hidden bg-gray-100 mb-6 shadow-sm group-hover:shadow-2xl transition-all duration-500">
+              <div className="relative mb-5 aspect-[4/5] overflow-hidden rounded-2xl border border-border bg-surface-soft">
                 <Image
                   src={product.image}
-                  alt={product.name}
+                  alt={`Montura ${product.name}`}
                   fill
-                  className="object-cover group-hover:scale-110 transition-transform duration-700"
+                  sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                  className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                 />
-                <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-4 py-1.5 rounded-full text-xs font-bold text-blue-900 uppercase tracking-widest">
-                  {product.category}
-                </div>
               </div>
-              <div className="flex justify-between items-center">
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900">{product.name}</h3>
-                  <p className="text-gray-500">Desde {product.price}</p>
-                </div>
-                <div className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center group-hover:bg-green-600 group-hover:border-green-600 group-hover:text-white transition-all duration-300">
-                  <ArrowRight className="w-5 h-5" />
-                </div>
-              </div>
-            </motion.div>
+              <p className="text-sm font-medium text-brand">{product.category}</p>
+              <h3 className="mt-1 text-xl font-semibold text-ink">{product.name}</h3>
+            </motion.article>
           ))}
         </div>
       </div>
