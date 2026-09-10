@@ -1,0 +1,122 @@
+name: MK0.3 Realistic Frame Certification
+
+on:
+  push:
+    branches:
+      - fix/mk0-3-realistic-frames-20260910
+
+permissions:
+  contents: read
+
+jobs:
+  certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 488e2292ae2415c7702d6db878815d9f8a8f12fc
+          fetch-depth: 1
+
+      - name: Assert runtime authority
+        run: test "$(git rev-parse HEAD)" = "488e2292ae2415c7702d6db878815d9f8a8f12fc"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm audit --audit-level=high
+      - run: npm audit --omit=dev --audit-level=high
+      - run: npm run lint
+      - run: npm run build
+      - name: Assert source clean after build
+        run: test -z "$(git status --porcelain)"
+
+      - name: Start production server
+        run: |
+          nohup npm run start -- -H 127.0.0.1 -p 3010 >/tmp/optihome-server.log 2>&1 &
+          for i in $(seq 1 40); do
+            if curl -fsS http://127.0.0.1:3010/products >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/optihome-server.log
+          exit 1
+
+      - name: Install isolated Playwright
+        run: |
+          mkdir -p /tmp/pw
+          cd /tmp/pw
+          npm init -y >/dev/null 2>&1
+          npm install playwright@1.55.0 >/dev/null
+          npx playwright install chromium >/dev/null
+
+      - name: Realistic frame browser contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat >/tmp/pw/test.cjs <<'JS'
+          const { chromium } = require('playwright');
+          const fs = require('fs');
+          const slugs = ['urban-acetate','titanium-air','crystal-vision','vintage-tortoise','solar-noir','solar-aviator','circle-brown','solar-color'];
+          const checks = [];
+          const ok = (name, detail='') => checks.push({name, pass:true, detail});
+          const assert = (cond, name, detail='') => { if (!cond) throw new Error(`${name}: ${detail}`); ok(name, detail); };
+          (async () => {
+            const browser = await chromium.launch({headless:true});
+            const page = await browser.newPage({viewport:{width:1440,height:900}});
+            for (const slug of slugs) {
+              const r = await page.request.get(`http://127.0.0.1:3010/frames/${slug}.svg`);
+              assert(r.ok(), `ASSET_HTTP_${slug}`, `status=${r.status()}`);
+              const svg = await r.text();
+              assert(svg.includes('<linearGradient') && svg.includes('filter'), `ASSET_DETAIL_${slug}`);
+              assert(!/background\s*=|<rect[^>]+width=["']100%["'][^>]+height=["']100%["']/i.test(svg), `ASSET_TRANSPARENT_${slug}`);
+            }
+            await page.goto('http://127.0.0.1:3010/products', {waitUntil:'networkidle'});
+            const catalogImgs = page.locator('img[src^="/frames/"]');
+            const count = await catalogImgs.count();
+            assert(count >= 9, 'CATALOG_FRAME_IMAGES_PRESENT', `count=${count}`);
+            const unique = new Set();
+            for (let i=0;i<count;i++) {
+              const img = catalogImgs.nth(i);
+              const src = await img.getAttribute('src');
+              if (src) unique.add(src);
+              assert(await img.evaluate(el => el.complete && el.naturalWidth > 0), `CATALOG_IMAGE_LOAD_${i+1}`, String(src));
+            }
+            for (const slug of slugs) assert(unique.has(`/frames/${slug}.svg`), `CATALOG_HAS_${slug}`);
+            await page.screenshot({path:'/tmp/pw/catalog-realistic.png', fullPage:false});
+
+            await page.locator('[data-intent="cta_catalog_try_on"]').first().click();
+            const dialog = page.getByRole('dialog');
+            await dialog.waitFor({state:'visible'});
+            const overlay = dialog.locator('.pointer-events-none img').first();
+            await overlay.waitFor({state:'visible'});
+            for (let i=0;i<slugs.length;i++) {
+              const src = await overlay.getAttribute('src');
+              assert(src === `/frames/${slugs[i]}.svg`, `TRYON_FRAME_${i+1}`, String(src));
+              assert(await overlay.evaluate(el => el.complete && el.naturalWidth > 0), `TRYON_LOAD_${i+1}`, String(src));
+              if (i < slugs.length-1) {
+                await page.getByRole('button', {name:'Siguiente montura'}).click();
+                await page.waitForTimeout(120);
+              }
+            }
+            await page.screenshot({path:'/tmp/pw/tryon-realistic.png', fullPage:false});
+            fs.writeFileSync('/tmp/pw/results.json', JSON.stringify({runtime:'488e2292ae2415c7702d6db878815d9f8a8f12fc', total:checks.length, passed:checks.length, checks}, null, 2));
+            console.log(`REALISTIC_FRAME_CERT_PASS ${checks.length}/${checks.length}`);
+            await browser.close();
+          })().catch(err => { console.error(err); process.exit(1); });
+          JS
+          cd /tmp/pw
+          node test.cjs
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mk03-realistic-frame-evidence
+          path: |
+            /tmp/pw/results.json
+            /tmp/pw/catalog-realistic.png
+            /tmp/pw/tryon-realistic.png
+            /tmp/optihome-server.log
+          if-no-files-found: warn
