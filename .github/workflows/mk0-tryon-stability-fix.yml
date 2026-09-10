@@ -1,0 +1,80 @@
+name: MK0 TryOn Stability Fix
+
+on:
+  push:
+    branches: [rc/mk0-web-20260910]
+    paths: ['.github/workflows/mk0-tryon-stability-fix.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Patch tracking stability and eye anchors
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('src/components/try-on/VirtualTryOn.tsx')
+          s = p.read_text()
+
+          old = '''  const leftEye = points.find((point) => point.name === "left_eye") ?? points[33];\n  const rightEye = points.find((point) => point.name === "right_eye") ?? points[263];\n  if (!leftEye || !rightEye) return null;'''
+          new = '''  const validPoint = (point?: FacePoint) =>\n    Boolean(point && Number.isFinite(point.x) && Number.isFinite(point.y));\n  const midpoint = (a?: FacePoint, b?: FacePoint): FacePoint | null => {\n    if (!validPoint(a) || !validPoint(b) || !a || !b) return null;\n    return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };\n  };\n\n  const rightIris = validPoint(points[468]) ? points[468] : null;\n  const leftIris = validPoint(points[473]) ? points[473] : null;\n  const rightEye = rightIris ?? midpoint(points[33], points[133]);\n  const leftEye = leftIris ?? midpoint(points[362], points[263]);\n  if (!leftEye || !rightEye) return null;'''
+          if old not in s:
+              raise SystemExit('eye anchor block not found')
+          s = s.replace(old, new, 1)
+
+          old = '    width: clamp(displayedEyeDistance * 2.35, 116, stageWidth * 0.82),'
+          new = '    width: clamp(displayedEyeDistance * 2.2, 116, stageWidth * 0.82),'
+          if old not in s:
+              raise SystemExit('width multiplier anchor not found')
+          s = s.replace(old, new, 1)
+
+          old = '  const latestFaceRef = useRef<FaceData | null>(null);\n'
+          new = '  const latestFaceRef = useRef<FaceData | null>(null);\n  const lastFaceSeenAtRef = useRef(0);\n'
+          if old not in s:
+              raise SystemExit('latestFaceRef anchor not found')
+          s = s.replace(old, new, 1)
+
+          old = '    latestFaceRef.current = null;\n  };\n'
+          new = '    latestFaceRef.current = null;\n    lastFaceSeenAtRef.current = 0;\n  };\n'
+          if old not in s:
+              raise SystemExit('stopCamera reset anchor not found')
+          s = s.replace(old, new, 1)
+
+          old = '''        if (nextFace) {\n          const smoothed = smoothFace(latestFaceRef.current, nextFace);\n          latestFaceRef.current = smoothed;\n          setFaceData(smoothed);\n          setStatus("Seguimiento activo. La montura acompaña tu rostro.");\n        } else {\n          latestFaceRef.current = null;\n          setFaceData(null);\n          setStatus("Buscando tu rostro… mira de frente y mejora la iluminación.");\n        }'''
+          new = '''        if (nextFace) {\n          const smoothed = smoothFace(latestFaceRef.current, nextFace);\n          latestFaceRef.current = smoothed;\n          lastFaceSeenAtRef.current = performance.now();\n          setFaceData(smoothed);\n          setStatus("Seguimiento activo. La montura acompaña tu rostro.");\n        } else {\n          const lastSeen = lastFaceSeenAtRef.current;\n          const stale = !lastSeen || performance.now() - lastSeen > 1500;\n          if (stale) {\n            latestFaceRef.current = null;\n            setFaceData(null);\n            setStatus("Buscando tu rostro… mira de frente y mejora la iluminación.");\n          } else {\n            setStatus("Manteniendo el último ajuste mientras recuperamos el seguimiento…");\n          }\n        }'''
+          if old not in s:
+              raise SystemExit('tracking miss block not found')
+          s = s.replace(old, new, 1)
+
+          p.write_text(s)
+
+      - name: Validate patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci
+          npm audit --audit-level=low
+          npm audit --omit=dev --audit-level=low
+          npm run lint
+          npm run build
+          git diff --check
+
+      - name: Commit tracking hardening
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/components/try-on/VirtualTryOn.tsx
+          git commit -m 'fix(mk0): stabilize face tracking and eye anchors'
+          git push origin HEAD:rc/mk0-web-20260910
