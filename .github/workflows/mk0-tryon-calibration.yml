@@ -1,0 +1,61 @@
+name: MK0 TryOn Calibration
+
+on:
+  push:
+    branches: [rc/mk0-web-20260910]
+    paths: ['.github/workflows/mk0-tryon-calibration.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  calibrate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Patch visible overlay geometry
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('src/components/try-on/VirtualTryOn.tsx')
+          s = p.read_text()
+          old_nose = '  const nose = points.find((point) => point.name === "nose_bridge") ?? points[168];\n'
+          if old_nose not in s:
+              raise SystemExit('nose anchor not found')
+          s = s.replace(old_nose, '', 1)
+          old_mid = '  const midY = nose ? eyeY * 0.86 + nose.y * 0.14 : eyeY;\n'
+          if old_mid not in s:
+              raise SystemExit('midY anchor not found')
+          s = s.replace(old_mid, '  const midY = eyeY;\n', 1)
+          old = '''        context.putImageData(imageData, 0, 0);\n        if (!cancelled) setOverlaySource(canvas.toDataURL("image/png"));'''
+          new = '''        context.putImageData(imageData, 0, 0);\n\n        let minX = canvas.width;\n        let minY = canvas.height;\n        let maxX = -1;\n        let maxY = -1;\n        for (let y = 0; y < canvas.height; y += 1) {\n          for (let x = 0; x < canvas.width; x += 1) {\n            const alpha = pixels[(y * canvas.width + x) * 4 + 3];\n            if (alpha > 12) {\n              minX = Math.min(minX, x);\n              minY = Math.min(minY, y);\n              maxX = Math.max(maxX, x);\n              maxY = Math.max(maxY, y);\n            }\n          }\n        }\n\n        if (maxX >= minX && maxY >= minY) {\n          const padding = Math.max(2, Math.round(Math.min(canvas.width, canvas.height) * 0.015));\n          const sx = Math.max(0, minX - padding);\n          const sy = Math.max(0, minY - padding);\n          const ex = Math.min(canvas.width, maxX + padding + 1);\n          const ey = Math.min(canvas.height, maxY + padding + 1);\n          const cropWidth = ex - sx;\n          const cropHeight = ey - sy;\n          const cropped = document.createElement("canvas");\n          cropped.width = cropWidth;\n          cropped.height = cropHeight;\n          const croppedContext = cropped.getContext("2d");\n          if (croppedContext) {\n            croppedContext.drawImage(canvas, sx, sy, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);\n            if (!cancelled) setOverlaySource(cropped.toDataURL("image/png"));\n          } else if (!cancelled) {\n            setOverlaySource(canvas.toDataURL("image/png"));\n          }\n        } else if (!cancelled) {\n          setOverlaySource(frameImage);\n        }'''
+          if old not in s:
+              raise SystemExit('overlay preprocessing anchor not found')
+          s = s.replace(old, new, 1)
+          p.write_text(s)
+
+      - name: Validate patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci
+          npm run lint
+          npm run build
+          git diff --check
+          git status --short
+
+      - name: Commit calibrated try-on
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/components/try-on/VirtualTryOn.tsx
+          git commit -m 'fix(mk0): align try-on overlay to visible frame bounds'
+          git push origin HEAD:rc/mk0-web-20260910
