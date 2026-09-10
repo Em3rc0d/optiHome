@@ -1,13 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="360" viewBox="0 0 1000 360" fill="none">
-
-  <g fill="#182229" fill-opacity="0.18" stroke="#101820" stroke-width="28" stroke-linejoin="round">
-    <path d="M62 88 H432 Q456 88 454 118 L438 258 Q435 286 404 290 H120 Q89 287 82 258 Z"/>
-    <path d="M546 118 Q544 88 568 88 H938 L918 258 Q911 287 880 290 H596 Q565 286 562 258 Z"/>
-  </g>
-  <g stroke="#101820" stroke-width="26" stroke-linecap="round">
-    <path d="M454 152 C478 134 522 134 546 152"/>
-    <path d="M62 126 L18 106"/>
-    <path d="M938 126 L982 106"/>
-  </g>
-
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="360" viewBox="0 0 1000 360" fill="none"><defs><linearGradient id="frame" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#4A5055"/><stop offset=".16" stop-color="#06080A"/><stop offset=".65" stop-color="#171B1F"/><stop offset="1" stop-color="#020304"/></linearGradient><linearGradient id="smoke" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#111820" stop-opacity=".82"/><stop offset=".52" stop-color="#27323B" stop-opacity=".72"/><stop offset="1" stop-color="#0C1116" stop-opacity=".82"/></linearGradient><filter id="shadow" x="-10%" y="-20%" width="120%" height="150%"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#000" flood-opacity=".32"/></filter></defs><g stroke="#07090B" stroke-width="18" stroke-linecap="round"><path d="M143 137 C100 124 58 119 18 120"/><path d="M857 137 C900 124 942 119 982 120"/></g><g filter="url(#shadow)"><rect x="60" y="63" width="385" height="230" rx="64" fill="url(#smoke)" stroke="url(#frame)" stroke-width="30"/><rect x="555" y="63" width="385" height="230" rx="64" fill="url(#smoke)" stroke="url(#frame)" stroke-width="30"/><path d="M445 149 C465 127 485 120 500 120 C515 120 535 127 555 149" stroke="url(#frame)" stroke-width="30" stroke-linecap="round"/><rect x="69" y="107" width="26" height="12" rx="4" fill="#BFC5C8"/><rect x="905" y="107" width="26" height="12" rx="4" fill="#BFC5C8"/></g><g opacity=".16" fill="#fff"><path d="M111 101 C195 75 344 83 403 104 L370 138 C277 113 199 120 125 157 Z"/><path d="M889 101 C805 75 656 83 597 104 L630 138 C723 113 801 120 875 157 Z"/></g><g opacity=".25" stroke="#A7B0B6" stroke-width="5" stroke-linecap="round"><path d="M117 94 C192 78 338 80 399 96"/><path d="M601 96 C662 80 808 78 883 94"/></g></svg>
