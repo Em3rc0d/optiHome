@@ -139,8 +139,17 @@ function faceGeometry({
 }): FaceData | null {
   if (!sourceWidth || !sourceHeight || !stageWidth || !stageHeight) return null;
 
-  const leftEye = points.find((point) => point.name === "left_eye") ?? points[33];
-  const rightEye = points.find((point) => point.name === "right_eye") ?? points[263];
+  const validPoint = (point?: FacePoint) =>
+    Boolean(point && Number.isFinite(point.x) && Number.isFinite(point.y));
+  const midpoint = (a?: FacePoint, b?: FacePoint): FacePoint | null => {
+    if (!validPoint(a) || !validPoint(b) || !a || !b) return null;
+    return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+  };
+
+  const rightIris = validPoint(points[468]) ? points[468] : null;
+  const leftIris = validPoint(points[473]) ? points[473] : null;
+  const rightEye = rightIris ?? midpoint(points[33], points[133]);
+  const leftEye = leftIris ?? midpoint(points[362], points[263]);
   if (!leftEye || !rightEye) return null;
 
   const renderScale =
@@ -167,7 +176,7 @@ function faceGeometry({
   return {
     x: offsetX + midX * renderScale,
     y: offsetY + midY * renderScale,
-    width: clamp(displayedEyeDistance * 2.35, 116, stageWidth * 0.82),
+    width: clamp(displayedEyeDistance * 2.2, 116, stageWidth * 0.82),
     rotation,
   };
 }
@@ -220,6 +229,7 @@ export function VirtualTryOn({
   const mountedRef = useRef(true);
   const cameraRequestRef = useRef(0);
   const latestFaceRef = useRef<FaceData | null>(null);
+  const lastFaceSeenAtRef = useRef(0);
 
   const canPrevious = frameIndex > 0;
   const canNext = frameIndex < frames.length - 1;
@@ -233,6 +243,7 @@ export function VirtualTryOn({
     setDetector(null);
     setFaceData(null);
     latestFaceRef.current = null;
+    lastFaceSeenAtRef.current = 0;
   };
 
   const closeTryOn = () => {
@@ -377,12 +388,19 @@ export function VirtualTryOn({
         if (nextFace) {
           const smoothed = smoothFace(latestFaceRef.current, nextFace);
           latestFaceRef.current = smoothed;
+          lastFaceSeenAtRef.current = performance.now();
           setFaceData(smoothed);
           setStatus("Seguimiento activo. La montura acompaña tu rostro.");
         } else {
-          latestFaceRef.current = null;
-          setFaceData(null);
-          setStatus("Buscando tu rostro… mira de frente y mejora la iluminación.");
+          const lastSeen = lastFaceSeenAtRef.current;
+          const stale = !lastSeen || performance.now() - lastSeen > 1500;
+          if (stale) {
+            latestFaceRef.current = null;
+            setFaceData(null);
+            setStatus("Buscando tu rostro… mira de frente y mejora la iluminación.");
+          } else {
+            setStatus("Manteniendo el último ajuste mientras recuperamos el seguimiento…");
+          }
         }
       } catch {
         setStatus("El seguimiento se interrumpió. Puedes reintentar o usar una foto.");
