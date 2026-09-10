@@ -1,91 +1,57 @@
-"use client";
-import React, { useRef } from "react";
-import { Lightbulb, MessageCircle } from "lucide-react";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/components/ui/carousel";
-import Autoplay from "embla-carousel-autoplay";
-
+import { MessageCircle } from "lucide-react";
 import { FeaturesSection } from "./components/landing/FeaturesSection";
 import { ProcessSection } from "./components/landing/ProcessSection";
 import { ProductShowcase } from "./components/landing/ProductShowcase";
 import Services from "./services/page";
 import { HeroSection } from "./components/landing/HeroSection";
-import TestimonialsCarousel from "./testimonials/page";
 import AboutUsSection from "./us/page";
 import { FaqSection } from "./components/landing/FaqSection";
+import { buildWhatsappUrl, siteConfig } from "@/content/site";
+import { intentProps } from "@/lib/analytics-events";
 
 export default function Home() {
-  const autoplay = useRef(Autoplay({ delay: 5000, stopOnInteraction: false }));
+  const whatsappHref = buildWhatsappUrl(
+    "Hola, quiero solicitar una evaluación con OptiHome. ¿Podemos revisar disponibilidad de fecha y horario?"
+  );
 
   return (
-    <main className="font-sans">
-      {/* HERO */}
+    <div className="font-sans">
       <HeroSection />
-      
-      {/* BENEFICIOS / POR QUE NOSOTROS */}
       <FeaturesSection />
-
-      {/* SERVICIOS INTEGRADOS */}
       <Services />
-
-      {/* PRODUCTOS DESTACADOS */}
       <ProductShowcase />
-
-      {/* PROCESO */}
       <ProcessSection />
-
-      {/* CONSEJOS */}
-      <section className="bg-white py-24 px-6 md:px-12 text-center">
-        <div className="max-w-4xl mx-auto flex flex-col items-center p-12 rounded-[4rem] bg-gradient-to-br from-green-50 to-blue-50 border border-white shadow-2xl">
-          <Lightbulb className="w-16 h-16 text-yellow-500 mb-6" />
-          <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-8">
-            Consejos para tu <br /> <span className="text-green-600">salud visual</span>
-          </h2>
-
-          <Carousel
-            className="w-full"
-            plugins={[autoplay.current]}
-            opts={{ loop: true }}
-          >
-            <CarouselContent>
-              {[
-                "👀 Descansa tus ojos cada 20 minutos al usar pantallas.",
-                "🌿 Asegura buena iluminación al leer o estudiar.",
-                "🥕 Consume alimentos ricos en vitamina A como zanahorias.",
-                "🚶‍♂️ Enfoca objetos lejanos para relajar tus ojos.",
-                "💧 Mantén tus ojos hidratados y evita la resequedad.",
-                "🕶️ Usa lentes con filtro UV para protegerte del sol.",
-              ].map((tip, i) => (
-                <CarouselItem key={i}>
-                  <p className="text-gray-800 text-xl font-medium leading-relaxed italic">
-                    &ldquo;{tip}&rdquo;
-                  </p>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-          </Carousel>
-        </div>
-      </section>
-
-      {/* NOSOTROS */}
       <AboutUsSection />
-
-      {/* TESTIMONIOS */}
-      <TestimonialsCarousel />
-
-      {/* FAQ */}
       <FaqSection />
 
-      <div className="py-20 text-center">
-        <h2 className="text-3xl font-bold mb-6">¿Listo para ver mejor?</h2>
-        <button className="bg-green-600 hover:bg-green-700 text-white px-10 py-5 rounded-full text-xl font-bold transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-3 mx-auto">
-          <MessageCircle className="w-6 h-6" />
-          Agendar mi examen gratuito
-        </button>
-      </div>
-    </main>
+      <section
+        id="solicitar-evaluacion"
+        className="border-t border-border bg-surface-soft px-6 py-20 text-center md:px-12"
+      >
+        <div className="mx-auto max-w-2xl">
+          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.16em] text-brand">
+            Siguiente paso
+          </p>
+          <h2 className="text-3xl font-semibold text-ink md:text-4xl">
+            Cuéntanos qué necesitas y revisamos disponibilidad contigo.
+          </h2>
+          <p className="mx-auto mt-5 max-w-xl text-base leading-7 text-ink-muted md:text-lg">
+            En esta etapa la coordinación continúa por WhatsApp. Enviar el mensaje inicia una solicitud;
+            la fecha y el horario se confirman después según capacidad disponible.
+          </p>
+          <a
+            href={whatsappHref}
+            target="_blank"
+            rel="noreferrer"
+            {...intentProps("cta_final_request_evaluation")}
+            className="mt-8 inline-flex min-h-12 items-center justify-center gap-3 rounded-xl bg-brand px-7 py-3 font-semibold text-white transition-colors hover:bg-brand-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
+          >
+            <MessageCircle className="size-5" aria-hidden="true" />
+            Continuar por WhatsApp
+          </a>
+          <p className="mt-4 text-sm text-ink-muted">{siteConfig.appointment.availabilityNotice}</p>
+        </div>
+      </section>
+    </div>
   );
 }
