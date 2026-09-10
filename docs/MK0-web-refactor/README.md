@@ -1,6 +1,6 @@
 # MK0 — OptiHome Web Refactor
 
-Status: `DOCUMENTATION_GATE_OPEN`
+Status: `BUILD_001_COMPLETE`
 Branch: `refactor/mk0-web-foundation-20260909`
 Scope: public website refactor only.
 
@@ -29,11 +29,31 @@ mining-site
 → accepted decisions
 ```
 
+## Current execution state
+
+```text
+DOCS / PRODUCT DIRECTION    FROZEN
+BUILD-001 FOUNDATION        COMPLETE
+BUILD-002 HOMEPAGE          READY
+BUILD-003 CATALOG           BLOCKED_BY_BUILD_002
+BUILD-004 TRY-ON            BLOCKED_BY_BUILD_003
+BUILD-005 A11Y/RESPONSIVE   BLOCKED_BY_BUILD_004
+BUILD-006 SEO/PERFORMANCE   BLOCKED_BY_BUILD_005
+```
+
+Certified BUILD-001 implementation SHA:
+
+```text
+01bff16741ea4440745856c99a7fa2977f7ae37f
+```
+
+The detailed gate receipt is authoritative in `build/BUILD.md`.
+
 ## Canonical product framing
 
 **OptiHome** is the canonical public brand for this refactor.
 
-`DaVision` is treated as a legacy naming residue in the current codebase and must not remain in the release candidate unless later evidence explicitly reverses this decision.
+`DaVision` is treated as legacy naming residue. It must not remain on a refactored public surface unless later evidence explicitly reverses this decision.
 
 ## MK0 definition of success
 
@@ -77,15 +97,27 @@ The site must also be responsive, accessible, performant, internally consistent 
 - Production appointment scheduling backend.
 - Medical diagnosis or automated clinical recommendations.
 
-## Current evidence that triggered the refactor
+## Appointment boundary frozen before BUILD-001
 
-The current repository contains a technically ambitious optical experience with a catalog, at-home service messaging and virtual try-on. However, the public experience mixes `OptiHome` and `DaVision`, includes unsupported proof/availability claims in UI copy, duplicates design patterns, and contains CTAs whose business behavior is incomplete or inconsistent.
+The public web may initiate a request, but it must not imply that WhatsApp itself owns appointment capacity.
 
-The refactor therefore optimizes first for **clarity, trust and intentional journeys**, not for adding more features.
+Future commercial continuation:
+
+```text
+web request
+→ capacity validation
+→ appointment state
+→ WhatsApp coordination
+→ internal notification
+→ operational agenda
+```
+
+`REQUESTED` and `CONFIRMED` remain distinct states. The future Appointment & Capacity MK comes after the web refactor and before scaling demand through TikTok/content automation.
 
 ## Documentation map
 
 - `brainstorming/BR-000-product-thesis.md`
+- `brainstorming/BR-001-appointment-capacity-contract.md`
 - `design/DESIGN.md`
 - `architecture/ARCHITECTURE.md`
 - `plan/PLAN.md`
@@ -94,6 +126,6 @@ The refactor therefore optimizes first for **clarity, trust and intentional jour
 - `../../mining-site/MK0-web-refactor/README.md`
 - `../../quarries/MK0-web-refactor/QRY-000-optical-web-patterns.md`
 
-## Gate
+## Next gate
 
-Implementation starts only after the documentation set is internally consistent and the human acceptance gate for the web direction is closed.
+`BUILD-002 — Homepage narrative` is ready. It owns the single-message hero, journey chooser and final homepage narrative before catalog and try-on refactors begin.
