@@ -1,6 +1,6 @@
 # PLAN.md — OptiHome MK0 Web Refactor
 
-Status: `READY_FOR_HUMAN_ACCEPTANCE`
+Status: `BUILD_001_COMPLETE`
 
 ## Objective
 
@@ -10,17 +10,23 @@ Execute the public web refactor without opening later commercial-system scope.
 
 ### BUILD-001 — Foundation cleanup
 
+Status: `COMPLETE`
+
 - Normalize canonical brand to `OptiHome`.
 - Introduce design tokens and remove arbitrary duplicated styling where practical.
 - Establish `SiteHeader` and `SiteFooter`.
 - Centralize authoritative/demo site content and business contact configuration.
-- Remove/replace unsupported claims.
+- Remove/replace unsupported claims on the refactored homepage surface.
 - Establish analytics-ready event IDs/no-op wrapper.
-- Normalize appointment-related CTA wording so a WhatsApp handoff is never presented as a confirmed booking.
+- Align the current WhatsApp handoff with the frozen appointment-capacity contract.
 
-**Exit:** coherent foundation, no visible legacy brand residue in refactored surfaces.
+**Certified implementation:** `01bff16741ea4440745856c99a7fa2977f7ae37f`
+
+**Exit:** PASS. Coherent foundation is deployed to a preview and validated; legacy surfaces outside BUILD-001 remain explicitly deferred.
 
 ### BUILD-002 — Homepage narrative
+
+Status: `READY`
 
 - Replace rotating hero with a single clear value proposition.
 - Implement primary/secondary hero actions.
@@ -30,11 +36,12 @@ Execute the public web refactor without opening later commercial-system scope.
 - Add focused virtual try-on explanation.
 - Refactor FAQ/trust section.
 - Implement final CTA.
-- Preserve a clean seam for the later structured appointment flow without displaying fake availability.
 
 **Exit:** first-time visitor can understand the service and next action without external explanation.
 
 ### BUILD-003 — Catalog experience
+
+Status: `BLOCKED_BY_BUILD_002`
 
 - Move frame data out of monolithic route code.
 - Normalize categories/material/color labels.
@@ -45,6 +52,8 @@ Execute the public web refactor without opening later commercial-system scope.
 **Exit:** catalog behaves as a real discovery surface rather than a demo grid.
 
 ### BUILD-004 — Virtual try-on decomposition
+
+Status: `BLOCKED_BY_BUILD_003`
 
 - Isolate model loading and camera lifecycle.
 - Separate UI states from detection logic.
@@ -58,6 +67,8 @@ Execute the public web refactor without opening later commercial-system scope.
 
 ### BUILD-005 — Responsive + accessibility hardening
 
+Status: `BLOCKED_BY_BUILD_004`
+
 - Keyboard pass.
 - Focus pass.
 - Heading/landmark pass.
@@ -70,6 +81,8 @@ Execute the public web refactor without opening later commercial-system scope.
 **Exit:** no P0/P1 accessibility or responsive defects known.
 
 ### BUILD-006 — SEO + performance hardening
+
+Status: `BLOCKED_BY_BUILD_005`
 
 - Metadata.
 - Image priorities/sizes.
@@ -90,37 +103,33 @@ Do not add:
 - lead database
 - payment processor
 - real appointment scheduler
-- notification backend
-- internal appointment agenda
 - content generation pipeline
 - revenue dashboard
 
-If implementation discovers a seam needed by those systems, document it; do not build the future system inside MK0.
+The web may expose the request handoff required by the frozen appointment contract, but the operational scheduler itself remains a later MK.
 
-## Frozen post-MK0 continuation
+## Commercial continuation after MK0
 
-The first commercial/operations continuation after the public web refactor is expected to be a dedicated **Appointment & Capacity MK**, using `brainstorming/BR-001-appointment-capacity-contract.md` as its input contract.
-
-Its intended responsibility is:
+Once BUILD-006 closes the web refactor, the next commercial MK is:
 
 ```text
-structured appointment request
-→ real availability / capacity control
-→ operational notification
-→ internal agenda
-→ WhatsApp handoff / confirmation
-→ execution status
+Appointment & Capacity
+→ Notifications + operational agenda
+→ WhatsApp coordination backed by appointment state
 ```
 
-This continuation must protect the business from overbooking and uncontrolled home visits before more advanced acquisition automation is added.
-
-TikTok/content automation remains later than this scheduling/operations foundation.
+Only after that foundation can absorb demand safely does the TikTok/content acquisition MK open.
 
 ## Release gates
 
 ```text
-DOCS_GATE
-→ BUILD_GATE
+DOCS_GATE              PASS
+→ BUILD_001_GATE       PASS
+→ BUILD_002_GATE       READY
+→ BUILD_003_GATE
+→ BUILD_004_GATE
+→ BUILD_005_GATE
+→ BUILD_006_GATE
 → LINT_GATE
 → TYPE/BUILD_GATE
 → RESPONSIVE_GATE
@@ -130,8 +139,6 @@ DOCS_GATE
 → HUMAN_VISUAL_GATE
 ```
 
-## Human gate before BUILD-001
+## Human gates
 
-The documentation can proceed autonomously, but implementation should begin only once the product/design direction in this MK0 set is accepted by the owner.
-
-This preserves the repository rule: major decisions are closed before coding.
+The owner accepted the MK0 direction before BUILD-001. Final visual acceptance remains a release gate after the intended homepage and responsive work exists; it is not inferred from successful compilation.
