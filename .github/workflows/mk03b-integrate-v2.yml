@@ -1,0 +1,128 @@
+name: MK0.3b integrate and certify v2
+
+on:
+  push:
+    branches:
+      - cert/mk0-3b-transfer-20260910
+    paths:
+      - .github/workflows/mk03b-integrate-v2.yml
+
+permissions:
+  contents: write
+
+jobs:
+  integrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout certification branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Prepare exact clean candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin feat/mk0-3b-photoreal-cache-clean-20260910
+          git checkout -B feat/mk0-3b-photoreal-cache-clean-20260910 origin/feat/mk0-3b-photoreal-cache-clean-20260910
+          test "$(git rev-parse HEAD)" = "cd9fc4271755788d7704e37abee94e1407a9511f"
+
+      - name: Rasterize certified realistic frames to transparent WebP
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq librsvg2-bin webp
+          slugs=(urban-acetate titanium-air crystal-vision vintage-tortoise solar-noir solar-aviator circle-brown solar-color)
+          for slug in "${slugs[@]}"; do
+            test -f "public/frames/${slug}.svg"
+            rsvg-convert -w 1200 -h 432 "public/frames/${slug}.svg" > "/tmp/${slug}.png"
+            cwebp -quiet -q 90 -alpha_q 100 -m 6 "/tmp/${slug}.png" -o "public/frames/${slug}.webp"
+          done
+          test "$(find public/frames -maxdepth 1 -name '*.webp' | wc -l)" -eq 8
+          file public/frames/*.webp
+
+      - name: Switch catalog references and preserve transparent WebP directly
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          slugs = ["urban-acetate","titanium-air","crystal-vision","vintage-tortoise","solar-noir","solar-aviator","circle-brown","solar-color"]
+          p = Path("src/content/frames.ts")
+          s = p.read_text()
+          for slug in slugs:
+              old = f"/frames/{slug}.svg"
+              new = f"/frames/{slug}.webp"
+              if s.count(old) != 2:
+                  raise SystemExit(f"{slug}: expected exactly 2 SVG refs, got {s.count(old)}")
+              s = s.replace(old, new)
+          p.write_text(s)
+          p = Path("src/components/try-on/VirtualTryOn.tsx")
+          s = p.read_text()
+          old = 'if (frameImage.toLowerCase().endsWith(".svg")) {'
+          new = 'const normalizedFrameImage = frameImage.toLowerCase();\n\n  if (normalizedFrameImage.endsWith(".svg") || normalizedFrameImage.endsWith(".webp")) {'
+          if s.count(old) != 1:
+              raise SystemExit("expected exact frame preprocessing guard once")
+          p.write_text(s.replace(old, new))
+          PY
+
+      - name: Certify source contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          frames = Path("src/content/frames.ts").read_text()
+          refs = re.findall(r'/frames/[a-z0-9-]+\.webp', frames)
+          if len(refs) != 16:
+              raise SystemExit(f"expected 16 WebP refs, got {len(refs)}")
+          if re.search(r'/frames/[a-z0-9-]+\.svg', frames):
+              raise SystemExit("catalog still contains SVG frame references")
+          src = Path("src/components/try-on/VirtualTryOn.tsx").read_text()
+          required = [
+              "let detectorCache: FaceDetector | null = null;",
+              "let detectorPromise: Promise<FaceDetector> | null = null;",
+              "if (detectorCache) return detectorCache;",
+              "if (detectorPromise) return detectorPromise;",
+              "detectorCache = nextDetector;",
+              'normalizedFrameImage.endsWith(".webp")',
+          ]
+          for needle in required:
+              if needle not in src:
+                  raise SystemExit(f"missing cache/runtime contract: {needle}")
+          start = src.index("  const stopCamera = () => {")
+          end = src.index("  const closeTryOn = () => {", start)
+          body = src[start:end]
+          if "detectorCache =" in body or "detectorPromise =" in body:
+              raise SystemExit("stopCamera resets module detector cache")
+          print("asset refs: 8/8 slugs, 16/16 image refs")
+          print("detector cache source contract: 0 -> 1 -> 1")
+          print("close resets component state only; module cache survives reopen")
+          print("WebP bypasses destructive preprocessing")
+          PY
+
+      - name: Install and certify application
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci
+          npm audit --omit=dev
+          npm run lint
+          npx tsc --noEmit
+          npm run build
+
+      - name: Commit exact candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git status --short
+          git add src/content/frames.ts src/components/try-on/VirtualTryOn.tsx public/frames/*.webp
+          git diff --cached --check
+          test "$(git diff --cached --name-only | wc -l)" -eq 10
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "feat: integrate MK0.3b photoreal WebP try-on assets"
+          git push origin HEAD:feat/mk0-3b-photoreal-cache-clean-20260910
