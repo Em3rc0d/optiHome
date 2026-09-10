@@ -16,6 +16,7 @@ Execute the public web refactor without opening later commercial-system scope.
 - Centralize authoritative/demo site content and business contact configuration.
 - Remove/replace unsupported claims.
 - Establish analytics-ready event IDs/no-op wrapper.
+- Normalize appointment-related CTA wording so a WhatsApp handoff is never presented as a confirmed booking.
 
 **Exit:** coherent foundation, no visible legacy brand residue in refactored surfaces.
 
@@ -29,6 +30,7 @@ Execute the public web refactor without opening later commercial-system scope.
 - Add focused virtual try-on explanation.
 - Refactor FAQ/trust section.
 - Implement final CTA.
+- Preserve a clean seam for the later structured appointment flow without displaying fake availability.
 
 **Exit:** first-time visitor can understand the service and next action without external explanation.
 
@@ -88,10 +90,31 @@ Do not add:
 - lead database
 - payment processor
 - real appointment scheduler
+- notification backend
+- internal appointment agenda
 - content generation pipeline
 - revenue dashboard
 
 If implementation discovers a seam needed by those systems, document it; do not build the future system inside MK0.
+
+## Frozen post-MK0 continuation
+
+The first commercial/operations continuation after the public web refactor is expected to be a dedicated **Appointment & Capacity MK**, using `brainstorming/BR-001-appointment-capacity-contract.md` as its input contract.
+
+Its intended responsibility is:
+
+```text
+structured appointment request
+→ real availability / capacity control
+→ operational notification
+→ internal agenda
+→ WhatsApp handoff / confirmation
+→ execution status
+```
+
+This continuation must protect the business from overbooking and uncontrolled home visits before more advanced acquisition automation is added.
+
+TikTok/content automation remains later than this scheduling/operations foundation.
 
 ## Release gates
 
