@@ -19,13 +19,13 @@ const features = [
   {
     title: "Disponibilidad controlada",
     description:
-      "Cada solicitud debe revisarse contra la capacidad disponible antes de convertirla en una cita confirmada.",
+      "Cada solicitud se revisa antes de ofrecer una fecha, para evitar confirmar más visitas de las que pueden atenderse correctamente.",
     icon: CalendarCheck2,
   },
   {
     title: "Continuidad por WhatsApp",
     description:
-      "WhatsApp sirve para coordinar y confirmar, mientras el sistema evoluciona hacia una agenda operativa como fuente de verdad.",
+      "La conversación continúa por WhatsApp para resolver detalles y dejar claro cuándo una solicitud ya tiene fecha confirmada.",
     icon: MessageCircleMore,
   },
 ];
