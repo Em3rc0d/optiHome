@@ -1,0 +1,1 @@
+MK0.3 is a scoped visual/performance hotfix. It must not change appointment semantics, catalog availability semantics, camera permission timing, or MK0.2 face geometry.
