@@ -1,0 +1,1 @@
+Performance target: the photorealistic overlays are cropped WebP assets sized for the actual try-on display rather than multi-megabyte source renders. The face detector is lazy and session-warm: zero detector initialization on catalog/dialog open, one initialization on first explicit camera/photo use, and reuse across dialog close/reopen in the same SPA runtime.
