@@ -1,0 +1,1 @@
+The final visual layer uses original generated eyewear artwork, not third-party product photography. This avoids provenance ambiguity while giving the Try-On materially more realistic material, lens and hinge rendering.
