@@ -1,0 +1,1 @@
+Implementation note: final code will point `Frame.image` and `Frame.tryOnImage` to pre-cropped transparent photorealistic assets. `VirtualTryOn` must bypass legacy white-background cleanup for prepared frame assets and cache the detector on `window` after first explicit use.
