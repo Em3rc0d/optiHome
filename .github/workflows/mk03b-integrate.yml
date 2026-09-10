@@ -101,22 +101,22 @@ jobs:
               "let detectorPromise: Promise<FaceDetector> | null = null;",
               "if (detectorCache) return detectorCache;",
               "if (detectorPromise) return detectorPromise;",
-              "detectorCache = detector;",
+              "detectorCache = nextDetector;",
               'normalizedFrameImage.endsWith(".webp")',
           ]
           for needle in required:
               if needle not in src:
                   raise SystemExit(f"missing cache/runtime contract: {needle}")
 
-          stop = re.search(r'const stopCamera = React\.useCallback\(\(\) => \{(?P<body>.*?)\n\s*\}, \[', src, re.S)
-          if not stop:
-              raise SystemExit("could not isolate stopCamera")
-          body = stop.group("body")
+          start = src.index("  const stopCamera = () => {")
+          end = src.index("  const closeTryOn = () => {", start)
+          body = src[start:end]
           if "detectorCache =" in body or "detectorPromise =" in body:
               raise SystemExit("stopCamera resets module detector cache")
 
           print("asset refs: 8/8 slugs, 16/16 image refs")
           print("detector cache source contract: 0 -> 1 -> 1")
+          print("close resets component detector state only; module cache survives reopen")
           print("WebP path bypasses destructive white-background preprocessing")
           PY
 
