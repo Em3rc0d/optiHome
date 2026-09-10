@@ -1,0 +1,85 @@
+name: MK0.4 Certification
+
+on:
+  push:
+    branches:
+      - "feat/mk0-4-immersive-experience-20260910"
+  pull_request:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Dependency audit
+        run: npm audit --audit-level=high
+
+      - name: Lint
+        run: npm run lint
+
+      - name: TypeScript
+        run: npx tsc --noEmit
+
+      - name: Frozen try-on contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object src/components/try-on/VirtualTryOn.tsx)" = "c211cfc4025a2963fed7ae49b76e218aaeee5cb2"
+          ! grep -q '/frames/urban-acetate\.svg' src/components/home/TryOnFeature.tsx
+          grep -q '/frames/urban-acetate\.webp' src/components/home/TryOnFeature.tsx
+
+      - name: MK0.4 source contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f src/lib/motion/tokens.ts
+          test -f src/lib/motion/capabilities.ts
+          test -f src/components/home/OpticalStory.tsx
+          test -f src/app/robots.ts
+          test -f src/app/sitemap.ts
+          test -f src/app/not-found.tsx
+          test -f src/app/opengraph-image.tsx
+          test -f docs/MK0.4-immersive-experience/RELEASE-CERTIFICATION.md
+
+      - name: Build
+        run: npm run build
+
+      - name: Runtime smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run start -- -p 3000 > /tmp/optihome-next.log 2>&1 &
+          APP_PID=$!
+          trap 'kill $APP_PID || true' EXIT
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:3000/ >/tmp/home.html; then
+              break
+            fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:3000/products >/tmp/products.html
+          curl -fsS http://127.0.0.1:3000/robots.txt >/tmp/robots.txt
+          curl -fsS http://127.0.0.1:3000/sitemap.xml >/tmp/sitemap.xml
+          grep -q "Explora" /tmp/home.html
+          grep -q "Showroom interactivo" /tmp/products.html
+          grep -q "sitemap" /tmp/robots.txt
+          grep -q "optihome-v1.vercel.app" /tmp/sitemap.xml
+          ! grep -Eiq "error|fatal" /tmp/optihome-next.log

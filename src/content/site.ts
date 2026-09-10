@@ -7,6 +7,7 @@ type NavigationItem = {
 
 export const siteConfig = {
   name: "OptiHome",
+  url: "https://optihome-v1.vercel.app",
   description:
     "Atención óptica a domicilio, exploración de monturas y prueba virtual para ayudarte a elegir desde casa.",
   locale: "es_PE",

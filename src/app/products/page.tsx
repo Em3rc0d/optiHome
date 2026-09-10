@@ -4,10 +4,23 @@ import { ArrowLeft } from "lucide-react";
 import { FrameCatalog } from "@/components/catalog/FrameCatalog";
 import { frames } from "@/content/frames";
 
+const description =
+  "Explora monturas, compara estilos y pruébatelas virtualmente con cámara o foto antes de consultar disponibilidad.";
+
 export const metadata: Metadata = {
   title: "Monturas y prueba virtual",
-  description:
-    "Explora monturas, compara estilos y pruébatelas virtualmente con cámara o foto antes de consultar disponibilidad.",
+  description,
+  openGraph: {
+    title: "Monturas y prueba virtual | OptiHome",
+    description,
+    images: ["/opengraph-image"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Monturas y prueba virtual | OptiHome",
+    description,
+    images: ["/opengraph-image"],
+  },
 };
 
 export default function ProductsPage() {
@@ -32,8 +45,9 @@ export default function ProductsPage() {
       <section className="bg-white">
         <div className="content-shell section-pad">
           <div id="prueba-virtual" className="scroll-mt-24">
-            <h2 className="text-2xl font-semibold">Explora y pruébate monturas</h2>
-            <p className="mt-2 max-w-2xl leading-7 text-ink-muted">
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-brand">Showroom interactivo</p>
+            <h2 className="mt-3 text-3xl font-semibold md:text-5xl">Explora y pruébate monturas</h2>
+            <p className="mt-3 max-w-2xl leading-7 text-ink-muted">
               Selecciona un modelo para verlo en detalle. Puedes probarlo con cámara o foto antes de consultar disponibilidad.
             </p>
           </div>

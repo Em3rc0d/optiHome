@@ -1,22 +1,25 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Home, Sparkles } from "lucide-react";
+import { HeroExperience } from "@/components/home/HeroExperience";
+import { Reveal } from "@/components/motion/Reveal";
 import { intentProps } from "@/lib/analytics-events";
 
 export function Hero() {
   return (
     <section className="overflow-hidden bg-white">
-      <div className="content-shell grid min-h-[calc(100svh-4rem)] items-center gap-12 py-12 lg:grid-cols-[1.05fr_.95fr] lg:py-16">
-        <div className="hero-copy-enter">
+      <div className="content-shell grid min-h-[calc(100svh-4rem)] items-center gap-12 py-12 lg:grid-cols-[1.02fr_.98fr] lg:py-16">
+        <Reveal>
           <div className="inline-flex items-center gap-2 rounded-full bg-accent-soft px-4 py-2 text-sm font-semibold text-brand-strong">
             <Home className="size-4" aria-hidden="true" />
             Óptica a domicilio
           </div>
-          <h1 className="mt-6 max-w-3xl text-4xl font-semibold leading-[1.08] text-ink sm:text-5xl lg:text-6xl">
-            Cuida tu visión y encuentra tus próximos lentes desde casa.
+
+          <h1 className="mt-6 max-w-3xl text-4xl font-semibold leading-[1.04] text-ink sm:text-5xl lg:text-6xl">
+            Cuida tu visión. Encuentra tus próximos lentes desde casa.
           </h1>
+
           <p className="mt-6 max-w-2xl text-lg leading-8 text-ink-muted">
-            OptiHome lleva la atención óptica a tu hogar y te permite explorar monturas y probar estilos virtualmente antes de coordinar tu visita.
+            Explora monturas, pruébate estilos virtualmente y coordina una evaluación óptica a domicilio sin perder el control del proceso.
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -47,26 +50,13 @@ export function Hero() {
           </Link>
 
           <p className="mt-5 max-w-xl text-sm leading-6 text-ink-muted">
-            Escríbenos y coordinamos contigo cobertura, fecha y horario disponibles.
+            Explora → Pruébate → Coordina. La animación acompaña el recorrido; nunca bloquea tu navegación.
           </p>
-        </div>
+        </Reveal>
 
-        <div className="hero-visual-enter relative mx-auto aspect-[4/5] w-full max-w-xl overflow-hidden rounded-3xl border border-border bg-surface-soft">
-          <Image
-            src="/exam-home.png"
-            alt="Experiencia de atención óptica a domicilio"
-            fill
-            priority
-            sizes="(min-width: 1024px) 45vw, 100vw"
-            className="object-cover"
-          />
-          <div className="absolute inset-x-4 bottom-4 rounded-2xl border border-white/60 bg-white/90 p-4 backdrop-blur">
-            <p className="font-semibold text-ink">Desde casa, a tu ritmo.</p>
-            <p className="mt-1 text-sm leading-6 text-ink-muted">
-              Explora estilos, prueba monturas y coordina una visita cuando estés listo.
-            </p>
-          </div>
-        </div>
+        <Reveal delay={0.08}>
+          <HeroExperience />
+        </Reveal>
       </div>
     </section>
   );
