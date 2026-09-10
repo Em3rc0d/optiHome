@@ -1,10 +1,18 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Camera, ImagePlus, Minus, Plus, ShieldCheck, X } from "lucide-react";
+import {
+  Camera,
+  ChevronLeft,
+  ChevronRight,
+  ImagePlus,
+  Minus,
+  Plus,
+  ShieldCheck,
+  X,
+} from "lucide-react";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogTitle,
@@ -36,32 +44,40 @@ type RuntimeWindow = Window &
     tf?: TfRuntime;
     faceLandmarksDetection?: FaceLandmarksRuntime;
   };
-type FaceData = { x: number; y: number; scale: number; rotation: number };
+type FaceData = { x: number; y: number; width: number; rotation: number };
+type FitMode = "cover" | "contain";
 
 let detectorCache: FaceDetector | null = null;
 let detectorPromise: Promise<FaceDetector> | null = null;
 
-function loadScript(src: string) {
-  return new Promise<void>((resolve, reject) => {
-    const existing = document.querySelector<HTMLScriptElement>(
-      `script[src="${src}"]`
-    );
+const TF_URL = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js";
+const FACE_URL =
+  "https://cdn.jsdelivr.net/npm/@tensorflow-models/face-landmarks-detection@1.0.6/dist/face-landmarks-detection.min.js";
 
+function loadScript(src: string, ready: () => boolean) {
+  return new Promise<void>((resolve, reject) => {
+    if (ready()) {
+      resolve();
+      return;
+    }
+
+    const existing = document.querySelector<HTMLScriptElement>(`script[src="${src}"]`);
     if (existing) {
-      if (existing.dataset.loaded === "true") resolve();
-      else existing.addEventListener("load", () => resolve(), { once: true });
+      const onLoad = () => resolve();
+      const onError = () => reject(new Error(`No se pudo cargar ${src}`));
+      existing.addEventListener("load", onLoad, { once: true });
+      existing.addEventListener("error", onError, { once: true });
       return;
     }
 
     const script = document.createElement("script");
     script.src = src;
     script.async = true;
-    script.addEventListener("load", () => {
-      script.dataset.loaded = "true";
-      resolve();
-    });
-    script.addEventListener("error", () =>
-      reject(new Error(`No se pudo cargar ${src}`))
+    script.addEventListener("load", () => resolve(), { once: true });
+    script.addEventListener(
+      "error",
+      () => reject(new Error(`No se pudo cargar ${src}`)),
+      { once: true }
     );
     document.body.appendChild(script);
   });
@@ -72,14 +88,11 @@ async function loadFaceDetector() {
   if (detectorPromise) return detectorPromise;
 
   detectorPromise = (async () => {
-    await loadScript(
-      "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"
-    );
-    await loadScript(
-      "https://cdn.jsdelivr.net/npm/@tensorflow-models/face-landmarks-detection@1.0.6/dist/face-landmarks-detection.min.js"
-    );
-
     const runtime = window as RuntimeWindow;
+
+    await loadScript(TF_URL, () => Boolean(runtime.tf));
+    await loadScript(FACE_URL, () => Boolean(runtime.faceLandmarksDetection));
+
     if (!runtime.tf || !runtime.faceLandmarksDetection) {
       throw new Error("El motor de seguimiento no quedó disponible.");
     }
@@ -105,6 +118,72 @@ async function loadFaceDetector() {
   }
 }
 
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function faceGeometry({
+  points,
+  sourceWidth,
+  sourceHeight,
+  stageWidth,
+  stageHeight,
+  fit,
+}: {
+  points: FacePoint[];
+  sourceWidth: number;
+  sourceHeight: number;
+  stageWidth: number;
+  stageHeight: number;
+  fit: FitMode;
+}): FaceData | null {
+  if (!sourceWidth || !sourceHeight || !stageWidth || !stageHeight) return null;
+
+  const leftEye = points.find((point) => point.name === "left_eye") ?? points[33];
+  const rightEye = points.find((point) => point.name === "right_eye") ?? points[263];
+  const nose = points.find((point) => point.name === "nose_bridge") ?? points[168];
+  if (!leftEye || !rightEye) return null;
+
+  const renderScale =
+    fit === "cover"
+      ? Math.max(stageWidth / sourceWidth, stageHeight / sourceHeight)
+      : Math.min(stageWidth / sourceWidth, stageHeight / sourceHeight);
+  const renderedWidth = sourceWidth * renderScale;
+  const renderedHeight = sourceHeight * renderScale;
+  const offsetX = (stageWidth - renderedWidth) / 2;
+  const offsetY = (stageHeight - renderedHeight) / 2;
+
+  const midX = (leftEye.x + rightEye.x) / 2;
+  const eyeY = (leftEye.y + rightEye.y) / 2;
+  const midY = nose ? eyeY * 0.86 + nose.y * 0.14 : eyeY;
+  const eyeDistance = Math.hypot(
+    rightEye.x - leftEye.x,
+    rightEye.y - leftEye.y
+  );
+  const displayedEyeDistance = eyeDistance * renderScale;
+  const rotation =
+    Math.atan2(rightEye.y - leftEye.y, rightEye.x - leftEye.x) *
+    (180 / Math.PI);
+
+  return {
+    x: offsetX + midX * renderScale,
+    y: offsetY + midY * renderScale,
+    width: clamp(displayedEyeDistance * 2.35, 116, stageWidth * 0.82),
+    rotation,
+  };
+}
+
+function smoothFace(previous: FaceData | null, next: FaceData): FaceData {
+  if (!previous) return next;
+  const weight = 0.38;
+  return {
+    x: previous.x + (next.x - previous.x) * weight,
+    y: previous.y + (next.y - previous.y) * weight,
+    width: previous.width + (next.width - previous.width) * weight,
+    rotation: previous.rotation + (next.rotation - previous.rotation) * weight,
+  };
+}
+
 export function VirtualTryOn({
   open,
   onOpenChange,
@@ -116,12 +195,16 @@ export function VirtualTryOn({
   initialFrame: Frame;
   frames: Frame[];
 }) {
-  const [currentFrame, setCurrentFrame] = useState(initialFrame);
+  const initialIndex = Math.max(
+    0,
+    frames.findIndex((frame) => frame.id === initialFrame.id)
+  );
+  const [frameIndex, setFrameIndex] = useState(initialIndex);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [photo, setPhoto] = useState<string | null>(null);
   const [detector, setDetector] = useState<FaceDetector | null>(null);
   const [faceData, setFaceData] = useState<FaceData | null>(null);
-  const [scale, setScale] = useState(1);
+  const [manualScale, setManualScale] = useState(1);
   const [status, setStatus] = useState(
     "Activa la cámara o sube una foto para comenzar."
   );
@@ -130,11 +213,17 @@ export function VirtualTryOn({
     initialFrame.tryOnImage ?? initialFrame.image
   );
 
+  const currentFrame = frames[frameIndex] ?? initialFrame;
   const videoRef = useRef<HTMLVideoElement>(null);
+  const photoRef = useRef<HTMLImageElement>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const mountedRef = useRef(true);
   const cameraRequestRef = useRef(0);
+  const latestFaceRef = useRef<FaceData | null>(null);
+
+  const canPrevious = frameIndex > 0;
+  const canNext = frameIndex < frames.length - 1;
 
   const stopCamera = () => {
     cameraRequestRef.current += 1;
@@ -144,6 +233,13 @@ export function VirtualTryOn({
     });
     setDetector(null);
     setFaceData(null);
+    latestFaceRef.current = null;
+  };
+
+  const closeTryOn = () => {
+    stopCamera();
+    setBusy(false);
+    onOpenChange(false);
   };
 
   useEffect(() => {
@@ -155,13 +251,8 @@ export function VirtualTryOn({
   }, []);
 
   useEffect(() => {
-    if (videoRef.current && stream) {
-      videoRef.current.srcObject = stream;
-    }
-
-    return () => {
-      stream?.getTracks().forEach((track) => track.stop());
-    };
+    if (videoRef.current && stream) videoRef.current.srcObject = stream;
+    return () => stream?.getTracks().forEach((track) => track.stop());
   }, [stream]);
 
   const frameImage = currentFrame.tryOnImage ?? currentFrame.image;
@@ -173,7 +264,6 @@ export function VirtualTryOn({
 
     image.onload = () => {
       if (cancelled) return;
-
       try {
         const canvas = document.createElement("canvas");
         canvas.width = image.naturalWidth || image.width;
@@ -185,12 +275,7 @@ export function VirtualTryOn({
         }
 
         context.drawImage(image, 0, 0);
-        const imageData = context.getImageData(
-          0,
-          0,
-          canvas.width,
-          canvas.height
-        );
+        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
         const pixels = imageData.data;
 
         for (let index = 0; index < pixels.length; index += 4) {
@@ -199,10 +284,9 @@ export function VirtualTryOn({
           const blue = pixels[index + 2];
           const max = Math.max(red, green, blue);
           const min = Math.min(red, green, blue);
-          const neutralLightBackground =
-            red > 235 && green > 235 && blue > 235 && max - min < 18;
-
-          if (neutralLightBackground) pixels[index + 3] = 0;
+          if (red > 235 && green > 235 && blue > 235 && max - min < 18) {
+            pixels[index + 3] = 0;
+          }
         }
 
         context.putImageData(imageData, 0, 0);
@@ -212,10 +296,7 @@ export function VirtualTryOn({
       }
     };
 
-    image.onerror = () => {
-      if (!cancelled) setOverlaySource(frameImage);
-    };
-
+    image.onerror = () => !cancelled && setOverlaySource(frameImage);
     return () => {
       cancelled = true;
     };
@@ -226,74 +307,51 @@ export function VirtualTryOn({
 
     let animationFrame = 0;
     let cancelled = false;
+    let detecting = false;
 
     const detect = async () => {
       const video = videoRef.current;
       const stage = stageRef.current;
-
       if (
+        cancelled ||
+        detecting ||
         !video ||
         !stage ||
         video.readyState < 2 ||
         !video.videoWidth ||
-        cancelled
+        !video.videoHeight
       ) {
         if (!cancelled) animationFrame = requestAnimationFrame(detect);
         return;
       }
 
+      detecting = true;
       try {
-        const faces = await detector.estimateFaces(video, {
-          flipHorizontal: true,
-        });
+        const faces = await detector.estimateFaces(video, { flipHorizontal: true });
         const points = faces[0]?.keypoints ?? faces[0]?.landmarks ?? [];
+        const nextFace = faceGeometry({
+          points,
+          sourceWidth: video.videoWidth,
+          sourceHeight: video.videoHeight,
+          stageWidth: stage.clientWidth,
+          stageHeight: stage.clientHeight,
+          fit: "cover",
+        });
 
-        if (points.length) {
-          const leftEye =
-            points.find((point) => point.name === "left_eye") ?? points[33];
-          const rightEye =
-            points.find((point) => point.name === "right_eye") ?? points[263];
-          const nose =
-            points.find((point) => point.name === "nose_bridge") ?? points[168];
-
-          if (leftEye && rightEye) {
-            const videoRect = video.getBoundingClientRect();
-            const stageRect = stage.getBoundingClientRect();
-            const scaleX = videoRect.width / video.videoWidth;
-            const scaleY = videoRect.height / video.videoHeight;
-            const midX = (leftEye.x + rightEye.x) / 2;
-            const eyeY = (leftEye.y + rightEye.y) / 2;
-            const midY = nose ? (eyeY + nose.y) / 2 : eyeY;
-            const eyeDistance = Math.hypot(
-              rightEye.x - leftEye.x,
-              rightEye.y - leftEye.y
-            );
-            const rotation =
-              Math.atan2(
-                rightEye.y - leftEye.y,
-                rightEye.x - leftEye.x
-              ) *
-              (180 / Math.PI);
-
-            setFaceData({
-              x: videoRect.left - stageRect.left + midX * scaleX,
-              y: videoRect.top - stageRect.top + midY * scaleY,
-              scale: Math.max(
-                0.65,
-                Math.min(1.8, (eyeDistance / 145) * 1.7)
-              ),
-              rotation,
-            });
-            setStatus("Seguimiento activo. Puedes ajustar el tamaño.");
-          }
+        if (nextFace) {
+          const smoothed = smoothFace(latestFaceRef.current, nextFace);
+          latestFaceRef.current = smoothed;
+          setFaceData(smoothed);
+          setStatus("Seguimiento activo. La montura acompaña tu rostro.");
         } else {
+          latestFaceRef.current = null;
           setFaceData(null);
-          setStatus("Buscando tu rostro…");
+          setStatus("Buscando tu rostro… mira de frente y mejora la iluminación.");
         }
       } catch {
-        setStatus(
-          "El seguimiento se interrumpió. Puedes cerrar y volver a intentarlo."
-        );
+        setStatus("El seguimiento se interrumpió. Puedes reintentar o usar una foto.");
+      } finally {
+        detecting = false;
       }
 
       if (!cancelled) animationFrame = requestAnimationFrame(detect);
@@ -306,18 +364,66 @@ export function VirtualTryOn({
     };
   }, [stream, detector, photo]);
 
+  useEffect(() => {
+    if (!photo) return;
+
+    let cancelled = false;
+    const detectPhoto = async () => {
+      const image = photoRef.current;
+      const stage = stageRef.current;
+      if (!image || !stage || !image.complete || !image.naturalWidth) return;
+
+      setBusy(true);
+      setStatus("Ajustando la montura a tu foto…");
+      try {
+        const nextDetector = await loadFaceDetector();
+        if (cancelled || !mountedRef.current) return;
+        const faces = await nextDetector.estimateFaces(image, { flipHorizontal: false });
+        const points = faces[0]?.keypoints ?? faces[0]?.landmarks ?? [];
+        const nextFace = faceGeometry({
+          points,
+          sourceWidth: image.naturalWidth,
+          sourceHeight: image.naturalHeight,
+          stageWidth: stage.clientWidth,
+          stageHeight: stage.clientHeight,
+          fit: "contain",
+        });
+
+        if (nextFace) {
+          latestFaceRef.current = nextFace;
+          setFaceData(nextFace);
+          setStatus("Foto ajustada. Puedes afinar el tamaño si lo necesitas.");
+        } else {
+          latestFaceRef.current = null;
+          setFaceData(null);
+          setStatus("No detectamos un rostro con claridad; dejamos un ajuste manual centrado.");
+        }
+      } catch {
+        latestFaceRef.current = null;
+        setFaceData(null);
+        setStatus("No pudimos detectar el rostro en la foto; puedes ajustar el tamaño manualmente.");
+      } finally {
+        if (!cancelled && mountedRef.current) setBusy(false);
+      }
+    };
+
+    const image = photoRef.current;
+    if (image?.complete) void detectPhoto();
+    else image?.addEventListener("load", detectPhoto, { once: true });
+
+    return () => {
+      cancelled = true;
+      image?.removeEventListener("load", detectPhoto);
+    };
+  }, [photo]);
+
   const activateCamera = async () => {
     if (!window.isSecureContext && window.location.hostname !== "localhost") {
-      setStatus(
-        "La cámara requiere HTTPS. Puedes usar una foto como alternativa."
-      );
+      setStatus("La cámara requiere HTTPS. Puedes usar una foto como alternativa.");
       return;
     }
-
     if (!navigator.mediaDevices?.getUserMedia) {
-      setStatus(
-        "Este navegador no expone acceso a cámara. Puedes usar una foto."
-      );
+      setStatus("Este navegador no ofrece acceso a cámara. Puedes usar una foto.");
       return;
     }
 
@@ -329,7 +435,6 @@ export function VirtualTryOn({
     setStatus("Solicitando permiso de cámara…");
 
     let nextStream: MediaStream | null = null;
-
     try {
       nextStream = await navigator.mediaDevices.getUserMedia({
         video: {
@@ -340,10 +445,7 @@ export function VirtualTryOn({
         audio: false,
       });
 
-      if (
-        !mountedRef.current ||
-        requestId !== cameraRequestRef.current
-      ) {
+      if (!mountedRef.current || requestId !== cameraRequestRef.current) {
         nextStream.getTracks().forEach((track) => track.stop());
         return;
       }
@@ -352,10 +454,7 @@ export function VirtualTryOn({
       setStatus("Cargando seguimiento facial…");
       const nextDetector = await loadFaceDetector();
 
-      if (
-        !mountedRef.current ||
-        requestId !== cameraRequestRef.current
-      ) {
+      if (!mountedRef.current || requestId !== cameraRequestRef.current) {
         nextStream.getTracks().forEach((track) => track.stop());
         return;
       }
@@ -368,12 +467,10 @@ export function VirtualTryOn({
         setStream(null);
         setDetector(null);
         setFaceData(null);
-        setStatus("No se pudo activar la cámara. Puedes probar con una foto.");
+        setStatus("No se pudo activar la cámara. Puedes reintentar o usar una foto.");
       }
     } finally {
-      if (mountedRef.current && requestId === cameraRequestRef.current) {
-        setBusy(false);
-      }
+      if (mountedRef.current && requestId === cameraRequestRef.current) setBusy(false);
     }
   };
 
@@ -381,54 +478,61 @@ export function VirtualTryOn({
     if (!file) return;
     stopCamera();
     setBusy(false);
+    setFaceData(null);
+    latestFaceRef.current = null;
 
     const reader = new FileReader();
     reader.onload = () => {
       if (!mountedRef.current) return;
       setPhoto(typeof reader.result === "string" ? reader.result : null);
-      setStatus(
-        "Modo foto: la montura queda centrada y puedes ajustar su tamaño."
-      );
+      setStatus("Preparando tu foto…");
     };
     reader.readAsDataURL(file);
   };
 
-  const overlayStyle =
-    faceData && !photo
-      ? {
-          left: `${faceData.x}px`,
-          top: `${faceData.y}px`,
-          transform: `translate(-50%, -50%) rotate(${faceData.rotation}deg) scale(${faceData.scale * scale})`,
-        }
-      : {
-          left: "50%",
-          top: "50%",
-          transform: `translate(-50%, -50%) scale(${scale})`,
-        };
+  const overlayStyle = faceData
+    ? {
+        left: `${faceData.x}px`,
+        top: `${faceData.y}px`,
+        width: `${faceData.width * manualScale}px`,
+        transform: `translate(-50%, -50%) rotate(${faceData.rotation}deg)`,
+      }
+    : {
+        left: "50%",
+        top: "48%",
+        width: `clamp(160px, ${58 * manualScale}vw, ${320 * manualScale}px)`,
+        transform: "translate(-50%, -50%)",
+      };
+
+  const previousFrame = () => setFrameIndex((index) => Math.max(0, index - 1));
+  const nextFrame = () =>
+    setFrameIndex((index) => Math.min(frames.length - 1, index + 1));
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen) => {
+        if (!nextOpen) closeTryOn();
+      }}
+    >
       <DialogContent
         showCloseButton={false}
-        className="h-[calc(100svh-1rem)] w-[calc(100vw-1rem)] max-w-none overflow-hidden rounded-3xl border-white/10 bg-black p-0 text-white sm:max-w-none"
+        className="h-[calc(100svh-0.75rem)] w-[calc(100vw-0.75rem)] max-w-none overflow-hidden rounded-2xl border-white/10 bg-black p-0 text-white sm:h-[calc(100svh-1rem)] sm:w-[calc(100vw-1rem)] sm:max-w-none sm:rounded-3xl"
       >
         <DialogTitle className="sr-only">Prueba virtual de monturas</DialogTitle>
         <DialogDescription className="sr-only">
-          Herramienta visual para orientar estilo y proporción. No realiza
-          diagnóstico visual.
+          Herramienta visual para orientar estilo y proporción. No realiza diagnóstico visual.
         </DialogDescription>
 
-        <div
-          ref={stageRef}
-          className="relative h-full w-full overflow-hidden bg-black"
-        >
+        <div ref={stageRef} className="relative h-full w-full overflow-hidden bg-black">
           <div className="absolute inset-0 flex items-center justify-center">
             {photo ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
+                ref={photoRef}
                 src={photo}
                 alt="Foto seleccionada para la prueba virtual"
-                className="max-h-full max-w-full object-contain"
+                className="h-full w-full object-contain"
               />
             ) : stream ? (
               <video
@@ -436,27 +540,23 @@ export function VirtualTryOn({
                 autoPlay
                 muted
                 playsInline
-                className="max-h-full max-w-full scale-x-[-1] object-contain"
+                className="h-full w-full scale-x-[-1] object-cover"
               />
             ) : (
               <div className="max-w-lg px-6 text-center">
-                <Camera
-                  className="mx-auto size-10 text-white/70"
-                  aria-hidden="true"
-                />
+                <Camera className="mx-auto size-10 text-white/70" aria-hidden="true" />
                 <h3 className="mt-5 text-2xl font-semibold text-white">
-                  Prueba la montura cuando tú decidas.
+                  Prueba una montura cuando tú decidas.
                 </h3>
-                <p className="mt-3 leading-7 text-white/65">
-                  La cámara no se solicita al entrar al catálogo. Actívala aquí
-                  o utiliza una fotografía.
+                <p className="mt-3 leading-7 text-white/70">
+                  La cámara y el modelo facial solo se cargan después de tu acción. También puedes usar una foto.
                 </p>
                 <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center">
                   <button
                     type="button"
                     disabled={busy}
                     onClick={activateCamera}
-                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 font-semibold text-black disabled:opacity-50"
+                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 font-semibold text-black transition-[background-color,transform] duration-200 hover:bg-white/90 disabled:cursor-wait disabled:opacity-55 motion-safe:active:scale-[0.98]"
                   >
                     <Camera className="size-5" aria-hidden="true" />
                     {busy ? "Preparando…" : "Activar cámara"}
@@ -464,7 +564,7 @@ export function VirtualTryOn({
                   <button
                     type="button"
                     onClick={() => photoInputRef.current?.click()}
-                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/20 px-5 py-3 font-semibold"
+                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/25 px-5 py-3 font-semibold transition-[background-color,transform] duration-200 hover:bg-white/10 motion-safe:active:scale-[0.98]"
                   >
                     <ImagePlus className="size-5" aria-hidden="true" />
                     Subir foto
@@ -478,75 +578,81 @@ export function VirtualTryOn({
             <div className="pointer-events-none absolute inset-0 z-20">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
+                key={currentFrame.id}
                 src={overlaySource}
                 alt=""
                 aria-hidden="true"
-                className="absolute h-auto w-64 max-w-[70vw] object-contain drop-shadow-2xl"
+                className="frame-switch absolute h-auto max-w-[82vw] object-contain drop-shadow-2xl"
                 style={overlayStyle}
               />
             </div>
           )}
 
-          <div className="absolute inset-x-4 top-4 z-30 flex items-start justify-between gap-4">
-            <div className="max-w-lg rounded-2xl border border-white/10 bg-black/55 px-4 py-3 backdrop-blur">
-              <p className="text-sm font-semibold text-white">
-                {currentFrame.name}
+          <div className="absolute inset-x-3 top-3 z-30 flex items-start justify-between gap-3 sm:inset-x-4 sm:top-4">
+            <div className="max-w-[calc(100%-3.5rem)] rounded-2xl border border-white/10 bg-black/60 px-4 py-3 backdrop-blur">
+              <p className="truncate text-sm font-semibold text-white">{currentFrame.name}</p>
+              <p className="mt-1 line-clamp-2 text-xs leading-5 text-white/70" aria-live="polite">
+                {status}
               </p>
-              <p className="mt-1 text-xs leading-5 text-white/65">{status}</p>
             </div>
-            <DialogClose asChild>
-              <button
-                type="button"
-                onClick={stopCamera}
-                className="grid size-11 shrink-0 place-items-center rounded-xl border border-white/10 bg-black/55 backdrop-blur"
-                aria-label="Cerrar prueba virtual"
-              >
-                <X className="size-5" aria-hidden="true" />
-              </button>
-            </DialogClose>
+            <button
+              type="button"
+              onClick={closeTryOn}
+              className="grid size-12 shrink-0 place-items-center rounded-xl border border-white/15 bg-black/60 text-white backdrop-blur transition-colors hover:bg-white/10"
+              aria-label="Cerrar prueba virtual"
+            >
+              <X className="size-5" aria-hidden="true" />
+            </button>
           </div>
 
-          <div className="absolute bottom-4 left-4 right-4 z-30">
-            <div className="mx-auto max-w-3xl rounded-2xl border border-white/10 bg-black/60 p-3 backdrop-blur">
-              <div className="flex gap-2 overflow-x-auto pb-2">
-                {frames.map((frame) => (
-                  <button
-                    key={frame.id}
-                    type="button"
-                    onClick={() => setCurrentFrame(frame)}
-                    aria-pressed={currentFrame.id === frame.id}
-                    className={`shrink-0 rounded-xl border px-3 py-2 text-xs font-semibold ${
-                      currentFrame.id === frame.id
-                        ? "border-white bg-white text-black"
-                        : "border-white/15 text-white"
-                    }`}
-                  >
-                    {frame.name}
-                  </button>
-                ))}
+          <div className="safe-bottom absolute inset-x-3 z-30 sm:inset-x-4">
+            <div className="mx-auto max-h-[42svh] max-w-2xl overflow-y-auto rounded-2xl border border-white/10 bg-black/65 p-3 backdrop-blur sm:p-4">
+              <div className="flex items-center justify-between gap-3">
+                <button
+                  type="button"
+                  onClick={previousFrame}
+                  disabled={!canPrevious}
+                  className="grid size-12 shrink-0 place-items-center rounded-xl border border-white/15 text-white transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-35"
+                  aria-label="Montura anterior"
+                >
+                  <ChevronLeft className="size-5" aria-hidden="true" />
+                </button>
+
+                <div className="min-w-0 text-center">
+                  <p className="truncate text-sm font-semibold text-white">{currentFrame.name}</p>
+                  <p className="mt-0.5 text-xs text-white/60">
+                    {frameIndex + 1} de {frames.length} · una montura a la vez
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={nextFrame}
+                  disabled={!canNext}
+                  className="grid size-12 shrink-0 place-items-center rounded-xl border border-white/15 text-white transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-35"
+                  aria-label="Siguiente montura"
+                >
+                  <ChevronRight className="size-5" aria-hidden="true" />
+                </button>
               </div>
 
-              <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-3">
+                <div className="flex items-center gap-2" aria-label="Ajuste de tamaño de montura">
                   <button
                     type="button"
-                    onClick={() =>
-                      setScale((value) => Math.max(0.65, value - 0.05))
-                    }
-                    className="grid size-10 place-items-center rounded-xl border border-white/15"
+                    onClick={() => setManualScale((value) => Math.max(0.72, value - 0.05))}
+                    className="grid size-11 place-items-center rounded-xl border border-white/15 text-white hover:bg-white/10"
                     aria-label="Reducir montura"
                   >
                     <Minus className="size-4" aria-hidden="true" />
                   </button>
-                  <span className="min-w-14 text-center text-xs font-semibold">
-                    {Math.round(scale * 100)}%
+                  <span className="min-w-12 text-center text-xs font-semibold text-white">
+                    {Math.round(manualScale * 100)}%
                   </span>
                   <button
                     type="button"
-                    onClick={() =>
-                      setScale((value) => Math.min(1.5, value + 0.05))
-                    }
-                    className="grid size-10 place-items-center rounded-xl border border-white/15"
+                    onClick={() => setManualScale((value) => Math.min(1.35, value + 0.05))}
+                    className="grid size-11 place-items-center rounded-xl border border-white/15 text-white hover:bg-white/10"
                     aria-label="Aumentar montura"
                   >
                     <Plus className="size-4" aria-hidden="true" />
@@ -558,28 +664,24 @@ export function VirtualTryOn({
                     type="button"
                     onClick={activateCamera}
                     disabled={busy}
-                    className="min-h-10 rounded-xl border border-white/15 px-3 text-xs font-semibold disabled:opacity-50"
+                    className="min-h-11 rounded-xl border border-white/15 px-3 text-xs font-semibold text-white hover:bg-white/10 disabled:opacity-50"
                   >
                     Cámara
                   </button>
                   <button
                     type="button"
                     onClick={() => photoInputRef.current?.click()}
-                    className="min-h-10 rounded-xl border border-white/15 px-3 text-xs font-semibold"
+                    className="min-h-11 rounded-xl border border-white/15 px-3 text-xs font-semibold text-white hover:bg-white/10"
                   >
                     Foto
                   </button>
                 </div>
               </div>
 
-              <div className="mt-3 flex items-start gap-2 text-[11px] leading-5 text-white/60">
-                <ShieldCheck
-                  className="mt-0.5 size-4 shrink-0"
-                  aria-hidden="true"
-                />
+              <div className="mt-3 hidden items-start gap-2 text-[11px] leading-5 text-white/60 sm:flex">
+                <ShieldCheck className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
                 <p>
-                  La imagen se procesa en el navegador durante esta experiencia.
-                  La prueba es orientativa y no sustituye una evaluación visual.
+                  Procesamiento durante esta experiencia. La prueba orienta estilo y proporción; no sustituye una evaluación visual.
                 </p>
               </div>
             </div>

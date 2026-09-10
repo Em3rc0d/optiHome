@@ -8,10 +8,12 @@ export function FinalCta() {
   );
 
   return (
-    <section id="solicitar-evaluacion" className="bg-white">
+    <section id="solicitar-evaluacion" className="scroll-mt-24 bg-white">
       <div className="content-shell section-pad">
         <div className="rounded-3xl bg-ink px-6 py-12 text-center sm:px-10 lg:py-16">
-          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-accent">Siguiente paso</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-accent-soft">
+            Siguiente paso
+          </p>
           <h2 className="mx-auto mt-3 max-w-3xl text-3xl font-semibold text-white md:text-5xl">
             Cuéntanos qué necesitas y revisamos disponibilidad contigo.
           </h2>
@@ -23,12 +25,12 @@ export function FinalCta() {
             target="_blank"
             rel="noreferrer"
             {...intentProps("cta_final_request_evaluation")}
-            className="mt-8 inline-flex min-h-12 items-center justify-center gap-3 rounded-xl bg-white px-7 py-3 font-semibold text-ink transition-colors hover:bg-accent-soft"
+            className="mt-8 inline-flex min-h-12 items-center justify-center gap-3 rounded-xl bg-white px-7 py-3 font-semibold text-ink transition-[background-color,transform] duration-200 hover:bg-accent-soft motion-safe:active:scale-[0.99]"
           >
             <MessageCircle className="size-5" aria-hidden="true" />
             Continuar por WhatsApp
           </a>
-          <p className="mt-4 text-sm text-white/65">{siteConfig.appointment.availabilityNotice}</p>
+          <p className="mt-4 text-sm text-white/70">{siteConfig.appointment.availabilityNotice}</p>
         </div>
       </div>
     </section>
