@@ -1,14 +1,15 @@
 # MK0 — OptiHome Web Refactor
 
-Status: `BUILD_001_COMPLETE`
-Branch: `refactor/mk0-web-foundation-20260909`
+Status: `RELEASE_CANDIDATE_CODE_READY`
+Branch authority: `refactor/mk0-web-foundation-20260909`
+Detached RC authority: see `build/BUILD.md`.
 Scope: public website refactor only.
 
 ## Mission
 
 Refactor OptiHome from a feature-oriented marketing website into a coherent, credible and conversion-ready public experience that can later become the front door of a measurable commercial system.
 
-MK0 deliberately does **not** implement the future acquisition/content engine, CRM, revenue attribution, retention automation or TikTok automation. Those belong to later MKs.
+MK0 deliberately does **not** implement the future acquisition/content engine, CRM, revenue attribution, retention automation, production appointment scheduler or TikTok automation. Those belong to later MKs.
 
 ## Execution flow
 
@@ -29,90 +30,59 @@ mining-site
 → accepted decisions
 ```
 
-## Current execution state
-
-```text
-DOCS / PRODUCT DIRECTION    FROZEN
-BUILD-001 FOUNDATION        COMPLETE
-BUILD-002 HOMEPAGE          READY
-BUILD-003 CATALOG           BLOCKED_BY_BUILD_002
-BUILD-004 TRY-ON            BLOCKED_BY_BUILD_003
-BUILD-005 A11Y/RESPONSIVE   BLOCKED_BY_BUILD_004
-BUILD-006 SEO/PERFORMANCE   BLOCKED_BY_BUILD_005
-```
-
-Certified BUILD-001 implementation SHA:
-
-```text
-01bff16741ea4440745856c99a7fa2977f7ae37f
-```
-
-The detailed gate receipt is authoritative in `build/BUILD.md`.
-
 ## Canonical product framing
 
-**OptiHome** is the canonical public brand for this refactor.
+**OptiHome** is the canonical public brand.
 
-`DaVision` is treated as legacy naming residue. It must not remain on a refactored public surface unless later evidence explicitly reverses this decision.
+The release-candidate public surface no longer exposes legacy `DaVision` routes or components. Historical assets may remain in `public/` until a later dead-asset cleanup proves they are unused.
 
-## MK0 definition of success
+## Product truth
 
-The web refactor is successful when a first-time visitor can answer, without external explanation:
-
-1. What OptiHome is.
-2. Who it is for.
-3. What useful actions can be completed.
-4. How the optical-at-home journey works.
-5. Why the visitor should trust the experience.
-6. What the next action is.
-
-The site must also be responsive, accessible, performant, internally consistent and free from unsupported commercial/medical claims.
-
-## Scope boundaries
-
-### IN
-
-- Information architecture.
-- Visual/design system.
-- Homepage refactor.
-- Navigation and footer.
-- Catalog discovery experience.
-- Virtual try-on entry experience.
-- Appointment/contact journey at web level.
-- Content hierarchy and copy cleanup.
-- Responsive behavior.
-- Accessibility.
-- SEO/performance foundations.
-- Explicit analytics-ready interaction identifiers where useful.
-
-### OUT
-
-- TikTok/content automation.
-- Social scheduling.
-- CRM or lead pipeline backend.
-- Revenue attribution.
-- Automated follow-up.
-- Payments/e-commerce backend.
-- Inventory management.
-- Production appointment scheduling backend.
-- Medical diagnosis or automated clinical recommendations.
-
-## Appointment boundary frozen before BUILD-001
-
-The public web may initiate a request, but it must not imply that WhatsApp itself owns appointment capacity.
-
-Future commercial continuation:
+The website is a public decision and request surface, not the future appointment system.
 
 ```text
-web request
-→ capacity validation
-→ appointment state
-→ WhatsApp coordination
-→ internal notification
-→ operational agenda
+visitor
+→ understand OptiHome
+→ choose journey
+→ explore frames / virtual try-on / request evaluation
+→ structured intent
+→ WhatsApp continuation
+→ future Appointment & Capacity system
 ```
 
-`REQUESTED` and `CONFIRMED` remain distinct states. The future Appointment & Capacity MK comes after the web refactor and before scaling demand through TikTok/content automation.
+`REQUESTED` and `CONFIRMED` remain distinct states. WhatsApp is communication, not capacity authority.
+
+## RC scope now implemented
+
+- canonical OptiHome shell and design tokens
+- single-message homepage hero
+- three explicit visitor journeys
+- truthful request/capacity process
+- demo-safe frame catalog with centralized data
+- virtual try-on isolated from catalog rendering
+- camera/model loading only after explicit user intent
+- photo fallback and media-track cleanup
+- no fake checkout, price, inventory, social proof or SLA
+- native/semantic FAQ and accessibility-oriented navigation
+- legacy public routes redirected to canonical journeys
+- route metadata and deferred ML loading foundation
+
+## Explicitly deferred
+
+- production appointment scheduler
+- operational agenda / notifications
+- CRM
+- payments / checkout
+- real inventory
+- production analytics provider
+- TikTok/content automation
+- revenue attribution
+
+## Release policy
+
+Development branches are **not** deployed to Vercel for validation. The stable state is assembled as detached Git objects and only the accepted stable state is intended to move to `main` and deploy.
+
+The detached RC is therefore not certified by a Vercel preview. Mechanical `lint/type/build` and final human visual verification remain explicit gates before/at stable integration.
 
 ## Documentation map
 
@@ -125,7 +95,3 @@ web request
 - `test/TEST.md`
 - `../../mining-site/MK0-web-refactor/README.md`
 - `../../quarries/MK0-web-refactor/QRY-000-optical-web-patterns.md`
-
-## Next gate
-
-`BUILD-002 — Homepage narrative` is ready. It owns the single-message hero, journey chooser and final homepage narrative before catalog and try-on refactors begin.

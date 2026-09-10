@@ -1,10 +1,10 @@
 # PLAN.md — OptiHome MK0 Web Refactor
 
-Status: `BUILD_001_COMPLETE`
+Status: `RC_CODE_READY`
 
 ## Objective
 
-Execute the public web refactor without opening later commercial-system scope.
+Produce a stable public-web candidate without opening later commercial-system scope and without using development Vercel previews as an execution gate.
 
 ## Build sequence
 
@@ -12,133 +12,151 @@ Execute the public web refactor without opening later commercial-system scope.
 
 Status: `COMPLETE`
 
-- Normalize canonical brand to `OptiHome`.
-- Introduce design tokens and remove arbitrary duplicated styling where practical.
-- Establish `SiteHeader` and `SiteFooter`.
-- Centralize authoritative/demo site content and business contact configuration.
-- Remove/replace unsupported claims on the refactored homepage surface.
-- Establish analytics-ready event IDs/no-op wrapper.
-- Align the current WhatsApp handoff with the frozen appointment-capacity contract.
+Delivered:
 
-**Certified implementation:** `01bff16741ea4440745856c99a7fa2977f7ae37f`
+- canonical `OptiHome` brand
+- design tokens
+- `SiteHeader` / `SiteFooter`
+- centralized site/contact configuration
+- unsupported-claim cleanup on canonical surfaces
+- typed analytics-ready intent semantics
+- truthful WhatsApp request wording
 
-**Exit:** PASS. Coherent foundation is deployed to a preview and validated; legacy surfaces outside BUILD-001 remain explicitly deferred.
+Historical certification: implementation SHA `01bff16741ea4440745856c99a7fa2977f7ae37f` passed the then-active build preview before the no-development-preview policy was frozen.
 
 ### BUILD-002 — Homepage narrative
 
-Status: `READY`
+Status: `COMPLETE_CODE`
 
-- Replace rotating hero with a single clear value proposition.
-- Implement primary/secondary hero actions.
-- Implement three-path journey chooser.
-- Refactor process explanation.
-- Add featured frame entry point.
-- Add focused virtual try-on explanation.
-- Refactor FAQ/trust section.
-- Implement final CTA.
+Delivered:
 
-**Exit:** first-time visitor can understand the service and next action without external explanation.
+- static single-message hero
+- primary/secondary/tertiary actions
+- three-path journey chooser
+- request/capacity process
+- featured frame discovery
+- focused virtual try-on explanation
+- trust/FAQ
+- final WhatsApp CTA
+- server-rendered composition except interactive boundaries
 
 ### BUILD-003 — Catalog experience
 
-Status: `BLOCKED_BY_BUILD_002`
+Status: `COMPLETE_CODE`
 
-- Move frame data out of monolithic route code.
-- Normalize categories/material/color labels.
-- Remove false checkout behavior.
-- Make product actions explicit: details / try-on / contact as supported.
-- Improve filter accessibility and mobile behavior.
+Delivered:
 
-**Exit:** catalog behaves as a real discovery surface rather than a demo grid.
+- frame data moved to `src/content/frames.ts`
+- typed `Frame` domain model
+- localized filter taxonomy
+- demo authority explicit
+- fake price/checkout/cart behavior removed
+- try-on and WhatsApp availability actions modeled honestly
+- accessible pressed-state filters
 
 ### BUILD-004 — Virtual try-on decomposition
 
-Status: `BLOCKED_BY_BUILD_003`
+Status: `COMPLETE_CODE`
 
-- Isolate model loading and camera lifecycle.
-- Separate UI states from detection logic.
-- Add explicit camera consent/context.
-- Preserve upload fallback.
-- Add loading, unavailable, denied and error states.
-- Ensure media tracks stop correctly.
-- Avoid loading ML dependencies before user intent.
+Delivered:
 
-**Exit:** try-on is an intentional product feature with understandable states and bounded performance cost.
+- dedicated `VirtualTryOn` client boundary
+- catalog no longer owns face-detection implementation
+- no TensorFlow/model preload on catalog entry
+- camera requested only after explicit action
+- photo fallback
+- loading/error/status communication
+- media-track cleanup
+- model cache bounded to the browser session
+- explicit non-diagnostic/privacy context
 
 ### BUILD-005 — Responsive + accessibility hardening
 
-Status: `BLOCKED_BY_BUILD_004`
+Status: `STATIC_HARDENING_COMPLETE__HUMAN_VISUAL_GATE_OPEN`
 
-- Keyboard pass.
-- Focus pass.
-- Heading/landmark pass.
-- Contrast pass.
-- Touch target pass.
-- `prefers-reduced-motion` pass.
-- 320px layout pass.
-- tablet/laptop/wide layout pass.
+Implemented in code:
 
-**Exit:** no P0/P1 accessibility or responsive defects known.
+- skip link and semantic main landmark
+- accessible mobile-navigation state
+- semantic ordered process
+- native FAQ disclosure
+- visible focus contract
+- reduced-motion CSS contract
+- minimum touch-oriented control sizes
+- mobile-first grid/layout rules
+- no hover-only catalog action
+- dialog primitive provides focus management and Escape handling
+
+Remaining gate:
+
+- human visual/browser verification at required widths and keyboard traversal on the final integrated candidate
 
 ### BUILD-006 — SEO + performance hardening
 
-Status: `BLOCKED_BY_BUILD_005`
+Status: `STATIC_HARDENING_COMPLETE__MECHANICAL_BUILD_GATE_OPEN`
 
-- Metadata.
-- Image priorities/sizes.
-- Client-boundary review.
-- Lazy/deferred ML loading verification.
-- Dead code/assets review.
-- Production build/lint.
+Implemented in code:
 
-**Exit:** release candidate passes automated quality gates.
+- route metadata and Open Graph foundation
+- hero image priority only where justified
+- `sizes` supplied to responsive imagery
+- home mostly Server Components
+- interactive client boundaries constrained
+- virtual try-on dynamically imported
+- TensorFlow/model loading deferred until camera intent
+- legacy public pages converted to redirects
+- obsolete landing implementation removed from the RC tree
 
-## Explicit non-goals during these builds
+Remaining gate:
 
-Do not add:
+- `npm ci`
+- `npm run lint`
+- `npm run build`
 
-- TikTok API
-- social automation
-- CRM
-- lead database
-- payment processor
-- real appointment scheduler
+These commands are intentionally not substituted with a Vercel development preview. The current execution environment cannot resolve the npm registry, so this gate remains visible rather than being falsely marked PASS.
+
+## Explicit non-goals
+
+Do not add during MK0:
+
+- TikTok API / social automation
+- CRM / lead database
+- production appointment scheduler
+- notification backend / internal agenda
+- payments or checkout
+- real inventory
 - content generation pipeline
 - revenue dashboard
 
-The web may expose the request handoff required by the frozen appointment contract, but the operational scheduler itself remains a later MK.
-
 ## Commercial continuation after MK0
-
-Once BUILD-006 closes the web refactor, the next commercial MK is:
 
 ```text
 Appointment & Capacity
 → Notifications + operational agenda
 → WhatsApp coordination backed by appointment state
+→ acquisition/content automation
 ```
-
-Only after that foundation can absorb demand safely does the TikTok/content acquisition MK open.
 
 ## Release gates
 
 ```text
-DOCS_GATE              PASS
-→ BUILD_001_GATE       PASS
-→ BUILD_002_GATE       READY
-→ BUILD_003_GATE
-→ BUILD_004_GATE
-→ BUILD_005_GATE
-→ BUILD_006_GATE
-→ LINT_GATE
-→ TYPE/BUILD_GATE
-→ RESPONSIVE_GATE
-→ ACCESSIBILITY_GATE
-→ UX_JOURNEY_GATE
-→ PERFORMANCE_REVIEW
-→ HUMAN_VISUAL_GATE
+DOCS_GATE                         PASS
+BUILD_001_GATE                    PASS
+BUILD_002_CODE_GATE               PASS
+BUILD_003_CODE_GATE               PASS
+BUILD_004_CODE_GATE               PASS
+BUILD_005_STATIC_GATE             PASS
+BUILD_006_STATIC_GATE             PASS
+STATIC_TS_SYNTAX_GATE             PASS
+INTERNAL_IMPORT_RESOLUTION_GATE   PASS
+CLAIM_SANITIZATION_GATE           PASS
+LINT_GATE                         OPEN
+TYPE/PRODUCTION_BUILD_GATE        OPEN
+HUMAN_VISUAL_GATE                 OPEN
+MAIN_INTEGRATION_GATE             BLOCKED_BY_OPEN_GATES
+PRODUCTION_DEPLOY                 BLOCKED_BY_MAIN
 ```
 
-## Human gates
+## Release rule
 
-The owner accepted the MK0 direction before BUILD-001. Final visual acceptance remains a release gate after the intended homepage and responsive work exists; it is not inferred from successful compilation.
+No development Vercel preview is required or desired. Only an accepted stable `main` state is deployed.

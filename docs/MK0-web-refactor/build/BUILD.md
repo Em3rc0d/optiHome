@@ -1,100 +1,142 @@
 # BUILD.md — OptiHome MK0 Build Ledger
 
-Status: `IN_PROGRESS`
+Status: `RELEASE_CANDIDATE_CODE_READY`
 
-This ledger records implementation receipts. Documentation completion does not imply build completion.
+This ledger separates implementation completion from release certification.
 
 ## BUILD-001 — Foundation cleanup
 
 Status: `COMPLETE`
 
-Completed outputs:
-
-- canonical `OptiHome` brand on the refactored public shell
-- frozen design tokens applied to the application foundation
-- reusable `SiteHeader` and `SiteFooter`
-- centralized site/contact/appointment configuration
-- unsupported visible homepage claims removed or replaced
-- request/confirmation semantics aligned with the frozen appointment-capacity contract
-- analytics-ready semantic interaction IDs
-- accessible skip link, navigation semantics and explicit form labels
-
-### Receipt
+Certified implementation:
 
 ```text
-BUILD_ID           BUILD-001
-SOURCE_SHA         3b0e9791c75a88514553fcb235d19d867ff0a05c
-OUTPUT_SHA         01bff16741ea4440745856c99a7fa2977f7ae37f
-FILES_CHANGED      14 source files
-
-AUTOMATED_GATES
-- Vercel Git preview for exact OUTPUT_SHA: SUCCESS / READY
-- npm run build -> next build --turbopack: PASS
-- Next.js production compilation: PASS (8.3s reported by Vercel)
-- TypeScript build phase: PASS
-- Preview HTTP response on `/`: 200 OK
-- GitHub commit status `Vercel`: success
-
-MANUAL_GATES
-- rendered HTML / metadata / journey semantics inspection: PASS
-- final human visual acceptance: DEFERRED to homepage and responsive hardening gates
-
-KNOWN_LIMITATIONS
-- hero image rotation remains temporarily and is replaced by the single-message hero in BUILD-002
-- `/products` remains the legacy catalog, including demo commerce behavior; BUILD-003 owns its cleanup
-- unused legacy `DaVision` routes/components/assets may remain in the repository until their replacements are verified; they are no longer part of the refactored homepage shell
-- no real appointment database, capacity engine or scheduler exists in MK0; the web currently exposes the truthful WhatsApp request seam only
-- TikTok/content automation remains outside MK0
-
-DECISIONS_CHANGED
-- none; implementation follows the frozen MK0 design/architecture and appointment-capacity contract
+SOURCE_SHA  3b0e9791c75a88514553fcb235d19d867ff0a05c
+OUTPUT_SHA  01bff16741ea4440745856c99a7fa2977f7ae37f
 ```
+
+Outputs:
+
+- canonical OptiHome brand
+- design tokens and global shell
+- centralized contact/config authority
+- unsupported-claim cleanup
+- analytics-ready semantic IDs
+- truthful request/WhatsApp semantics
 
 ## BUILD-002 — Homepage narrative
 
-Status: `READY`
+Status: `COMPLETE_CODE`
 
-Planned outputs:
+Outputs:
 
-- single-message hero
-- journey chooser
-- service process
-- featured frames
-- try-on feature section
-- trust/FAQ
-- final CTA
-
-Entry condition: BUILD-001 certified on `01bff16741ea4440745856c99a7fa2977f7ae37f`.
+- `src/components/home/Hero.tsx`
+- `JourneyChooser.tsx`
+- `HowItWorks.tsx`
+- `FeaturedFrames.tsx`
+- `TryOnFeature.tsx`
+- `TrustFaq.tsx`
+- `FinalCta.tsx`
+- thin `src/app/page.tsx` composition
 
 ## BUILD-003 — Catalog experience
 
-Status: `BLOCKED_BY_BUILD_002`
+Status: `COMPLETE_CODE`
+
+Outputs:
+
+- `src/types/frame.ts`
+- `src/content/frames.ts`
+- `src/components/catalog/FrameCatalog.tsx`
+- rewritten `src/app/products/page.tsx`
+- no demo price/cart/checkout claim
+- explicit DEMO authority
 
 ## BUILD-004 — Virtual try-on decomposition
 
-Status: `BLOCKED_BY_BUILD_003`
+Status: `COMPLETE_CODE`
+
+Outputs:
+
+- `src/components/try-on/VirtualTryOn.tsx`
+- lazy component boundary from catalog
+- camera permission only after explicit click
+- TF/model load only after camera intent
+- photo fallback
+- media stream cleanup
+- clear non-diagnostic context
 
 ## BUILD-005 — Responsive + accessibility hardening
 
-Status: `BLOCKED_BY_BUILD_004`
+Status: `STATIC_COMPLETE__VISUAL_GATE_OPEN`
+
+Static/code outputs:
+
+- mobile-first responsive grids
+- skip link
+- focus visibility
+- semantic landmarks/headings/lists
+- native FAQ disclosures
+- dialog semantics
+- reduced-motion contract
+- non-hover-only actions
 
 ## BUILD-006 — SEO + performance hardening
 
-Status: `BLOCKED_BY_BUILD_005`
+Status: `STATIC_COMPLETE__BUILD_GATE_OPEN`
 
-## Receipt format
+Static/code outputs:
 
-Each completed BUILD must record:
+- route metadata/Open Graph foundation
+- responsive image sizing
+- constrained client boundaries
+- deferred try-on/ML work
+- legacy route redirects
+- obsolete legacy implementation removed from RC tree
+
+## Current detached release candidate
 
 ```text
-BUILD_ID
-SOURCE_SHA
-OUTPUT_SHA
-FILES_CHANGED
-AUTOMATED_GATES
-MANUAL_GATES
-KNOWN_LIMITATIONS
-DECISIONS_CHANGED (if any)
+RC_PARENT    1a228cc1b37bf869b189a8572231e033c97d1f94
+RC_CODE_SHA  1835a1781a4bdd91c4ce9f97a0cf3350dc160f7e
+RC_CODE_TREE f0ea7277760d40d42f6cc6b1a0f03b446f2614b4
+REF_MOVED    NO
+VERCEL_DEV   NOT_USED
 ```
 
-No BUILD may be marked complete from visual inspection alone.
+The RC is intentionally detached. The PR branch remains unchanged so Git integration cannot create another development preview from this candidate.
+
+## Available automated/static evidence
+
+```text
+TS_TSX_PARSE                     25 files / 0 syntax errors
+INTERNAL_ALIAS_IMPORTS           PASS
+UNSUPPORTED_PUBLIC_CLAIM_SCAN    PASS
+CLIENT_BOUNDARY_REVIEW           PASS
+DETACHED_GIT_DIFF                PASS
+```
+
+Claim scan checked the candidate runtime for legacy brand residue and known invalid commercial promises/actions including fake prices, checkout/cart wording, fabricated customer counts, fixed fast-SLA wording and free-service wording.
+
+## Gates intentionally still open
+
+```text
+npm ci
+npm run lint
+npm run build
+browser responsive pass
+keyboard/focus traversal pass
+human visual acceptance
+```
+
+The execution environment used for detached RC validation cannot resolve the npm registry. These gates are therefore not fabricated or replaced by a Vercel development preview.
+
+## Release invariant
+
+```text
+DETACHED_RC
+→ mechanical local/CI gates
+→ human visual gate
+→ move accepted stable state to PR/main
+→ production deploy from main only
+```

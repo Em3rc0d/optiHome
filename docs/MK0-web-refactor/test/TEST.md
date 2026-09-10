@@ -1,10 +1,84 @@
-# TEST.md — OptiHome MK0 Acceptance Contract
+# TEST.md — OptiHome MK0 Verification Contract
 
-Status: `DEFINED`
+Status: `RC_STATIC_GATES_PASS__RUNTIME_GATES_OPEN`
 
-## 1. Automated gates
+## 1. Evidence policy
 
-Minimum automated checks after each implementation build:
+A green visual impression is not enough. Each release claim must identify whether it is statically verified, mechanically executed, visually verified or still open.
+
+## 2. Current detached RC
+
+```text
+CODE_SHA 1835a1781a4bdd91c4ce9f97a0cf3350dc160f7e
+TREE_SHA f0ea7277760d40d42f6cc6b1a0f03b446f2614b4
+BRANCH_REF_MOVED NO
+VERCEL_PREVIEW_USED NO
+```
+
+## 3. Static gates executed
+
+### TS/TSX syntax
+
+Result: `PASS`
+
+- 25 TypeScript/TSX source files inspected with TypeScript parsing/transpilation.
+- 0 syntax diagnostics.
+
+This is not equivalent to a full project typecheck.
+
+### Internal alias import resolution
+
+Result: `PASS`
+
+All inspected `@/…` imports in the candidate resolve to a file/module in the reconstructed candidate source tree.
+
+### Public-claim sanitization
+
+Result: `PASS`
+
+The candidate runtime source was scanned for known legacy/unsupported patterns. No matches remained for:
+
+- `DaVision`
+- fake `S/` price labels
+- `Comprar`
+- `Agregar Carrito`
+- `+500`
+- fixed `<48h` wording
+- unsupported free/gratuity wording
+
+Historical assets/docs are not interpreted as current public runtime claims.
+
+### Client-boundary review
+
+Result: `PASS`
+
+Interactive/product client boundaries are limited to:
+
+- `components/layout/SiteHeader.tsx`
+- `components/catalog/FrameCatalog.tsx`
+- `components/try-on/VirtualTryOn.tsx`
+- the existing Radix dialog UI primitive
+
+The homepage composition itself remains server-rendered.
+
+### ML/camera intent boundary
+
+Result: `PASS_STATIC`
+
+- catalog route does not call face-model loading on mount
+- try-on is dynamically imported
+- `getUserMedia` is reached only by explicit camera activation
+- TensorFlow/model CDN loading is reached from that activation path
+- media tracks have cleanup paths
+- upload fallback exists
+
+## 4. Required final gates
+
+### Mechanical build
+
+Status: `OPEN_ENVIRONMENT_LIMITATION`
+
+Required commands:
 
 ```text
 npm ci
@@ -12,136 +86,59 @@ npm run lint
 npm run build
 ```
 
-If a dedicated typecheck/test script is introduced, it becomes mandatory thereafter.
+Current detached-validation environment cannot resolve the npm registry. Development Vercel previews are disabled by project policy, so no preview is used as a substitute.
 
-## 2. Brand/content tests
+### Responsive/browser
 
-Release candidate must contain:
+Status: `OPEN`
 
-- `OptiHome` as the canonical public brand.
-- no accidental `DaVision` residue on public surfaces.
-- no unsupported `+500 familias`, same-day, `<48h`, free-exam, guarantee or equivalent claims unless backed by newly documented authoritative evidence.
-- no CTA labeled as a completed transaction when it merely opens contact/WhatsApp.
-
-## 3. Journey tests
-
-### J-01 Evaluation
-
-A new visitor can:
+Required viewport checks:
 
 ```text
-Home
-→ understand at-home optical evaluation
-→ find request CTA
-→ understand what happens next
-→ complete the supported contact/request action
+320px
+mobile portrait
+mobile landscape
+tablet
+laptop
+wide desktop
 ```
 
-### J-02 Frames
+Verify no unintended horizontal scrolling, CTA reachability and modal usability.
 
-```text
-Home
-→ enter catalog
-→ filter/browse frames
-→ understand product context
-→ continue through a real supported action
-```
+### Accessibility interaction
 
-### J-03 Try-on
+Status: `OPEN`
 
-```text
-Home/Catalog
-→ intentionally open try-on
-→ understand camera/photo use
-→ grant/deny camera access
-→ receive usable fallback/error state
-→ close experience cleanly
-```
+Verify with a real browser:
 
-## 4. Accessibility tests
+- keyboard-only traversal
+- skip link
+- visible focus
+- mobile-menu state
+- FAQ disclosure
+- dialog open/close/focus restoration/Escape
+- camera-denied path
+- upload-photo path
+- reduced-motion behavior
 
-Release blocking:
+### Human visual acceptance
 
-- keyboard-only navigation works
-- visible focus is present
-- menu/dialog focus behavior is correct
-- meaningful images have useful alt text
-- decorative imagery does not pollute accessibility tree
-- no hover-only required action
-- labels exist for form fields
-- error messages are programmatically understandable
-- heading hierarchy is valid
-- reduced-motion preference is respected
-- contrast is acceptable for text and controls
+Status: `OPEN`
 
-## 5. Responsive matrix
+Confirm hierarchy, copy, spacing, imagery, catalog density and try-on presentation on the exact stable candidate.
 
-Required visual/interaction checks at minimum:
+## 5. Release blockers
 
-```text
-320x568
-360x800
-390x844
-768x1024
-1280x800
-1440x900
-```
+Any of the following blocks `main` integration:
 
-Expected:
+- lint/type/build failure
+- broken route/import
+- inaccessible critical CTA
+- modal/camera lifecycle failure
+- public unsupported claim regression
+- severe responsive overflow
+- human rejection of the stable visual state
 
-- no accidental horizontal overflow
-- no clipped CTAs
-- no unreadable text wrapping
-- no overlapping dialog/catalog UI
-- touch targets remain usable
-- hero does not consume the entire mobile experience without revealing purpose/action
+## 6. Deployment policy
 
-## 6. Try-on robustness
-
-Test states:
-
-- supported camera + permission granted
-- permission denied
-- camera API unavailable
-- insecure/unsupported environment
-- photo upload fallback
-- model loading
-- model load failure
-- no face detected
-- close/unmount releases media tracks
-- repeated open/close does not leak streams
-
-## 7. Performance review
-
-Must verify:
-
-- homepage does not eagerly load ML stack
-- hero contains no autoplay carousel
-- above-the-fold image uses appropriate Next Image settings
-- major client components are justified
-- catalog interaction does not force unnecessary try-on loading
-
-## 8. UX content comprehension gate
-
-A human reviewer should be able to answer after a brief first visit:
-
-1. What does OptiHome do?
-2. Can I request an optical evaluation?
-3. Can I browse frames?
-4. Can I try frames virtually?
-5. What happens when I click the main CTA?
-
-If any answer is ambiguous, `UX_JOURNEY_GATE = FAIL`.
-
-## 9. Visual regression evidence
-
-For the release candidate capture at least:
-
-- homepage desktop
-- homepage mobile
-- catalog desktop
-- catalog mobile
-- try-on ready state
-- try-on denied/error fallback
-
-These become the initial visual regression baseline for later MKs.
+Only stable `main` is deployed. Development branch pushes/previews are not part of the MK0 validation workflow.
