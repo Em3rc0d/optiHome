@@ -11,6 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
+import { buildWhatsappUrl, siteConfig } from "@/content/site";
+import { intentProps } from "@/lib/analytics-events";
 
 type Props = {
   isOpen: boolean;
@@ -31,22 +33,15 @@ const ContactFormModal = ({ isOpen, onClose }: Props) => {
     formState: { errors },
   } = useForm<FormData>();
 
-  // Número de WhatsApp del negocio
-  const businessNumber = "51933075200";
-
   const onSubmit = (data: FormData) => {
-    const message = encodeURIComponent(
-      `👋 Hola, soy ${data.name}.\n📱 Mi número es: ${data.phoneNumber}\n💬 ${data.message}`
-    );
+    const message = [
+      `Hola, soy ${data.name}.`,
+      `Mi número es ${data.phoneNumber}.`,
+      data.message,
+      "Quiero revisar disponibilidad para una evaluación con OptiHome.",
+    ].join("\n");
 
-    // Detectar si el usuario está en móvil o escritorio
-    const isMobile = /iPhone|Android|iPad/i.test(navigator.userAgent);
-    const whatsappUrl = isMobile
-      ? `https://api.whatsapp.com/send?phone=${businessNumber}&text=${message}`
-      : `https://web.whatsapp.com/send?phone=${businessNumber}&text=${message}`;
-
-    window.open(whatsappUrl, "_blank");
-
+    window.open(buildWhatsappUrl(message), "_blank", "noopener,noreferrer");
     onClose();
     reset();
   };
@@ -54,72 +49,74 @@ const ContactFormModal = ({ isOpen, onClose }: Props) => {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-lg">
-        <DialogHeader className="mb-4">
-          <DialogTitle className="text-2xl text-green-700 font-semibold">
-            Contáctanos por WhatsApp
+        <DialogHeader className="mb-2">
+          <DialogTitle className="text-2xl font-semibold text-ink">
+            Solicitar coordinación por WhatsApp
           </DialogTitle>
-          <DialogDescription className="text-gray-600">
-            Déjanos tus datos y te responderemos lo antes posible 🕓
+          <DialogDescription className="leading-6 text-ink-muted">
+            Completa tus datos para preparar el mensaje. Enviarlo inicia una solicitud; no reserva una cita automáticamente.
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* Nombre */}
-          <div>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          <div className="space-y-2">
+            <label htmlFor="request-name" className="text-sm font-medium text-ink">
+              Nombre completo
+            </label>
             <Input
-              placeholder="Nombre completo"
+              id="request-name"
+              autoComplete="name"
               {...register("name", { required: "Este campo es obligatorio" })}
             />
-            {errors.name && (
-              <p className="text-sm text-red-600 mt-1">{errors.name.message}</p>
-            )}
+            {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
           </div>
 
-          {/* Número de WhatsApp */}
-          <div>
+          <div className="space-y-2">
+            <label htmlFor="request-phone" className="text-sm font-medium text-ink">
+              Número de WhatsApp
+            </label>
             <Input
+              id="request-phone"
               type="tel"
-              placeholder="Tu número de WhatsApp"
+              inputMode="tel"
+              autoComplete="tel"
               {...register("phoneNumber", {
                 required: "Este campo es obligatorio",
                 pattern: {
-                  value: /^[0-9]{9,15}$/,
-                  message: "Número no válido",
+                  value: /^[0-9+()\s-]{9,20}$/,
+                  message: "Ingresa un número válido",
                 },
               })}
             />
             {errors.phoneNumber && (
-              <p className="text-sm text-red-600 mt-1">
-                {errors.phoneNumber.message}
-              </p>
+              <p className="text-sm text-destructive">{errors.phoneNumber.message}</p>
             )}
           </div>
 
-          {/* Mensaje */}
-          <div>
+          <div className="space-y-2">
+            <label htmlFor="request-message" className="text-sm font-medium text-ink">
+              ¿Qué necesitas?
+            </label>
             <Textarea
-              placeholder="Escribe tu mensaje aquí..."
+              id="request-message"
               rows={4}
-              {...register("message", {
-                required: "Este campo es obligatorio",
-              })}
+              placeholder="Por ejemplo: quiero revisar mi medida y ver monturas."
+              {...register("message", { required: "Este campo es obligatorio" })}
             />
-            {errors.message && (
-              <p className="text-sm text-red-600 mt-1">
-                {errors.message.message}
-              </p>
-            )}
+            {errors.message && <p className="text-sm text-destructive">{errors.message.message}</p>}
           </div>
 
-          {/* Botón */}
-          <div className="text-right">
-            <Button
-              type="submit"
-              className="bg-green-600 hover:bg-green-700 text-white"
-            >
-              Enviar por WhatsApp
-            </Button>
-          </div>
+          <p className="rounded-xl bg-surface-soft p-3 text-sm leading-6 text-ink-muted">
+            {siteConfig.appointment.availabilityNotice}
+          </p>
+
+          <Button
+            type="submit"
+            {...intentProps("cta_request_whatsapp")}
+            className="min-h-11 w-full bg-brand text-white hover:bg-brand-strong"
+          >
+            Continuar en WhatsApp
+          </Button>
         </form>
       </DialogContent>
     </Dialog>
