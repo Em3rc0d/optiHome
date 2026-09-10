@@ -1,0 +1,1 @@
+Photorealistic raster uploads are prepared locally as transparent WebP, 512 px wide, totaling about 170 KB for all eight references. This file is temporary staging documentation and will not be part of the clean release lineage.
