@@ -32,6 +32,7 @@ The stack is adequate for MK0. No framework migration is justified.
 5. Virtual try-on logic must be isolated from catalog rendering.
 6. No hidden backend behavior: if a CTA only opens WhatsApp, it must be named and modeled accordingly.
 7. Future acquisition/CRM systems attach through stable interfaces, not page-specific hacks.
+8. Future appointment availability is owned by a scheduler/capacity system, never by WhatsApp conversation state.
 
 ## 4. Target public routes
 
@@ -123,6 +124,18 @@ The current monolithic products page must be decomposed so this logic is testabl
 
 For MK0, this remains a clearly modeled contact/request flow. If WhatsApp is the actual destination, the interface must say so and the implementation must not imply that a database appointment has been booked.
 
+Once the future appointment engine exists, the request flow changes authority:
+
+```text
+request UI
+→ availability/capacity validation
+→ structured appointment request
+→ WhatsApp handoff / business notification
+→ confirmation
+```
+
+WhatsApp is a downstream communication channel, not the source of truth for appointment availability or status.
+
 ## 7. Data authority
 
 Define three data classes:
@@ -162,6 +175,19 @@ type WebIntentEvent =
 ```
 
 MK0 may implement a no-op/event wrapper. A later MK can attach a real provider.
+
+Future appointment events are reserved conceptually but not implemented in MK0:
+
+```text
+appointment_flow_started
+appointment_slot_viewed
+appointment_request_created
+appointment_whatsapp_handoff
+appointment_confirmed
+appointment_rescheduled
+appointment_cancelled
+appointment_completed
+```
 
 ## 9. SEO foundation
 
@@ -222,3 +248,14 @@ Delete legacy structures only after their replacement is verified.
 - camera/privacy boundary defined
 - performance budget direction defined
 - no future CRM/TikTok implementation leaking into MK0 scope
+- no WhatsApp-only scheduling semantics masquerading as a confirmed appointment
+
+## 14. Future appointment-capacity boundary
+
+Detailed decision authority: `brainstorming/BR-001-appointment-capacity-contract.md`.
+
+The future scheduler must be able to constrain service capacity using operating windows, duration, daily/team capacity, buffers, lead time, blackout periods and service areas. More advanced route optimization may follow later and is not required for the first scheduling release.
+
+Canonical appointment states begin with a clear distinction between `REQUESTED` and `CONFIRMED`. The public UI may never collapse those states into a single ambiguous “booked” state.
+
+MK0 only preserves the interface seam and truthful wording. Scheduler persistence, notifications and internal agenda remain outside this build scope.
