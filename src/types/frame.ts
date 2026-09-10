@@ -14,5 +14,5 @@ export type Frame = {
   color: string;
   image: string;
   tryOnImage?: string;
-  authority: "DEMO";
+  authority: "REFERENCE";
 };

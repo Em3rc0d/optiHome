@@ -1,23 +1,23 @@
 const steps = [
   {
     number: "01",
-    title: "Envía tu solicitud",
-    description: "Comparte qué necesitas y los datos mínimos para poder continuar la coordinación.",
+    title: "Cuéntanos qué necesitas",
+    description: "Escríbenos por WhatsApp y dinos qué tipo de atención o montura estás buscando.",
   },
   {
     number: "02",
-    title: "Revisamos capacidad",
-    description: "Antes de ofrecer una fecha, la solicitud se contrasta con horarios, zona y capacidad operativa.",
+    title: "Revisamos disponibilidad",
+    description: "Confirmamos contigo la cobertura de tu zona y las opciones de fecha y horario.",
   },
   {
     number: "03",
-    title: "Confirmamos la cita",
-    description: "Solo cuando existe un horario acordado, la solicitud pasa a ser una cita confirmada.",
+    title: "Coordinamos la visita",
+    description: "Cuando acordamos fecha y horario, tu evaluación queda confirmada.",
   },
   {
     number: "04",
-    title: "Continúa la atención",
-    description: "La evaluación, selección de monturas y siguientes pasos se realizan según lo coordinado.",
+    title: "Recibe atención en casa",
+    description: "Continuamos con la evaluación y la selección de monturas según lo coordinado.",
   },
 ] as const;
 
@@ -28,10 +28,10 @@ export function HowItWorks() {
         <div className="max-w-3xl">
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-brand">Cómo funciona</p>
           <h2 id="process-title" className="mt-3 text-3xl font-semibold md:text-5xl">
-            Solicitar no es lo mismo que confirmar.
+            De tu mensaje a una visita coordinada.
           </h2>
           <p className="mt-5 text-lg leading-8 text-ink-muted">
-            El flujo protege tanto la experiencia del visitante como la capacidad real del negocio.
+            Un proceso simple para que sepas qué sigue en cada momento.
           </p>
         </div>
         <ol className="mt-10 grid gap-8 md:grid-cols-2 lg:grid-cols-4">

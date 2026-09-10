@@ -17,17 +17,22 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: siteConfig.name,
+    default: "OptiHome | Óptica a domicilio",
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
-  authors: [{ name: "Eduardo Farid Merino Cordova" }],
   icons: "/favicon.ico",
   openGraph: {
-    title: siteConfig.name,
+    title: "OptiHome | Óptica a domicilio",
     description: siteConfig.description,
     locale: siteConfig.locale,
     type: "website",
+    siteName: siteConfig.name,
+  },
+  twitter: {
+    card: "summary",
+    title: "OptiHome | Óptica a domicilio",
+    description: siteConfig.description,
   },
 };
 

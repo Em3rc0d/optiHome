@@ -2,7 +2,8 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "git": {
     "deploymentEnabled": {
-      "rc/mk0-web-20260910": false
+      "rc/mk0-web-20260910": false,
+      "feat/mk0-1-commercial-hardening-20260910": false
     }
   }
 }

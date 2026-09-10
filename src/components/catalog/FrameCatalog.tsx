@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Camera,
   ChevronLeft,
@@ -28,6 +28,7 @@ export function FrameCatalog({ frames }: { frames: Frame[] }) {
   const [filter, setFilter] = useState<Filter>("Todas");
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedFrame, setSelectedFrame] = useState<Frame | null>(null);
+  const intentHandledRef = useRef(false);
 
   const categories = useMemo(
     () =>
@@ -51,6 +52,21 @@ export function FrameCatalog({ frames }: { frames: Frame[] }) {
   const safeIndex = Math.min(activeIndex, Math.max(filtered.length - 1, 0));
   const activeFrame = filtered[safeIndex];
 
+  useEffect(() => {
+    if (intentHandledRef.current) return;
+    intentHandledRef.current = true;
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("tryon") !== "1") return;
+
+    const firstTryOnIndex = frames.findIndex((frame) => Boolean(frame.tryOnImage));
+    if (firstTryOnIndex < 0) return;
+
+    setFilter("Todas");
+    setActiveIndex(firstTryOnIndex);
+    setSelectedFrame(frames[firstTryOnIndex]);
+  }, [frames]);
+
   const changeFilter = (nextFilter: Filter) => {
     setFilter(nextFilter);
     setActiveIndex(0);
@@ -63,13 +79,13 @@ export function FrameCatalog({ frames }: { frames: Frame[] }) {
   if (!activeFrame) {
     return (
       <p className="rounded-2xl border border-border bg-surface-soft p-6 text-ink-muted">
-        No hay referencias disponibles para este filtro.
+        No hay monturas disponibles para este filtro.
       </p>
     );
   }
 
   const whatsappHref = buildWhatsappUrl(
-    `Hola, vi la referencia ${activeFrame.name} en OptiHome y quisiera consultar disponibilidad y alternativas similares.`
+    `Hola, vi la montura ${activeFrame.name} en OptiHome y quisiera consultar disponibilidad y alternativas similares.`
   );
 
   return (
@@ -104,18 +120,46 @@ export function FrameCatalog({ frames }: { frames: Frame[] }) {
 
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-ink-muted">
-          {filtered.length} referencias demo. Mostramos una montura a la vez para facilitar la comparación.
+          {filtered.length} estilos para explorar. Selecciona uno para verlo en detalle o probarlo virtualmente.
         </p>
         <p className="text-sm font-semibold text-ink" aria-live="polite">
           {safeIndex + 1} de {filtered.length}
         </p>
       </div>
 
+      <div className="mt-7 hidden grid-cols-4 gap-3 lg:grid" aria-label="Vista rápida de monturas">
+        {filtered.map((frame, index) => (
+          <button
+            key={frame.id}
+            type="button"
+            aria-pressed={index === safeIndex}
+            onClick={() => setActiveIndex(index)}
+            className={`rounded-2xl border bg-white p-3 text-left transition-[border-color,box-shadow,transform] duration-200 motion-safe:active:scale-[0.99] ${
+              index === safeIndex
+                ? "border-brand shadow-sm"
+                : "border-border hover:border-brand/60"
+            }`}
+          >
+            <span className="relative block aspect-[16/7] overflow-hidden rounded-xl bg-surface-soft">
+              <Image
+                src={frame.image}
+                alt=""
+                fill
+                sizes="(min-width: 1024px) 20vw, 0px"
+                className="object-contain p-3"
+              />
+            </span>
+            <span className="mt-3 block truncate text-sm font-semibold text-ink">{frame.name}</span>
+            <span className="mt-1 block text-xs text-ink-muted">{frame.category}</span>
+          </button>
+        ))}
+      </div>
+
       <div
         className="mt-8"
         role="region"
         aria-roledescription="carrusel"
-        aria-label="Monturas de referencia"
+        aria-label="Montura seleccionada"
         tabIndex={0}
         onKeyDown={(event) => {
           if (event.key === "ArrowLeft") previousFrame();
@@ -134,7 +178,7 @@ export function FrameCatalog({ frames }: { frames: Frame[] }) {
               alt={`Montura ${activeFrame.name}`}
               fill
               sizes="(min-width: 1024px) 55vw, 100vw"
-              className="object-contain p-6 sm:p-10"
+              className="object-contain p-6 sm:p-10 lg:p-14"
               priority={safeIndex === 0}
             />
           </div>
@@ -146,7 +190,7 @@ export function FrameCatalog({ frames }: { frames: Frame[] }) {
               {activeFrame.material} · {activeFrame.color}
             </p>
             <p className="mt-5 max-w-md text-sm leading-6 text-ink-muted">
-              Referencia demostrativa; no representa inventario, precio ni disponibilidad confirmados.
+              La disponibilidad del modelo, colores y alternativas similares se confirma por WhatsApp.
             </p>
 
             <div className="mt-7 flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">

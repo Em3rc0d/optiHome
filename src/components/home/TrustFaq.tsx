@@ -1,21 +1,22 @@
-import { CheckCircle2, ChevronDown } from "lucide-react";
+import Link from "next/link";
+import { CheckCircle2, ChevronDown, ShieldCheck } from "lucide-react";
 
 const faqs = [
   {
-    question: "¿Enviar una solicitud confirma mi cita?",
-    answer: "No. La solicitud inicia la coordinación. La fecha y el horario se confirman después de revisar la capacidad disponible.",
+    question: "¿Enviar un mensaje confirma mi cita?",
+    answer: "No. Primero revisamos contigo cobertura, fecha y horario. La cita queda confirmada cuando acordamos esos datos.",
   },
   {
-    question: "¿Puedo explorar monturas antes de coordinar una visita?",
-    answer: "Sí. El catálogo sirve como referencia para descubrir estilos y preparar mejor la conversación posterior.",
+    question: "¿En qué zonas atiende OptiHome?",
+    answer: "La cobertura se confirma al coordinar tu solicitud por WhatsApp, antes de acordar una visita.",
   },
   {
     question: "¿La prueba virtual reemplaza una evaluación visual?",
-    answer: "No. Es una herramienta de orientación estética y no realiza diagnósticos ni reemplaza una evaluación profesional.",
+    answer: "No. Sirve para orientarte sobre estilo y proporción; no realiza diagnósticos ni reemplaza una evaluación profesional.",
   },
   {
-    question: "¿Los precios y la disponibilidad del catálogo son definitivos?",
-    answer: "No en este caso de estudio. Las referencias visuales están marcadas como contenido demo y no se presentan como inventario comercial real.",
+    question: "¿La disponibilidad de una montura está garantizada?",
+    answer: "No. Los modelos te ayudan a explorar estilos; la disponibilidad y las alternativas similares se confirman por WhatsApp.",
   },
 ] as const;
 
@@ -24,14 +25,14 @@ export function TrustFaq() {
     <section id="preguntas-frecuentes" aria-labelledby="faq-title" className="border-y border-border bg-surface-soft">
       <div className="content-shell section-pad grid gap-12 lg:grid-cols-[.8fr_1.2fr]">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-brand">Confianza antes que promesas</p>
-          <h2 id="faq-title" className="mt-3 text-3xl font-semibold md:text-5xl">Lo que la web dice debe poder sostenerse.</h2>
+          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-brand">Antes de coordinar</p>
+          <h2 id="faq-title" className="mt-3 text-3xl font-semibold md:text-5xl">Atención clara desde el primer contacto.</h2>
           <div className="mt-7 space-y-4">
             {[
-              "Sin testimonios inventados.",
-              "Sin disponibilidad o SLA ficticios.",
-              "Sin convertir una solicitud en una cita.",
-              "Sin presentar datos demo como inventario real.",
+              "La cita se confirma contigo antes de la visita.",
+              "La cobertura por zona se revisa antes de coordinar.",
+              "La prueba virtual es orientativa, no diagnóstica.",
+              "La cámara solo se activa cuando tú la autorizas.",
             ].map((item) => (
               <div key={item} className="flex items-start gap-3">
                 <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-accent" aria-hidden="true" />
@@ -39,6 +40,10 @@ export function TrustFaq() {
               </div>
             ))}
           </div>
+          <Link href="/privacy" className="mt-7 inline-flex min-h-11 items-center gap-2 rounded-lg font-semibold text-brand hover:text-brand-strong">
+            <ShieldCheck className="size-5" aria-hidden="true" />
+            Cómo cuidamos tu privacidad en el try-on
+          </Link>
         </div>
 
         <div className="space-y-3">
