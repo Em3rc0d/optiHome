@@ -1,0 +1,78 @@
+name: MK0 Secure Lock Freeze
+
+on:
+  push:
+    branches: [rc/mk0-web-20260910]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mk0-secure-lock-freeze
+  cancel-in-progress: false
+
+jobs:
+  freeze:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout RC branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Regenerate certified dependency authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm pkg set name=optihome
+          npm pkg delete 'devDependencies.@eslint/eslintrc'
+          npm install --save-exact next@16.3.4
+          npm install --save-dev --save-exact eslint-config-next@16.3.4
+          npm audit fix --package-lock-only
+          test "$(git hash-object package.json)" = "73901309dacd934253c49cc1ffc38217d1f7d7c8"
+          test "$(git hash-object package-lock.json)" = "ca2dc2201c423f093c7f04c7f3ede1e145ffaa51"
+
+      - name: Clean install and security gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf node_modules
+          npm ci
+          npm audit --json > audit-full.json
+          npm audit --omit=dev --json > audit-prod.json
+          node - <<'NODE'
+          const fs = require('fs');
+          for (const file of ['audit-full.json', 'audit-prod.json']) {
+            const audit = JSON.parse(fs.readFileSync(file, 'utf8'));
+            const v = audit.metadata?.vulnerabilities;
+            if (!v || v.total !== 0) {
+              console.error(file, v);
+              process.exit(1);
+            }
+          }
+          NODE
+          npm run lint
+          npm run build
+
+      - name: Assert only dependency authority changed
+        shell: bash
+        run: |
+          set -euo pipefail
+          unexpected="$(git status --porcelain | awk '{print $2}' | grep -Ev '^(package.json|package-lock.json|audit-full.json|audit-prod.json)$' || true)"
+          test -z "$unexpected"
+
+      - name: Commit certified lock to RC branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f audit-full.json audit-prod.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add package.json package-lock.json
+          git commit -m 'fix(mk0): secure dependency authority for release candidate'
+          git push origin HEAD:rc/mk0-web-20260910
+          echo "RC_SHA=$(git rev-parse HEAD)" >> "$GITHUB_STEP_SUMMARY"
+          echo "RC_TREE=$(git rev-parse HEAD^{tree})" >> "$GITHUB_STEP_SUMMARY"
