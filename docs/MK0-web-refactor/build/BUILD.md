@@ -1,8 +1,10 @@
 # BUILD.md — OptiHome MK0 Build Ledger
 
-Status: `PRE_RUNTIME_RELEASE_CANDIDATE_READY`
+Status: `RELEASE_CERTIFIED__MAIN_READY`
 
 This ledger separates implementation completion from release certification.
+
+Final release receipt: `../test/RELEASE-CERTIFICATION-20260910.md`.
 
 ## BUILD-001 — Foundation cleanup
 
@@ -26,7 +28,7 @@ Outputs:
 
 ## BUILD-002 — Homepage narrative
 
-Status: `COMPLETE_CODE__HARDENED`
+Status: `COMPLETE_CODE__CERTIFIED`
 
 Outputs:
 
@@ -43,7 +45,7 @@ Outputs:
 
 ## BUILD-003 — Catalog experience
 
-Status: `COMPLETE_CODE__HARDENED`
+Status: `COMPLETE_CODE__CERTIFIED`
 
 Outputs:
 
@@ -59,7 +61,7 @@ Outputs:
 
 ## BUILD-004 — Virtual try-on
 
-Status: `COMPLETE_CODE__HARDENED`
+Status: `COMPLETE_CODE__CERTIFIED`
 
 Outputs:
 
@@ -81,12 +83,14 @@ Outputs:
 - media-stream cleanup
 - safe-area responsive controls
 - non-diagnostic/privacy context
+- camera inference from a reusable canvas frame
+- invalid detector ROI recovery when returned geometry is non-finite
 
 ## BUILD-005 — Responsive + accessibility hardening
 
-Status: `STATIC_COMPLETE__RUNTIME_MATRIX_OPEN`
+Status: `COMPLETE__CERTIFIED`
 
-Static/code outputs:
+Outputs:
 
 - mobile-first responsive rules
 - skip link
@@ -98,12 +102,14 @@ Static/code outputs:
 - dialog semantics via Radix primitive
 - reduced-motion contract
 - one-frame-per-screen revision `design/DR-001-one-frame-per-screen.md`
+- V1–V9 homepage and product matrix certified
+- keyboard/mobile-menu/FAQ contract certified
 
 ## BUILD-006 — SEO + performance hardening
 
-Status: `STATIC_COMPLETE__BUILD_GATE_OPEN`
+Status: `COMPLETE__CERTIFIED`
 
-Static/code outputs:
+Outputs:
 
 - metadata/Open Graph foundation
 - responsive image sizing
@@ -111,85 +117,88 @@ Static/code outputs:
 - deferred try-on/ML work
 - legacy route redirects
 - obsolete legacy landing implementation removed from RC tree
+- dependency audit, lint and production build certified
 
-## Current detached code authority
+## Certified runtime authority
 
 ```text
-RC_PARENT_DOC_SHA ad57742e8127ad65420c737bad5574e573e1959f
-RC_CODE_SHA       5e32d338cce28ae79273866783b8cec1c905744e
-RC_CODE_TREE      21030d1e23a18871abdd8e1ea3d8079582825b28
-REF_MOVED         NO
-VERCEL_DEV        FORBIDDEN
+CODE_SHA  6ef350dada66524c6197a158225d6abcf3ce99e0
+TREE_SHA  1828102bbd46b958b97dfdadaa9fd84c867d6b9c
 ```
 
-The code authority is detached. The PR branch remains unchanged; no development Vercel preview is required or desired.
+Release evidence:
+
+```text
+FULL_RUN_ID       34437644311
+FULL_RESULT       SUCCESS
+FULL_ARTIFACT_ID  10136833105
+BROWSER_CHECKS    29/29 PASS
+TARGETED_RUN_ID   34437602932
+TARGETED_RESULT   SUCCESS
+```
+
+Documentation-only descendants may carry the receipt into the integration PR. Runtime/source/config/dependency changes after the certified SHA invalidate affected evidence.
 
 ## Verification authority
 
-Runtime/browser/device validation MUST follow:
+The frozen execution contract remains:
 
 ```text
 docs/MK0-web-refactor/test/PRE-RUNTIME-RUNBOOK.md
 ```
 
-The runbook defines:
-
-- exact route inventory;
-- 9 viewport baselines;
-- CTA matrix;
-- keyboard/accessibility sequence;
-- one-frame-per-screen behavior;
-- photo protocol P1–P3;
-- camera/device protocol C1–C6;
-- motion/reduced-motion checks;
-- visual acceptance and evidence taxonomy.
-
-## Static evidence state
+The final executed evidence and gate closure are recorded in:
 
 ```text
-DESIGN_SYSTEM_CONTRACT           FROZEN
-DR_001_ONE_FRAME                 ACCEPTED
-CLAIM_TRUST_CONTRACT             PASS_STATIC
-CAMERA_INTENT_BOUNDARY           PASS_STATIC
-LATE_PERMISSION_INVALIDATION     PASS_STATIC
-PHOTO_FALLBACK_PATH              PASS_STATIC
-RESPONSIVE_CONTROL_RULES         PASS_STATIC
-REDUCED_MOTION_CONTRACT          PASS_STATIC
-DEV_VERCEL_PREVIEW               NOT_USED_FOR_CURRENT_RC
+docs/MK0-web-refactor/test/RELEASE-CERTIFICATION-20260910.md
 ```
 
-Static evidence is not a substitute for browser/device execution.
-
-## Gates intentionally open
+## Certified evidence state
 
 ```text
-npm ci
-npm run lint
-npm run build
-route smoke
-responsive V1–V9
-keyboard/focus traversal
-CTA interactions
-catalog runtime
-try-on photo P1–P3
-try-on camera/device C1–C6
-motion/reduced-motion
-human visual acceptance
+DESIGN_SYSTEM_CONTRACT           PASS_BROWSER
+DR_001_ONE_FRAME                 PASS_BROWSER
+CLAIM_TRUST_CONTRACT             PASS_STATIC
+CAMERA_INTENT_BOUNDARY           PASS_BROWSER
+LATE_PERMISSION_INVALIDATION     PASS_BROWSER
+PHOTO_FALLBACK_PATH              PASS_BROWSER
+RESPONSIVE_CONTROL_RULES         PASS_BROWSER
+REDUCED_MOTION_CONTRACT          PASS_BROWSER
+DEPENDENCY_AUDIT                 PASS_MECHANICAL__ZERO_VULNERABILITIES
+LINT                             PASS_MECHANICAL
+PRODUCTION_BUILD                 PASS_MECHANICAL
+C5_FACE_TRACKING                 PASS_BROWSER__FACE_GEOMETRY
+VISUAL_EVIDENCE_REVIEW           PASS
+MAIN_READY                       YES
+```
+
+## Gates closed
+
+```text
+npm ci                           PASS
+npm run lint                     PASS
+npm run build                    PASS
+route smoke                      PASS
+responsive V1–V9                PASS
+keyboard/focus traversal         PASS
+CTA interactions                 PASS
+catalog runtime                  PASS
+try-on photo P1–P3              PASS
+try-on camera C1–C6 contract     PASS
+motion/reduced-motion            PASS
+visual evidence review           PASS
+release continuation             ACCEPTED
 ```
 
 ## Release invariant
 
 ```text
-DETACHED_CODE_AUTHORITY
-→ FROZEN_PRE_RUNTIME_DOCS
-→ MECHANICAL_GATE
-→ BROWSER/DEVICE_GATES
-→ HUMAN_VISUAL_GATE
-→ EVIDENCE_FREEZE
-→ STABLE_INTEGRATION
+CERTIFIED_RUNTIME_SHA
+→ DOCS_ONLY_RELEASE_RECEIPT
+→ STABLE_INTEGRATION_PR
 → MAIN
 → ONE_PRODUCTION_VERCEL_DEPLOY
 → PRODUCTION_SMOKE
 ```
 
-Any code change after runtime begins creates a new code authority and invalidates affected evidence.
+The runtime authority is immutable at `6ef350dada66524c6197a158225d6abcf3ce99e0`. Any non-documentation change before merge requires affected gates to be rerun.
