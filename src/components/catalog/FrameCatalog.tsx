@@ -62,9 +62,14 @@ export function FrameCatalog({ frames }: { frames: Frame[] }) {
     const firstTryOnIndex = frames.findIndex((frame) => Boolean(frame.tryOnImage));
     if (firstTryOnIndex < 0) return;
 
-    setFilter("Todas");
-    setActiveIndex(firstTryOnIndex);
-    setSelectedFrame(frames[firstTryOnIndex]);
+    const initialTryOnFrame = frames[firstTryOnIndex];
+    const animationFrame = window.requestAnimationFrame(() => {
+      setFilter("Todas");
+      setActiveIndex(firstTryOnIndex);
+      setSelectedFrame(initialTryOnFrame);
+    });
+
+    return () => window.cancelAnimationFrame(animationFrame);
   }, [frames]);
 
   const changeFilter = (nextFilter: Filter) => {
