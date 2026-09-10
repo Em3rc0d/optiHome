@@ -3,7 +3,8 @@
   "git": {
     "deploymentEnabled": {
       "rc/mk0-web-20260910": false,
-      "feat/mk0-1-commercial-hardening-20260910": false
+      "feat/mk0-1-commercial-hardening-20260910": false,
+      "fix/mk0-2-tryon-rotation-20260910": false
     }
   }
 }

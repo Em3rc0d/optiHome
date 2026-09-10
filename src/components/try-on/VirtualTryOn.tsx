@@ -123,6 +123,15 @@ function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
 }
 
+const MAX_FRAME_ROTATION_DEG = 4.5;
+const ROTATION_DEAD_ZONE_DEG = 1.25;
+
+function normalizeEyeLineRotation(angle: number) {
+  const normalized = ((((angle + 90) % 180) + 180) % 180) - 90;
+  if (Math.abs(normalized) < ROTATION_DEAD_ZONE_DEG) return 0;
+  return clamp(normalized, -MAX_FRAME_ROTATION_DEG, MAX_FRAME_ROTATION_DEG);
+}
+
 function faceGeometry({
   points,
   sourceWidth,
@@ -170,9 +179,10 @@ function faceGeometry({
     rightEye.y - leftEye.y
   );
   const displayedEyeDistance = eyeDistance * renderScale;
-  const rotation =
-    Math.atan2(rightEye.y - leftEye.y, rightEye.x - leftEye.x) *
-    (180 / Math.PI);
+  const eyeLineAngle =
+  Math.atan2(leftEye.y - rightEye.y, leftEye.x - rightEye.x) *
+  (180 / Math.PI);
+const rotation = normalizeEyeLineRotation(eyeLineAngle);
 
   return {
     x: offsetX + midX * renderScale,
@@ -184,12 +194,16 @@ function faceGeometry({
 
 function smoothFace(previous: FaceData | null, next: FaceData): FaceData {
   if (!previous) return next;
-  const weight = 0.38;
+  const positionWeight = 0.34;
+  const scaleWeight = 0.28;
+  const rotationWeight = 0.14;
   return {
-    x: previous.x + (next.x - previous.x) * weight,
-    y: previous.y + (next.y - previous.y) * weight,
-    width: previous.width + (next.width - previous.width) * weight,
-    rotation: previous.rotation + (next.rotation - previous.rotation) * weight,
+    x: previous.x + (next.x - previous.x) * positionWeight,
+    y: previous.y + (next.y - previous.y) * positionWeight,
+    width: previous.width + (next.width - previous.width) * scaleWeight,
+    rotation: normalizeEyeLineRotation(
+      previous.rotation + (next.rotation - previous.rotation) * rotationWeight
+    ),
   };
 }
 
@@ -271,9 +285,14 @@ export function VirtualTryOn({
   const frameImage = currentFrame.tryOnImage ?? currentFrame.image;
 
   useEffect(() => {
-    let cancelled = false;
-    const image = new window.Image();
-    image.src = frameImage;
+  if (frameImage.toLowerCase().endsWith(".svg")) {
+    setOverlaySource(frameImage);
+    return;
+  }
+
+  let cancelled = false;
+  const image = new window.Image();
+  image.src = frameImage;
 
     image.onload = () => {
       if (cancelled) return;
@@ -649,7 +668,7 @@ export function VirtualTryOn({
                 src={overlaySource}
                 alt=""
                 aria-hidden="true"
-                className="frame-switch absolute h-auto max-w-[82vw] object-contain drop-shadow-2xl"
+                className="frame-switch absolute h-auto max-w-[82vw] object-contain drop-shadow-md"
                 style={overlayStyle}
               />
             </div>
