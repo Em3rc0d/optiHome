@@ -285,7 +285,9 @@ export function VirtualTryOn({
   const frameImage = currentFrame.tryOnImage ?? currentFrame.image;
 
   useEffect(() => {
-  if (frameImage.toLowerCase().endsWith(".svg")) {
+  const normalizedFrameImage = frameImage.toLowerCase();
+
+  if (normalizedFrameImage.endsWith(".svg") || normalizedFrameImage.endsWith(".webp")) {
     setOverlaySource(frameImage);
     return;
   }
