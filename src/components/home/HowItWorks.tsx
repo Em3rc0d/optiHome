@@ -1,3 +1,8 @@
+"use client";
+
+import { useRef } from "react";
+import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+
 const steps = [
   {
     number: "01",
@@ -22,8 +27,16 @@ const steps = [
 ] as const;
 
 export function HowItWorks() {
+  const ref = useRef<HTMLElement>(null);
+  const reduceMotion = useReducedMotion();
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start 75%", "end 35%"],
+  });
+  const progress = useTransform(scrollYProgress, [0, 1], [0, 1]);
+
   return (
-    <section id="proceso" aria-labelledby="process-title" className="bg-white">
+    <section ref={ref} id="proceso" aria-labelledby="process-title" className="bg-white">
       <div className="content-shell section-pad">
         <div className="max-w-3xl">
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-brand">Cómo funciona</p>
@@ -34,15 +47,41 @@ export function HowItWorks() {
             Un proceso simple para que sepas qué sigue en cada momento.
           </p>
         </div>
-        <ol className="mt-10 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-          {steps.map((step) => (
-            <li key={step.number} className="border-t border-border pt-6">
-              <span className="text-sm font-semibold text-brand">{step.number}</span>
-              <h3 className="mt-3 text-xl font-semibold">{step.title}</h3>
-              <p className="mt-3 leading-7 text-ink-muted">{step.description}</p>
-            </li>
-          ))}
-        </ol>
+
+        <div className="relative mt-12">
+          <div className="absolute left-[15px] top-2 bottom-2 w-px bg-border md:hidden" aria-hidden="true">
+            <motion.div
+              className="h-full w-full origin-top bg-brand"
+              style={reduceMotion ? { scaleY: 1 } : { scaleY: progress }}
+            />
+          </div>
+
+          <div className="absolute left-[12.5%] right-[12.5%] top-[15px] hidden h-px bg-border md:block" aria-hidden="true">
+            <motion.div
+              className="h-full w-full origin-left bg-brand"
+              style={reduceMotion ? { scaleX: 1 } : { scaleX: progress }}
+            />
+          </div>
+
+          <ol className="grid gap-8 md:grid-cols-4 md:gap-5">
+            {steps.map((step, index) => (
+              <motion.li
+                key={step.number}
+                initial={reduceMotion ? false : { opacity: 0.45, y: 10 }}
+                whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.65 }}
+                transition={{ duration: 0.3, delay: index * 0.06 }}
+                className="relative pl-12 md:pl-0 md:pt-12"
+              >
+                <span className="absolute left-0 top-0 z-10 grid size-[30px] place-items-center rounded-full border border-brand/30 bg-white text-[10px] font-bold text-brand md:left-1/2 md:-translate-x-1/2">
+                  {step.number}
+                </span>
+                <h3 className="text-xl font-semibold md:text-center">{step.title}</h3>
+                <p className="mt-3 leading-7 text-ink-muted md:text-center">{step.description}</p>
+              </motion.li>
+            ))}
+          </ol>
+        </div>
       </div>
     </section>
   );

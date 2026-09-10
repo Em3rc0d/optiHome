@@ -135,18 +135,6 @@
     bottom: max(0.75rem, env(safe-area-inset-bottom));
   }
 
-  .hero-copy-enter {
-    animation: opti-enter-up 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-
-  .hero-visual-enter {
-    animation: opti-enter-up 520ms 70ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-
-  .frame-enter {
-    animation: opti-frame-enter 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-
   .frame-switch {
     animation: opti-frame-switch 180ms ease-out both;
   }
@@ -155,16 +143,6 @@
     transform-origin: top;
     animation: opti-menu-enter 160ms ease-out both;
   }
-}
-
-@keyframes opti-enter-up {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes opti-frame-enter {
-  from { opacity: 0.35; transform: translateX(10px); }
-  to { opacity: 1; transform: translateX(0); }
 }
 
 @keyframes opti-frame-switch {
