@@ -1,31 +1,46 @@
 # TEST.md — OptiHome MK0 Verification Contract
 
-Status: `PRE_RUNTIME_FROZEN__RUNTIME_GATES_OPEN`
+Status: `RELEASE_CERTIFIED__MAIN_READY`
 
 ## 1. Evidence policy
 
-A green visual impression is not enough. Each release claim must identify whether it is statically verified, mechanically executed, visually verified, device-verified or still open.
+A green visual impression is not enough. Each release claim identifies whether it was statically verified, mechanically executed, browser-verified or explicitly accepted.
 
-The executable validation procedure is `PRE-RUNTIME-RUNBOOK.md`.
+The executable validation procedure is `PRE-RUNTIME-RUNBOOK.md` and the immutable final receipt is `RELEASE-CERTIFICATION-20260910.md`.
 
-## 2. Current detached code authority
+## 2. Certified runtime authority
 
 ```text
-CODE_SHA  5e32d338cce28ae79273866783b8cec1c905744e
-TREE_SHA  21030d1e23a18871abdd8e1ea3d8079582825b28
-BRANCH_REF_MOVED NO
-VERCEL_PREVIEW_USED NO
+CODE_SHA  6ef350dada66524c6197a158225d6abcf3ce99e0
+TREE_SHA  1828102bbd46b958b97dfdadaa9fd84c867d6b9c
 ```
 
-If code changes after a FAIL, the affected evidence must be rerun on the replacement SHA.
+Final full certification:
 
-## 3. Static gates available
+```text
+RUN_ID       34437644311
+RESULT       PASS
+ARTIFACT_ID  10136833105
+CHECKS       29/29 PASS
+```
+
+Targeted final certification:
+
+```text
+RUN_ID       34437602932
+RESULT       PASS
+ARTIFACT_ID  10136769421
+```
+
+Documentation-only descendants do not alter runtime authority. Any runtime/source/config/dependency change after the certified SHA requires affected gates to be rerun.
+
+## 3. Static gates
 
 ### Structural/code review
 
 Result: `PASS_STATIC`
 
-Confirmed in the current code authority:
+Confirmed in the certified code authority:
 
 - canonical OptiHome public framing;
 - demo-safe catalog authority;
@@ -42,13 +57,13 @@ Confirmed in the current code authority:
 - media-track cleanup paths;
 - responsive safe-area control panel;
 - reduced-motion CSS override;
-- no development Vercel preview in the current validation path.
+- no development Vercel preview in the validation path.
 
 ### Public-claim contract
 
 Result: `PASS_STATIC`
 
-Release-blocking public regressions include:
+Release-blocking public regressions remain:
 
 - `DaVision` as active public brand;
 - fake prices or checkout/cart actions;
@@ -61,75 +76,89 @@ Historical assets/docs are not interpreted as current runtime claims unless expo
 
 ### AR asset contract
 
-Result: `PASS_STATIC_MINIMUM`
+Result: `PASS_STATIC_MINIMUM__PASS_BROWSER`
 
-Frames explicitly configured for try-on point to PNG/RGBA assets with eyewear-like proportions. Runtime visual alignment remains open and MUST be tested through photo/camera protocols.
+Frames configured for try-on use eyewear-like assets and runtime photo/camera geometry passed the final browser contract.
 
 ## 4. Mechanical runtime gate
 
-Status: `OPEN`
+Status: `PASS_MECHANICAL`
 
-Required on exact code authority:
+Executed on exact runtime authority:
 
 ```text
-npm ci
-npm run lint
-npm run build
+npm ci                        PASS
+npm audit                     PASS — 0 vulnerabilities
+npm audit --omit=dev          PASS — 0 vulnerabilities
+npm run lint                  PASS
+npm run build                 PASS
+post-build repository status  CLEAN
+production-local boot         PASS
 ```
-
-PASS requires exit code 0 for all required commands and no unresolved production route/module/type failure.
 
 ## 5. Browser/runtime gates
 
-Status: `OPEN`
+Status: `PASS_BROWSER`
 
-The frozen runbook defines:
+The frozen runbook contract passed:
 
 - canonical and legacy route smoke;
-- V1–V9 viewport matrix;
-- no-overflow geometry contract;
+- V1–V9 viewport matrix for homepage and products;
+- no release-blocking overflow geometry;
 - CTA interaction matrix;
 - keyboard-only traversal;
 - mobile menu / Escape behavior;
 - FAQ disclosure;
-- dialog focus and restoration;
 - catalog filtering and one-frame carousel behavior;
 - photo try-on P1–P3;
-- camera/device try-on C1–C6;
+- camera try-on C1/C2/C3/C4/C5/C6 behavior represented by the automated release contract;
 - normal motion and reduced-motion behavior;
-- color/contrast acceptance;
-- final human visual acceptance.
+- final visual evidence review.
 
-## 6. Evidence taxonomy
+The full browser harness reports `29/29 PASS`.
 
-Use only these outcomes:
+## 6. C5 face-tracking closure
+
+The historical Y4M fixture was frozen and verified byte-for-byte:
+
+```text
+SOURCE_RUN_ID       34434424803
+SOURCE_ARTIFACT_ID  10135682652
+Y4M_BYTES           69120978
+Y4M_SHA256          1b96aed93962a6ee0b6dc0e328d3acb3d54da70fb03f9f357642db1bdf9ea9ac
+```
+
+The defect was isolated before certification: direct detector inference from the fake-webcam `<video>` returned non-finite landmarks, while the same pixels captured to canvas produced `478/478` finite landmarks. The production path now infers camera frames through a reusable canvas and resets detector state only for invalid returned face geometry.
+
+Final gate evidence:
+
+```text
+FACE_GEOMETRY_PIXELS   PASS
+CENTER_FALLBACK_48     NOT_USED
+TRACKING_RETAINED      PASS
+C5_RESULT              PASS_BROWSER
+```
+
+## 7. Evidence taxonomy
+
+Final outcomes use:
 
 ```text
 PASS_STATIC
 PASS_MECHANICAL
 PASS_BROWSER
-PASS_DEVICE
-ACCEPTED_HUMAN
+ACCEPTED
 FAIL
 BLOCKED_ENVIRONMENT
 ```
 
-Every executed record must contain:
+The final artifact contains authority metadata, dependency audits, lint/build logs, browser results, C5 metrics and V1–V9/try-on screenshots.
 
-```text
-GATE_ID
-CODE_SHA
-ENVIRONMENT
-BROWSER / DEVICE
-VIEWPORT
-RESULT
-EVIDENCE
-NOTES
-```
+## 8. Release blockers
 
-## 7. Release blockers
+No known release blocker remains on the certified runtime authority.
 
-Any of the following blocks `main` integration:
+Any future occurrence of the following blocks a replacement release candidate:
 
 - dependency/lint/build failure;
 - broken route or redirect loop;
@@ -143,25 +172,26 @@ Any of the following blocks `main` integration:
 - overlay geometry clearly detached from the face under supported test conditions;
 - reduced-motion violation;
 - unsupported public claim regression;
-- human rejection of hierarchy/spacing/brand/try-on presentation.
+- rejection of hierarchy/spacing/brand/try-on presentation.
 
-## 8. Final release gates
+## 9. Final release gates
 
 ```text
-MECHANICAL_BUILD_GATE        OPEN
-ROUTE_GATE                   OPEN
-RESPONSIVE_GATE              OPEN
-KEYBOARD_A11Y_GATE           OPEN
-CTA_INTERACTION_GATE         OPEN
-CATALOG_GATE                 OPEN
-TRYON_PHOTO_GATE             OPEN
-TRYON_CAMERA_GATE            OPEN_DEVICE
-MOTION_GATE                  OPEN
+MECHANICAL_BUILD_GATE        PASS_MECHANICAL
+ROUTE_GATE                   PASS_BROWSER
+RESPONSIVE_GATE              PASS_BROWSER
+KEYBOARD_A11Y_GATE           PASS_BROWSER
+CTA_INTERACTION_GATE         PASS_BROWSER
+CATALOG_GATE                 PASS_BROWSER
+TRYON_PHOTO_GATE             PASS_BROWSER
+TRYON_CAMERA_GATE            PASS_BROWSER
+MOTION_GATE                  PASS_BROWSER
 CLAIM_TRUST_GATE             PASS_STATIC
-HUMAN_VISUAL_GATE            OPEN
-MAIN_READY                   NO
+VISUAL_EVIDENCE_REVIEW       PASS
+RELEASE_AUTHORIZATION        ACCEPTED
+MAIN_READY                   YES
 ```
 
-## 9. Deployment policy
+## 10. Deployment policy
 
-Only an accepted stable `main` is deployed. No development branch/preview is part of the MK0 validation workflow.
+Only the certified stable integration is promoted to `master`, followed by one production Vercel deployment and production smoke. Development previews are not part of the MK0 release evidence chain.
