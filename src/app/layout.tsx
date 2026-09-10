@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Header } from "./components/util/Header";
+import { SiteHeader } from "@/components/layout/SiteHeader";
+import { SiteFooter } from "@/components/layout/SiteFooter";
+import { siteConfig } from "@/content/site";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,24 +16,35 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DaVision",
-  description: "Lentes, exámenes de vista y más en DaVision.",
+  title: {
+    default: siteConfig.name,
+    template: `%s | ${siteConfig.name}`,
+  },
+  description: siteConfig.description,
   authors: [{ name: "Eduardo Farid Merino Cordova" }],
   icons: "/favicon.ico",
+  openGraph: {
+    title: siteConfig.name,
+    description: siteConfig.description,
+    locale: siteConfig.locale,
+    type: "website",
+  },
 };
 
-const RootLayout = ({ children }: { children: React.ReactNode }) => {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="es" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body className="antialiased bg-white text-gray-800">
-        <Header />
-        <main className="max-w-6xl mx-auto px-4 py-8">{children}</main>
-        <footer className="text-center text-sm py-6 text-gray-500">
-          © {new Date().getFullYear()} Davision. Todos los derechos reservados.
-        </footer>
+      <body className="min-h-screen bg-background font-sans text-foreground antialiased">
+        <a
+          href="#main-content"
+          className="sr-only fixed left-4 top-4 z-[100] rounded-lg bg-brand px-4 py-3 font-semibold text-white focus:not-sr-only"
+        >
+          Saltar al contenido
+        </a>
+        <SiteHeader />
+        <main id="main-content">{children}</main>
+        <SiteFooter />
       </body>
     </html>
   );
-};
-
-export default RootLayout;
+}
