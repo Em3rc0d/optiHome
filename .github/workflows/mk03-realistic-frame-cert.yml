@@ -17,15 +17,12 @@ jobs:
         with:
           ref: 488e2292ae2415c7702d6db878815d9f8a8f12fc
           fetch-depth: 1
-
       - name: Assert runtime authority
         run: test "$(git rev-parse HEAD)" = "488e2292ae2415c7702d6db878815d9f8a8f12fc"
-
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-
       - run: npm ci
       - run: npm audit --audit-level=high
       - run: npm audit --omit=dev --audit-level=high
@@ -33,7 +30,6 @@ jobs:
       - run: npm run build
       - name: Assert source clean after build
         run: test -z "$(git status --porcelain)"
-
       - name: Start production server
         run: |
           nohup npm run start -- -H 127.0.0.1 -p 3010 >/tmp/optihome-server.log 2>&1 &
@@ -43,99 +39,69 @@ jobs:
           done
           cat /tmp/optihome-server.log
           exit 1
-
       - name: Install isolated Playwright
         run: |
-          mkdir -p /tmp/pw
-          cd /tmp/pw
+          mkdir -p /tmp/pw && cd /tmp/pw
           npm init -y >/dev/null 2>&1
           npm install playwright@1.55.0 >/dev/null
           npx playwright install chromium >/dev/null
-
       - name: Realistic frame browser contract
         shell: bash
+        env:
+          FIXTURE: ${{ github.workspace }}/public/david.png
         run: |
           set -euo pipefail
           cat >/tmp/pw/test.cjs <<'JS'
           const { chromium } = require('playwright');
           const fs = require('fs');
           const slugs = ['urban-acetate','titanium-air','crystal-vision','vintage-tortoise','solar-noir','solar-aviator','circle-brown','solar-color'];
-          const checks = [];
-          const ok = (name, detail='') => checks.push({name, pass:true, detail});
-          const assert = (cond, name, detail='') => { if (!cond) throw new Error(`${name}: ${detail}`); ok(name, detail); };
-          (async () => {
-            const browser = await chromium.launch({headless:true});
-            const page = await browser.newPage({viewport:{width:1440,height:900}});
-            await page.addInitScript(() => {
-              window.tf = { setBackend: async () => true, ready: async () => {} };
-              window.faceLandmarksDetection = {
-                SupportedModels: { MediaPipeFaceMesh: 'synthetic' },
-                createDetector: async () => ({
-                  initialize: async () => {}, reset: () => {},
-                  estimateFaces: async (input) => {
-                    const w = input.naturalWidth || input.videoWidth || input.width || 640;
-                    const h = input.naturalHeight || input.videoHeight || input.height || 480;
-                    const pts = Array.from({length:478}, () => ({x:w*.5,y:h*.45}));
-                    pts[468] = {x:w*.35,y:h*.45}; pts[473] = {x:w*.65,y:h*.45};
-                    return [{keypoints:pts}];
-                  }
-                })
-              };
-              const canvas = document.createElement('canvas');
-              canvas.width = 640; canvas.height = 480;
-              const ctx = canvas.getContext('2d');
-              ctx.fillStyle = '#9da3a6'; ctx.fillRect(0,0,640,480);
-              ctx.fillStyle = '#777'; ctx.beginPath(); ctx.arc(320,235,145,0,Math.PI*2); ctx.fill();
-              Object.defineProperty(navigator, 'mediaDevices', { configurable:true, value:{ getUserMedia: async () => canvas.captureStream(15) } });
+          const names = ['Urban Acetate','Titanium Air','Crystal Vision','Vintage Tortoise','Solar Noir','Solar Aviator','Circle Brown','Solar Color'];
+          const checks=[];
+          const ok=(name,detail='')=>checks.push({name,pass:true,detail});
+          const assert=(cond,name,detail='')=>{if(!cond)throw new Error(`${name}: ${detail}`);ok(name,detail)};
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            const page=await browser.newPage({viewport:{width:1440,height:900}});
+            await page.addInitScript(()=>{
+              window.tf={setBackend:async()=>true,ready:async()=>{}};
+              window.faceLandmarksDetection={SupportedModels:{MediaPipeFaceMesh:'synthetic'},createDetector:async()=>({initialize:async()=>{},reset:()=>{},estimateFaces:async(input)=>{const w=input.naturalWidth||input.width||640;const h=input.naturalHeight||input.height||480;const p=Array.from({length:478},()=>({x:w*.5,y:h*.45}));p[468]={x:w*.35,y:h*.45};p[473]={x:w*.65,y:h*.45};return[{keypoints:p}]}})};
             });
-
-            for (const slug of slugs) {
-              const r = await page.request.get(`http://127.0.0.1:3010/frames/${slug}.svg`);
-              assert(r.ok(), `ASSET_HTTP_${slug}`, `status=${r.status()}`);
-              const svg = await r.text();
-              assert(svg.includes('<linearGradient') && svg.includes('filter'), `ASSET_DETAIL_${slug}`);
-              assert(!/background\s*=|<rect[^>]+width=["']100%["'][^>]+height=["']100%["']/i.test(svg), `ASSET_TRANSPARENT_${slug}`);
+            for(const slug of slugs){
+              const r=await page.request.get(`http://127.0.0.1:3010/frames/${slug}.svg`);
+              assert(r.ok(),`ASSET_HTTP_${slug}`,`status=${r.status()}`);
+              const svg=await r.text();
+              assert(svg.includes('<linearGradient')&&svg.includes('filter'),`ASSET_DETAIL_${slug}`);
+              assert(!/background\s*=|<rect[^>]+width=["']100%["'][^>]+height=["']100%["']/i.test(svg),`ASSET_TRANSPARENT_${slug}`);
             }
-
-            await page.goto('http://127.0.0.1:3010/products', {waitUntil:'networkidle'});
-            const catalogImgs = page.locator('img[src^="/frames/"]');
-            const count = await catalogImgs.count();
-            assert(count >= 9, 'CATALOG_FRAME_IMAGES_PRESENT', `count=${count}`);
-            const unique = new Set();
-            for (let i=0;i<count;i++) {
-              const img = catalogImgs.nth(i);
-              const src = await img.getAttribute('src');
-              if (src) unique.add(src);
-              assert(await img.evaluate(el => el.complete && el.naturalWidth > 0), `CATALOG_IMAGE_LOAD_${i+1}`, String(src));
-            }
-            for (const slug of slugs) assert(unique.has(`/frames/${slug}.svg`), `CATALOG_HAS_${slug}`);
-            await page.screenshot({path:'/tmp/pw/catalog-realistic.png', fullPage:false});
-
+            await page.goto('http://127.0.0.1:3010/products',{waitUntil:'networkidle'});
+            const imgs=page.locator('img[src^="/frames/"]');
+            const count=await imgs.count();
+            assert(count>=9,'CATALOG_FRAME_IMAGES_PRESENT',`count=${count}`);
+            const unique=new Set();
+            for(let i=0;i<count;i++){const img=imgs.nth(i);const src=await img.getAttribute('src');if(src)unique.add(src);assert(await img.evaluate(el=>el.complete&&el.naturalWidth>0),`CATALOG_LOAD_${i+1}`,String(src));}
+            for(const slug of slugs)assert(unique.has(`/frames/${slug}.svg`),`CATALOG_HAS_${slug}`);
+            await page.screenshot({path:'/tmp/pw/catalog-realistic.png'});
             await page.locator('[data-intent="cta_catalog_try_on"]').first().click();
-            const dialog = page.getByRole('dialog');
+            const dialog=page.getByRole('dialog');
             await dialog.waitFor({state:'visible'});
-            await page.getByRole('button', {name:'Activar cámara'}).click();
-            await page.getByText('Seguimiento activo. La montura acompaña tu rostro.').waitFor({timeout:15000});
-            const overlay = dialog.locator('.pointer-events-none img').first();
+            await page.locator('input[type="file"]').setInputFiles(process.env.FIXTURE);
+            await page.getByText('Foto ajustada. Puedes afinar el tamaño si lo necesitas.').waitFor({timeout:15000});
+            const overlay=dialog.locator('.pointer-events-none img').first();
             await overlay.waitFor({state:'visible'});
-            for (let i=0;i<slugs.length;i++) {
-              const src = await overlay.getAttribute('src');
-              assert(src === `/frames/${slugs[i]}.svg`, `TRYON_FRAME_${i+1}`, String(src));
-              assert(await overlay.evaluate(el => el.complete && el.naturalWidth > 0), `TRYON_LOAD_${i+1}`, String(src));
-              if (i < slugs.length-1) {
-                await page.getByRole('button', {name:'Siguiente montura'}).click();
-                await page.waitForTimeout(140);
-              }
+            for(let i=0;i<slugs.length;i++){
+              await dialog.getByText(names[i],{exact:true}).first().waitFor({state:'visible'});
+              const src=await overlay.getAttribute('src');
+              assert(src===`/frames/${slugs[i]}.svg`,`TRYON_FRAME_${i+1}`,String(src));
+              assert(await overlay.evaluate(el=>el.complete&&el.naturalWidth>0),`TRYON_LOAD_${i+1}`,String(src));
+              if(i<slugs.length-1){await page.getByRole('button',{name:'Siguiente montura'}).click();await page.waitForTimeout(160);}
             }
-            await page.screenshot({path:'/tmp/pw/tryon-realistic.png', fullPage:false});
-            fs.writeFileSync('/tmp/pw/results.json', JSON.stringify({runtime:'488e2292ae2415c7702d6db878815d9f8a8f12fc', total:checks.length, passed:checks.length, checks}, null, 2));
+            await page.screenshot({path:'/tmp/pw/tryon-realistic.png'});
+            fs.writeFileSync('/tmp/pw/results.json',JSON.stringify({runtime:'488e2292ae2415c7702d6db878815d9f8a8f12fc',total:checks.length,passed:checks.length,checks},null,2));
             console.log(`REALISTIC_FRAME_CERT_PASS ${checks.length}/${checks.length}`);
             await browser.close();
-          })().catch(err => { console.error(err); process.exit(1); });
+          })().catch(e=>{console.error(e);process.exit(1)});
           JS
-          cd /tmp/pw
-          node test.cjs
-
+          cd /tmp/pw && node test.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
