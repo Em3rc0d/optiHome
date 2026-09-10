@@ -82,7 +82,7 @@ export function HeroExperience() {
           ["02", "Pruébate"],
           ["03", "Coordina"],
         ].map(([number, label]) => (
-          <div key={number} className="rounded-2xl border border-white/80 bg-white/82 p-3 backdrop-blur-md">
+          <div key={number} className="rounded-2xl border border-white/80 bg-white/80 p-3 backdrop-blur-md">
             <span className="text-[11px] font-semibold text-brand">{number}</span>
             <p className="mt-1 text-sm font-semibold text-ink">{label}</p>
           </div>

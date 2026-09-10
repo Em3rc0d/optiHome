@@ -94,7 +94,7 @@ export function FeaturedFrames() {
                       className="object-contain drop-shadow-[0_28px_26px_rgba(16,33,43,.17)]"
                     />
                   </div>
-                  <div className="absolute inset-x-6 bottom-6 rounded-2xl border border-white/90 bg-white/88 p-5 backdrop-blur sm:inset-x-8 sm:bottom-8">
+                  <div className="absolute inset-x-6 bottom-6 rounded-2xl border border-white/90 bg-white/90 p-5 backdrop-blur sm:inset-x-8 sm:bottom-8">
                     <h3 className="text-2xl font-semibold sm:text-3xl">{frame.name}</h3>
                     <p className="mt-2 text-sm text-ink-muted">{frame.material} · {frame.color}</p>
                   </div>

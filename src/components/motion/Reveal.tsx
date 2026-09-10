@@ -17,8 +17,8 @@ export function Reveal({
   return (
     <motion.div
       className={className}
-      initial={reduceMotion ? false : { opacity: 0, y: motionTokens.distance.sm }}
-      whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+      initial={reduceMotion ? false : { y: motionTokens.distance.sm }}
+      whileInView={reduceMotion ? undefined : { y: 0 }}
       viewport={revealViewport}
       transition={{
         duration: motionTokens.duration.normal,
