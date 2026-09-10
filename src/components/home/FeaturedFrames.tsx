@@ -13,16 +13,16 @@ export function FeaturedFrames() {
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.16em] text-brand">Monturas</p>
             <h2 id="featured-title" className="mt-3 text-3xl font-semibold md:text-5xl">
-              Una montura a la vez. Menos ruido para decidir mejor.
+              Encuentra un estilo que se sienta tuyo.
             </h2>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-ink-muted">
-              Mostramos una referencia protagonista y dejamos la comparación progresiva para el catálogo. Las referencias son demostrativas y no representan inventario ni precio confirmado.
+              Explora cada montura con una imagen clara, compárala con otros estilos y pruébatela virtualmente antes de consultar disponibilidad.
             </p>
             <Link
               href="/products"
               className="mt-7 inline-flex min-h-12 items-center gap-2 rounded-xl bg-brand px-5 py-3 font-semibold text-white transition-[background-color,transform] duration-200 hover:bg-brand-strong motion-safe:active:scale-[0.99]"
             >
-              Explorar catálogo
+              Explorar monturas
               <ArrowRight className="size-4" aria-hidden="true" />
             </Link>
           </div>

@@ -1,4 +1,4 @@
-export type ContentAuthority = "AUTHORITATIVE" | "DEMO" | "DERIVED";
+export type ContentAuthority = "AUTHORITATIVE" | "REFERENCE" | "DERIVED";
 
 type NavigationItem = {
   label: string;
@@ -8,13 +8,13 @@ type NavigationItem = {
 export const siteConfig = {
   name: "OptiHome",
   description:
-    "Atención óptica a domicilio, exploración de monturas y una experiencia digital pensada para continuar tu cuidado visual desde casa.",
+    "Atención óptica a domicilio, exploración de monturas y prueba virtual para ayudarte a elegir desde casa.",
   locale: "es_PE",
   navigation: [
     { label: "Inicio", href: "/" },
     { label: "Monturas", href: "/products" },
     { label: "Cómo funciona", href: "/#proceso" },
-    { label: "Prueba virtual", href: "/products#prueba-virtual" },
+    { label: "Prueba virtual", href: "/products?tryon=1#prueba-virtual" },
     { label: "Preguntas frecuentes", href: "/#preguntas-frecuentes" },
   ] satisfies NavigationItem[],
   contact: {
@@ -25,7 +25,12 @@ export const siteConfig = {
   appointment: {
     requestHref: "/#solicitar-evaluacion",
     availabilityNotice:
-      "La disponibilidad de fecha y horario se confirma antes de agendar una visita.",
+      "La cita queda confirmada cuando acordamos fecha y horario contigo.",
+    coverageNotice:
+      "La cobertura por zona se confirma al coordinar tu solicitud.",
+  },
+  privacy: {
+    href: "/privacy",
   },
 } as const;
 

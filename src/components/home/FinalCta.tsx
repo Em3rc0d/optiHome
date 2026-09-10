@@ -4,7 +4,7 @@ import { intentProps } from "@/lib/analytics-events";
 
 export function FinalCta() {
   const whatsappHref = buildWhatsappUrl(
-    "Hola, quiero solicitar una evaluación con OptiHome. ¿Podemos revisar disponibilidad de fecha y horario?"
+    "Hola, quiero coordinar una evaluación con OptiHome. ¿Podemos revisar cobertura, fecha y horario disponibles?"
   );
 
   return (
@@ -15,10 +15,10 @@ export function FinalCta() {
             Siguiente paso
           </p>
           <h2 className="mx-auto mt-3 max-w-3xl text-3xl font-semibold text-white md:text-5xl">
-            Cuéntanos qué necesitas y revisamos disponibilidad contigo.
+            Cuéntanos qué necesitas y coordinamos contigo.
           </h2>
           <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-white/75 md:text-lg">
-            WhatsApp continúa la conversación. El mensaje inicia una solicitud; la cita existe solo después de confirmar fecha y horario.
+            Escríbenos por WhatsApp para revisar cobertura y encontrar una fecha disponible.
           </p>
           <a
             href={whatsappHref}
@@ -28,7 +28,7 @@ export function FinalCta() {
             className="mt-8 inline-flex min-h-12 items-center justify-center gap-3 rounded-xl bg-white px-7 py-3 font-semibold text-ink transition-[background-color,transform] duration-200 hover:bg-accent-soft motion-safe:active:scale-[0.99]"
           >
             <MessageCircle className="size-5" aria-hidden="true" />
-            Continuar por WhatsApp
+            Coordinar por WhatsApp
           </a>
           <p className="mt-4 text-sm text-white/70">{siteConfig.appointment.availabilityNotice}</p>
         </div>

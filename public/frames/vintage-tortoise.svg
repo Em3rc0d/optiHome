@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="360" viewBox="0 0 1000 360" fill="none">
+
+  <defs>
+    <linearGradient id="tort" x1="0" y1="0" x2="1000" y2="360" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#3A251D"/>
+      <stop offset="0.28" stop-color="#9A5A2D"/>
+      <stop offset="0.52" stop-color="#4C2C20"/>
+      <stop offset="0.76" stop-color="#C17A3A"/>
+      <stop offset="1" stop-color="#34211B"/>
+    </linearGradient>
+  </defs>
+  <g stroke="url(#tort)" stroke-width="31" stroke-linecap="round" stroke-linejoin="round">
+    <ellipse cx="270" cy="184" rx="205" ry="125"/>
+    <ellipse cx="730" cy="184" rx="205" ry="125"/>
+    <path d="M475 160 C490 142 510 142 525 160"/>
+    <path d="M65 148 L20 126"/>
+    <path d="M935 148 L980 126"/>
+  </g>
+
+</svg>

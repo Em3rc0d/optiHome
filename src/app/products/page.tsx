@@ -7,7 +7,7 @@ import { frames } from "@/content/frames";
 export const metadata: Metadata = {
   title: "Monturas y prueba virtual",
   description:
-    "Explora referencias de monturas y abre la prueba virtual de OptiHome bajo tu propia intención.",
+    "Explora monturas, compara estilos y pruébatelas virtualmente con cámara o foto antes de consultar disponibilidad.",
 };
 
 export default function ProductsPage() {
@@ -15,16 +15,16 @@ export default function ProductsPage() {
     <>
       <section className="border-b border-border bg-surface-soft">
         <div className="content-shell section-pad">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-brand">
+          <Link href="/" className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-brand">
             <ArrowLeft className="size-4" aria-hidden="true" />
             Volver al inicio
           </Link>
-          <p className="mt-8 text-sm font-semibold uppercase tracking-[0.16em] text-brand">Catálogo demostrativo</p>
+          <p className="mt-8 text-sm font-semibold uppercase tracking-[0.16em] text-brand">Monturas</p>
           <h1 className="mt-3 max-w-4xl text-4xl font-semibold leading-tight sm:text-5xl lg:text-6xl">
-            Descubre estilos antes de continuar la conversación.
+            Encuentra una montura que vaya contigo.
           </h1>
           <p className="mt-5 max-w-2xl text-lg leading-8 text-ink-muted">
-            Las referencias de este caso de estudio no se presentan como inventario, precio o disponibilidad comercial real.
+            Explora estilos, compara formas y prueba cualquier montura virtualmente. La disponibilidad se confirma al contactarnos.
           </p>
         </div>
       </section>
@@ -32,9 +32,9 @@ export default function ProductsPage() {
       <section className="bg-white">
         <div className="content-shell section-pad">
           <div id="prueba-virtual" className="scroll-mt-24">
-            <h2 className="text-2xl font-semibold">Monturas de referencia</h2>
+            <h2 className="text-2xl font-semibold">Explora y pruébate monturas</h2>
             <p className="mt-2 max-w-2xl leading-7 text-ink-muted">
-              Las monturas compatibles muestran una acción de prueba virtual. La cámara solo se solicita después de pulsarla.
+              Selecciona un modelo para verlo en detalle. Puedes probarlo con cámara o foto antes de consultar disponibilidad.
             </p>
           </div>
           <div className="mt-8">

@@ -16,7 +16,7 @@ export function Hero() {
             Cuida tu visión y encuentra tus próximos lentes desde casa.
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-ink-muted">
-            OptiHome conecta evaluación visual, exploración de monturas y herramientas digitales en un recorrido claro, sin convertir una solicitud en una cita hasta confirmar capacidad.
+            OptiHome lleva la atención óptica a tu hogar y te permite explorar monturas y probar estilos virtualmente antes de coordinar tu visita.
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -25,7 +25,7 @@ export function Hero() {
               {...intentProps("cta_hero_request_evaluation")}
               className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-brand px-6 py-3 font-semibold text-white transition-[background-color,transform] duration-200 hover:bg-brand-strong motion-safe:active:scale-[0.99]"
             >
-              Solicitar evaluación
+              Coordinar evaluación
               <ArrowRight className="size-4" aria-hidden="true" />
             </Link>
             <Link
@@ -38,7 +38,7 @@ export function Hero() {
           </div>
 
           <Link
-            href="/products#prueba-virtual"
+            href="/products?tryon=1#prueba-virtual"
             {...intentProps("cta_path_virtual_try_on")}
             className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-lg px-1 text-sm font-semibold text-brand transition-colors hover:text-brand-strong"
           >
@@ -47,7 +47,7 @@ export function Hero() {
           </Link>
 
           <p className="mt-5 max-w-xl text-sm leading-6 text-ink-muted">
-            La solicitud inicia la coordinación. La fecha y el horario se confirman después según disponibilidad.
+            Escríbenos y coordinamos contigo cobertura, fecha y horario disponibles.
           </p>
         </div>
 
@@ -61,9 +61,9 @@ export function Hero() {
             className="object-cover"
           />
           <div className="absolute inset-x-4 bottom-4 rounded-2xl border border-white/60 bg-white/90 p-4 backdrop-blur">
-            <p className="font-semibold text-ink">Primero entendemos la necesidad.</p>
+            <p className="font-semibold text-ink">Desde casa, a tu ritmo.</p>
             <p className="mt-1 text-sm leading-6 text-ink-muted">
-              Después coordinamos el siguiente paso sin sobrecargar la agenda.
+              Explora estilos, prueba monturas y coordina una visita cuando estés listo.
             </p>
           </div>
         </div>
