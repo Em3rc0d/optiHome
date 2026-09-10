@@ -43,7 +43,6 @@
 
 :root {
   --radius: 1rem;
-
   --opti-ink: #10212b;
   --opti-ink-muted: #53646d;
   --opti-brand: #126e82;
@@ -110,26 +109,13 @@
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
+  * { @apply border-border outline-ring/50; }
 
-  html {
-    scroll-behavior: smooth;
-  }
+  html { scroll-behavior: smooth; }
 
-  body {
-    @apply bg-background text-foreground;
-  }
+  body { @apply bg-background text-foreground; }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply tracking-tight text-ink;
-  }
+  h1, h2, h3, h4, h5, h6 { @apply tracking-tight text-ink; }
 
   :focus-visible {
     outline: 2px solid var(--opti-focus);
@@ -140,38 +126,18 @@
     background: var(--opti-accent-soft);
     color: var(--opti-ink);
   }
+
+  details > summary::-webkit-details-marker { display: none; }
 }
 
 @layer utilities {
-  .glass {
-    @apply border border-white/50 bg-white/80 shadow-lg backdrop-blur-md;
-  }
-
-  .glass-dark {
-    @apply border border-white/10 bg-black/40 shadow-lg backdrop-blur-md;
-  }
-
-  .text-gradient {
-    @apply bg-gradient-to-r from-brand to-accent bg-clip-text text-transparent;
-  }
-
-  .hover-lift {
-    @apply transition-transform duration-200 hover:-translate-y-1;
-  }
-
-  .content-shell {
-    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
-  }
+  .content-shell { @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8; }
+  .section-pad { @apply py-16 sm:py-20 lg:py-24; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
-  *,
-  *::before,
-  *::after {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;

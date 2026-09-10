@@ -23,6 +23,12 @@ export const metadata: Metadata = {
   description: siteConfig.description,
   authors: [{ name: "Eduardo Farid Merino Cordova" }],
   icons: "/favicon.ico",
+  openGraph: {
+    title: siteConfig.name,
+    description: siteConfig.description,
+    locale: siteConfig.locale,
+    type: "website",
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

@@ -14,7 +14,7 @@ export const siteConfig = {
     { label: "Inicio", href: "/" },
     { label: "Monturas", href: "/products" },
     { label: "Cómo funciona", href: "/#proceso" },
-    { label: "Prueba virtual", href: "/products" },
+    { label: "Prueba virtual", href: "/products#prueba-virtual" },
     { label: "Preguntas frecuentes", href: "/#preguntas-frecuentes" },
   ] satisfies NavigationItem[],
   contact: {
