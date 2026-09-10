@@ -4,7 +4,6 @@ import { ProcessSection } from "./components/landing/ProcessSection";
 import { ProductShowcase } from "./components/landing/ProductShowcase";
 import Services from "./services/page";
 import { HeroSection } from "./components/landing/HeroSection";
-import AboutUsSection from "./us/page";
 import { FaqSection } from "./components/landing/FaqSection";
 import { buildWhatsappUrl, siteConfig } from "@/content/site";
 import { intentProps } from "@/lib/analytics-events";
@@ -21,7 +20,6 @@ export default function Home() {
       <Services />
       <ProductShowcase />
       <ProcessSection />
-      <AboutUsSection />
       <FaqSection />
 
       <section
