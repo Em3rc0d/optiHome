@@ -1,8 +1,9 @@
 # MK0 — OptiHome Web Refactor
 
-Status: `RELEASE_CANDIDATE_CODE_READY`
+Status: `PRE_RUNTIME_RELEASE_CANDIDATE_READY`
 Branch authority: `refactor/mk0-web-foundation-20260909`
-Detached RC authority: see `build/BUILD.md`.
+Detached code authority: `5e32d338cce28ae79273866783b8cec1c905744e`
+Detached code tree: `21030d1e23a18871abdd8e1ea3d8079582825b28`
 Scope: public website refactor only.
 
 ## Mission
@@ -34,7 +35,7 @@ mining-site
 
 **OptiHome** is the canonical public brand.
 
-The release-candidate public surface no longer exposes legacy `DaVision` routes or components. Historical assets may remain in `public/` until a later dead-asset cleanup proves they are unused.
+The release-candidate public surface no longer exposes legacy `DaVision` routes/components as canonical experiences. Historical assets may remain in `public/` until a later dead-asset cleanup proves they are unused.
 
 ## Product truth
 
@@ -58,14 +59,52 @@ visitor
 - single-message homepage hero
 - three explicit visitor journeys
 - truthful request/capacity process
-- demo-safe frame catalog with centralized data
+- one featured eyewear frame as visual authority
+- demo-safe catalog with one active frame at a time
+- filter + previous/next + keyboard catalog navigation
 - virtual try-on isolated from catalog rendering
 - camera/model loading only after explicit user intent
-- photo fallback and media-track cleanup
+- camera overlay geometry based on face/inter-eye measurements
+- face rotation + smoothing path
+- photo detection attempt + manual fallback
+- one active frame overlay at a time
+- safe-area aware try-on controls
+- late camera-permission invalidation and media cleanup paths
+- reduced-motion and finite semantic motion rules
 - no fake checkout, price, inventory, social proof or SLA
 - native/semantic FAQ and accessibility-oriented navigation
 - legacy public routes redirected to canonical journeys
 - route metadata and deferred ML loading foundation
+
+## Design refinement
+
+`design/DR-001-one-frame-per-screen.md` freezes the rule that eyewear comparison surfaces expose one active frame at a time, while preserving access to all references through progressive navigation.
+
+## Pre-runtime verification
+
+No browser, device or production claim is inferred from static code.
+
+The next execution is governed by:
+
+```text
+test/PRE-RUNTIME-RUNBOOK.md
+```
+
+It freezes:
+
+- exact code/tree authority;
+- canonical + legacy route inventory;
+- V1–V9 viewport matrix;
+- CTA interaction matrix;
+- keyboard/accessibility protocol;
+- one-frame-per-screen runtime criteria;
+- photo try-on P1–P3;
+- camera/device try-on C1–C6;
+- motion/reduced-motion criteria;
+- visual acceptance;
+- evidence taxonomy and invalidation rules.
+
+Any code change during runtime validation creates a new authority SHA and requires affected gates to be rerun.
 
 ## Explicitly deferred
 
@@ -80,18 +119,31 @@ visitor
 
 ## Release policy
 
-Development branches are **not** deployed to Vercel for validation. The stable state is assembled as detached Git objects and only the accepted stable state is intended to move to `main` and deploy.
+Development branches are **not** deployed to Vercel for validation.
 
-The detached RC is therefore not certified by a Vercel preview. Mechanical `lint/type/build` and final human visual verification remain explicit gates before/at stable integration.
+```text
+frozen detached code
+→ frozen verification contract
+→ mechanical build
+→ browser/device verification
+→ human visual acceptance
+→ evidence freeze
+→ stable integration
+→ main
+→ one production Vercel deploy
+→ production smoke
+```
 
 ## Documentation map
 
 - `brainstorming/BR-000-product-thesis.md`
 - `brainstorming/BR-001-appointment-capacity-contract.md`
 - `design/DESIGN.md`
+- `design/DR-001-one-frame-per-screen.md`
 - `architecture/ARCHITECTURE.md`
 - `plan/PLAN.md`
 - `build/BUILD.md`
 - `test/TEST.md`
+- `test/PRE-RUNTIME-RUNBOOK.md`
 - `../../mining-site/MK0-web-refactor/README.md`
 - `../../quarries/MK0-web-refactor/QRY-000-optical-web-patterns.md`

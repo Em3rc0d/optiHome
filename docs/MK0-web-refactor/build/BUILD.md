@@ -1,6 +1,6 @@
 # BUILD.md — OptiHome MK0 Build Ledger
 
-Status: `RELEASE_CANDIDATE_CODE_READY`
+Status: `PRE_RUNTIME_RELEASE_CANDIDATE_READY`
 
 This ledger separates implementation completion from release certification.
 
@@ -26,62 +26,78 @@ Outputs:
 
 ## BUILD-002 — Homepage narrative
 
-Status: `COMPLETE_CODE`
+Status: `COMPLETE_CODE__HARDENED`
 
 Outputs:
 
-- `src/components/home/Hero.tsx`
+- `Hero.tsx`
 - `JourneyChooser.tsx`
 - `HowItWorks.tsx`
 - `FeaturedFrames.tsx`
 - `TryOnFeature.tsx`
 - `TrustFaq.tsx`
 - `FinalCta.tsx`
-- thin `src/app/page.tsx` composition
+- thin server-rendered page composition
+- one featured frame as the dominant eyewear visual
+- motion limited to finite semantic entrance/state cues
 
 ## BUILD-003 — Catalog experience
 
-Status: `COMPLETE_CODE`
+Status: `COMPLETE_CODE__HARDENED`
 
 Outputs:
 
-- `src/types/frame.ts`
-- `src/content/frames.ts`
-- `src/components/catalog/FrameCatalog.tsx`
-- rewritten `src/app/products/page.tsx`
-- no demo price/cart/checkout claim
-- explicit DEMO authority
+- typed frame domain/data model
+- demo-safe authority
+- no fake price/cart/checkout
+- one active frame at a time
+- filter taxonomy
+- previous/next navigation
+- Left/Right keyboard support
+- synchronized counter/state
+- explicit try-on and WhatsApp actions
 
-## BUILD-004 — Virtual try-on decomposition
+## BUILD-004 — Virtual try-on
 
-Status: `COMPLETE_CODE`
+Status: `COMPLETE_CODE__HARDENED`
 
 Outputs:
 
-- `src/components/try-on/VirtualTryOn.tsx`
-- lazy component boundary from catalog
+- isolated `VirtualTryOn` client boundary
+- lazy/dynamic component load
 - camera permission only after explicit click
-- TF/model load only after camera intent
-- photo fallback
-- media-stream cleanup, including late permission-resolution invalidation
+- TensorFlow/model load only after camera/photo intent
+- browser-session detector cache
+- camera geometry mapped for `object-cover`
+- photo geometry mapped for `object-contain`
+- overlay width derived from inter-eye distance
+- face-angle rotation
+- smoothing against obvious jitter
+- photo face-detection attempt
+- centered/manual fallback when photo detection fails
 - frame-overlay preprocessing for neutral light backgrounds
-- stage-relative face-overlay coordinates
-- clear non-diagnostic context
+- one active overlay frame at a time
+- late permission-resolution invalidation
+- media-stream cleanup
+- safe-area responsive controls
+- non-diagnostic/privacy context
 
 ## BUILD-005 — Responsive + accessibility hardening
 
-Status: `STATIC_COMPLETE__VISUAL_GATE_OPEN`
+Status: `STATIC_COMPLETE__RUNTIME_MATRIX_OPEN`
 
 Static/code outputs:
 
-- mobile-first responsive grids
+- mobile-first responsive rules
 - skip link
-- focus visibility
+- visible focus contract
 - semantic landmarks/headings/lists
 - native FAQ disclosures
-- dialog semantics
+- mobile menu with Escape close
+- minimum touch-oriented sizes
+- dialog semantics via Radix primitive
 - reduced-motion contract
-- non-hover-only actions
+- one-frame-per-screen revision `design/DR-001-one-frame-per-screen.md`
 
 ## BUILD-006 — SEO + performance hardening
 
@@ -89,71 +105,91 @@ Status: `STATIC_COMPLETE__BUILD_GATE_OPEN`
 
 Static/code outputs:
 
-- route metadata/Open Graph foundation
+- metadata/Open Graph foundation
 - responsive image sizing
 - constrained client boundaries
 - deferred try-on/ML work
 - legacy route redirects
-- obsolete legacy implementation removed from RC tree
+- obsolete legacy landing implementation removed from RC tree
 
-## Current detached release candidate
-
-```text
-RC_PARENT_BASE 1a228cc1b37bf869b189a8572231e033c97d1f94
-RC_INITIAL_SHA 1835a1781a4bdd91c4ce9f97a0cf3350dc160f7e
-RC_CODE_SHA    2728c4928ca955aa8f9af3acabad248aec69d636
-RC_CODE_TREE   70e7bd6d8f699c2b50d49d0971f45f4f57ca493f
-REF_MOVED      NO
-VERCEL_DEV     NOT_USED
-```
-
-The RC is intentionally detached. The PR branch remains unchanged so Git integration cannot create another development preview from this candidate.
-
-## Available automated/static evidence
+## Current detached code authority
 
 ```text
-TS_TSX_PARSE                     25 files / 0 syntax errors
-INTERNAL_ALIAS_IMPORTS           PASS
-UNSUPPORTED_PUBLIC_CLAIM_SCAN    PASS
-CLIENT_BOUNDARY_REVIEW           PASS
-DETACHED_GIT_DIFF                PASS
-CAMERA_LIFECYCLE_REVIEW          PASS_STATIC
+RC_PARENT_DOC_SHA ad57742e8127ad65420c737bad5574e573e1959f
+RC_CODE_SHA       5e32d338cce28ae79273866783b8cec1c905744e
+RC_CODE_TREE      21030d1e23a18871abdd8e1ea3d8079582825b28
+REF_MOVED         NO
+VERCEL_DEV        FORBIDDEN
 ```
 
-Claim scan checked the candidate runtime for legacy brand residue and known invalid commercial promises/actions including fake prices, checkout/cart wording, fabricated customer counts, fixed fast-SLA wording and free-service wording.
+The code authority is detached. The PR branch remains unchanged; no development Vercel preview is required or desired.
 
-## Local execution capability probe
+## Verification authority
+
+Runtime/browser/device validation MUST follow:
 
 ```text
-Node.js      v22.16.0
-npm          10.9.2
-TypeScript   available
-node_modules absent
-next binary  absent
-eslint binary absent
+docs/MK0-web-refactor/test/PRE-RUNTIME-RUNBOOK.md
 ```
 
-The detached-validation runtime therefore cannot honestly execute the project lint/production-build gates without resolving/installing dependencies.
+The runbook defines:
 
-## Gates intentionally still open
+- exact route inventory;
+- 9 viewport baselines;
+- CTA matrix;
+- keyboard/accessibility sequence;
+- one-frame-per-screen behavior;
+- photo protocol P1–P3;
+- camera/device protocol C1–C6;
+- motion/reduced-motion checks;
+- visual acceptance and evidence taxonomy.
+
+## Static evidence state
+
+```text
+DESIGN_SYSTEM_CONTRACT           FROZEN
+DR_001_ONE_FRAME                 ACCEPTED
+CLAIM_TRUST_CONTRACT             PASS_STATIC
+CAMERA_INTENT_BOUNDARY           PASS_STATIC
+LATE_PERMISSION_INVALIDATION     PASS_STATIC
+PHOTO_FALLBACK_PATH              PASS_STATIC
+RESPONSIVE_CONTROL_RULES         PASS_STATIC
+REDUCED_MOTION_CONTRACT          PASS_STATIC
+DEV_VERCEL_PREVIEW               NOT_USED_FOR_CURRENT_RC
+```
+
+Static evidence is not a substitute for browser/device execution.
+
+## Gates intentionally open
 
 ```text
 npm ci
 npm run lint
 npm run build
-browser responsive pass
-keyboard/focus traversal pass
+route smoke
+responsive V1–V9
+keyboard/focus traversal
+CTA interactions
+catalog runtime
+try-on photo P1–P3
+try-on camera/device C1–C6
+motion/reduced-motion
 human visual acceptance
 ```
-
-Development Vercel previews are not used as a substitute.
 
 ## Release invariant
 
 ```text
-DETACHED_RC
-→ mechanical local/CI gates
-→ human visual gate
-→ move accepted stable state to PR/main
-→ production deploy from main only
+DETACHED_CODE_AUTHORITY
+→ FROZEN_PRE_RUNTIME_DOCS
+→ MECHANICAL_GATE
+→ BROWSER/DEVICE_GATES
+→ HUMAN_VISUAL_GATE
+→ EVIDENCE_FREEZE
+→ STABLE_INTEGRATION
+→ MAIN
+→ ONE_PRODUCTION_VERCEL_DEPLOY
+→ PRODUCTION_SMOKE
 ```
+
+Any code change after runtime begins creates a new code authority and invalidates affected evidence.

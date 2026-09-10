@@ -1,101 +1,75 @@
 # TEST.md — OptiHome MK0 Verification Contract
 
-Status: `RC_STATIC_GATES_PASS__RUNTIME_GATES_OPEN`
+Status: `PRE_RUNTIME_FROZEN__RUNTIME_GATES_OPEN`
 
 ## 1. Evidence policy
 
-A green visual impression is not enough. Each release claim must identify whether it is statically verified, mechanically executed, visually verified or still open.
+A green visual impression is not enough. Each release claim must identify whether it is statically verified, mechanically executed, visually verified, device-verified or still open.
 
-## 2. Current detached RC
+The executable validation procedure is `PRE-RUNTIME-RUNBOOK.md`.
+
+## 2. Current detached code authority
 
 ```text
-CODE_SHA 2728c4928ca955aa8f9af3acabad248aec69d636
-TREE_SHA 70e7bd6d8f699c2b50d49d0971f45f4f57ca493f
+CODE_SHA  5e32d338cce28ae79273866783b8cec1c905744e
+TREE_SHA  21030d1e23a18871abdd8e1ea3d8079582825b28
 BRANCH_REF_MOVED NO
 VERCEL_PREVIEW_USED NO
 ```
 
-## 3. Static gates executed
+If code changes after a FAIL, the affected evidence must be rerun on the replacement SHA.
 
-### TS/TSX syntax
+## 3. Static gates available
 
-Result: `PASS`
-
-- 25 TypeScript/TSX source files inspected with TypeScript parsing/transpilation.
-- 0 syntax diagnostics.
-
-This is not equivalent to a full project typecheck.
-
-### Internal alias import resolution
-
-Result: `PASS`
-
-All inspected `@/…` imports in the candidate resolve to a file/module in the reconstructed candidate source tree.
-
-### Public-claim sanitization
-
-Result: `PASS`
-
-The candidate runtime source was scanned for known legacy/unsupported patterns. No matches remained for:
-
-- `DaVision`
-- fake `S/` price labels
-- `Comprar`
-- `Agregar Carrito`
-- `+500`
-- fixed `<48h` wording
-- unsupported free/gratuity wording
-
-Historical assets/docs are not interpreted as current public runtime claims.
-
-### Client-boundary review
-
-Result: `PASS`
-
-Interactive/product client boundaries are limited to:
-
-- `components/layout/SiteHeader.tsx`
-- `components/catalog/FrameCatalog.tsx`
-- `components/try-on/VirtualTryOn.tsx`
-- the existing Radix dialog UI primitive
-
-The homepage composition itself remains server-rendered.
-
-### ML/camera intent boundary
+### Structural/code review
 
 Result: `PASS_STATIC`
 
-- catalog route does not call face-model loading on mount
-- try-on is dynamically imported
-- `getUserMedia` is reached only by explicit camera activation
-- TensorFlow/model CDN loading is reached from that activation path
-- media tracks have cleanup paths
-- pending camera requests are invalidated on close/unmount
-- upload fallback exists
-- neutral light frame backgrounds are preprocessed before overlay when possible
+Confirmed in the current code authority:
 
-### Local execution capability probe
+- canonical OptiHome public framing;
+- demo-safe catalog authority;
+- one active frame per comparison surface;
+- catalog previous/next + keyboard semantics;
+- try-on dynamically imported;
+- camera request after explicit user action only;
+- photo fallback and photo face-detection attempt;
+- camera/photo geometry handled with distinct fit modes;
+- frame width based on inter-eye geometry;
+- face rotation mapping;
+- smoothing path for tracking;
+- late camera-permission invalidation;
+- media-track cleanup paths;
+- responsive safe-area control panel;
+- reduced-motion CSS override;
+- no development Vercel preview in the current validation path.
 
-Result: `ENVIRONMENT_LIMITED`
+### Public-claim contract
 
-Observed:
+Result: `PASS_STATIC`
 
-```text
-Node.js v22.16.0
-npm 10.9.2
-TypeScript binary available
-node_modules absent
-Next.js binary absent
-ESLint binary absent
-```
+Release-blocking public regressions include:
 
-## 4. Required final gates
+- `DaVision` as active public brand;
+- fake prices or checkout/cart actions;
+- fabricated customer counts/testimonials;
+- fixed fast SLA without evidence;
+- unsupported free-service claims;
+- wording that treats a request as a confirmed appointment.
 
-### Mechanical build
+Historical assets/docs are not interpreted as current runtime claims unless exposed publicly.
 
-Status: `OPEN_ENVIRONMENT_LIMITATION`
+### AR asset contract
 
-Required commands:
+Result: `PASS_STATIC_MINIMUM`
+
+Frames explicitly configured for try-on point to PNG/RGBA assets with eyewear-like proportions. Runtime visual alignment remains open and MUST be tested through photo/camera protocols.
+
+## 4. Mechanical runtime gate
+
+Status: `OPEN`
+
+Required on exact code authority:
 
 ```text
 npm ci
@@ -103,60 +77,91 @@ npm run lint
 npm run build
 ```
 
-Current detached-validation environment cannot install/resolve the project dependency set. Development Vercel previews are disabled by project policy, so no preview is used as a substitute.
+PASS requires exit code 0 for all required commands and no unresolved production route/module/type failure.
 
-### Responsive/browser
+## 5. Browser/runtime gates
 
 Status: `OPEN`
 
-Required viewport checks:
+The frozen runbook defines:
+
+- canonical and legacy route smoke;
+- V1–V9 viewport matrix;
+- no-overflow geometry contract;
+- CTA interaction matrix;
+- keyboard-only traversal;
+- mobile menu / Escape behavior;
+- FAQ disclosure;
+- dialog focus and restoration;
+- catalog filtering and one-frame carousel behavior;
+- photo try-on P1–P3;
+- camera/device try-on C1–C6;
+- normal motion and reduced-motion behavior;
+- color/contrast acceptance;
+- final human visual acceptance.
+
+## 6. Evidence taxonomy
+
+Use only these outcomes:
 
 ```text
-320px
-mobile portrait
-mobile landscape
-tablet
-laptop
-wide desktop
+PASS_STATIC
+PASS_MECHANICAL
+PASS_BROWSER
+PASS_DEVICE
+ACCEPTED_HUMAN
+FAIL
+BLOCKED_ENVIRONMENT
 ```
 
-Verify no unintended horizontal scrolling, CTA reachability and modal usability.
+Every executed record must contain:
 
-### Accessibility interaction
+```text
+GATE_ID
+CODE_SHA
+ENVIRONMENT
+BROWSER / DEVICE
+VIEWPORT
+RESULT
+EVIDENCE
+NOTES
+```
 
-Status: `OPEN`
-
-Verify with a real browser:
-
-- keyboard-only traversal
-- skip link
-- visible focus
-- mobile-menu state
-- FAQ disclosure
-- dialog open/close/focus restoration/Escape
-- camera-denied path
-- upload-photo path
-- late camera-permission close path
-- reduced-motion behavior
-
-### Human visual acceptance
-
-Status: `OPEN`
-
-Confirm hierarchy, copy, spacing, imagery, catalog density and try-on presentation on the exact stable candidate.
-
-## 5. Release blockers
+## 7. Release blockers
 
 Any of the following blocks `main` integration:
 
-- lint/type/build failure
-- broken route/import
-- inaccessible critical CTA
-- modal/camera lifecycle failure
-- public unsupported claim regression
-- severe responsive overflow
-- human rejection of the stable visual state
+- dependency/lint/build failure;
+- broken route or redirect loop;
+- unintended severe overflow;
+- inaccessible critical CTA;
+- keyboard/focus failure on critical journey;
+- catalog state/index mismatch;
+- try-on crash or unusable fallback;
+- camera stream remaining active after close;
+- late camera permission resolving into hidden active stream;
+- overlay geometry clearly detached from the face under supported test conditions;
+- reduced-motion violation;
+- unsupported public claim regression;
+- human rejection of hierarchy/spacing/brand/try-on presentation.
 
-## 6. Deployment policy
+## 8. Final release gates
 
-Only stable `main` is deployed. Development branch pushes/previews are not part of the MK0 validation workflow.
+```text
+MECHANICAL_BUILD_GATE        OPEN
+ROUTE_GATE                   OPEN
+RESPONSIVE_GATE              OPEN
+KEYBOARD_A11Y_GATE           OPEN
+CTA_INTERACTION_GATE         OPEN
+CATALOG_GATE                 OPEN
+TRYON_PHOTO_GATE             OPEN
+TRYON_CAMERA_GATE            OPEN_DEVICE
+MOTION_GATE                  OPEN
+CLAIM_TRUST_GATE             PASS_STATIC
+HUMAN_VISUAL_GATE            OPEN
+MAIN_READY                   NO
+```
+
+## 9. Deployment policy
+
+Only an accepted stable `main` is deployed. No development branch/preview is part of the MK0 validation workflow.

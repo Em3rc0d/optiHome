@@ -1,10 +1,21 @@
 # PLAN.md — OptiHome MK0 Web Refactor
 
-Status: `RC_CODE_READY`
+Status: `PRE_RUNTIME_CONTRACT_FROZEN`
 
 ## Objective
 
 Produce a stable public-web candidate without opening later commercial-system scope and without using development Vercel previews as an execution gate.
+
+## Current authority
+
+```text
+CODE_SHA  5e32d338cce28ae79273866783b8cec1c905744e
+TREE_SHA  21030d1e23a18871abdd8e1ea3d8079582825b28
+REF_MOVED  NO
+VERCEL_DEV FORBIDDEN
+```
+
+Runtime verification MUST follow `../test/PRE-RUNTIME-RUNBOOK.md`.
 
 ## Build sequence
 
@@ -34,7 +45,7 @@ Delivered:
 - primary/secondary/tertiary actions
 - three-path journey chooser
 - request/capacity process
-- featured frame discovery
+- one featured-frame authority per screen
 - focused virtual try-on explanation
 - trust/FAQ
 - final WhatsApp CTA
@@ -42,54 +53,63 @@ Delivered:
 
 ### BUILD-003 — Catalog experience
 
-Status: `COMPLETE_CODE`
+Status: `COMPLETE_CODE__HARDENED`
 
 Delivered:
 
-- frame data moved to `src/content/frames.ts`
+- frame data in `src/content/frames.ts`
 - typed `Frame` domain model
 - localized filter taxonomy
 - demo authority explicit
 - fake price/checkout/cart behavior removed
 - try-on and WhatsApp availability actions modeled honestly
-- accessible pressed-state filters
+- one active frame at a time
+- previous/next navigation
+- keyboard Left/Right navigation
+- accessible filter pressed states and active counter
 
-### BUILD-004 — Virtual try-on decomposition
+### BUILD-004 — Virtual try-on
 
-Status: `COMPLETE_CODE`
+Status: `COMPLETE_CODE__HARDENED`
 
 Delivered:
 
 - dedicated `VirtualTryOn` client boundary
-- catalog no longer owns face-detection implementation
 - no TensorFlow/model preload on catalog entry
 - camera requested only after explicit action
-- photo fallback
-- loading/error/status communication
+- browser-session model cache
+- photo fallback with face-detection attempt
+- manual fallback when photo face detection fails
+- mapping for camera `object-cover` and photo `object-contain`
+- frame width derived from inter-eye distance
+- face rotation tracking
+- smoothing against obvious single-frame jitter
+- late permission-resolution invalidation
 - media-track cleanup
-- model cache bounded to the browser session
+- one active overlay frame at a time
+- safe-area aware responsive control panel
 - explicit non-diagnostic/privacy context
 
 ### BUILD-005 — Responsive + accessibility hardening
 
-Status: `STATIC_HARDENING_COMPLETE__HUMAN_VISUAL_GATE_OPEN`
+Status: `STATIC_HARDENING_COMPLETE__RUNTIME_GATE_OPEN`
 
 Implemented in code:
 
 - skip link and semantic main landmark
-- accessible mobile-navigation state
-- semantic ordered process
-- native FAQ disclosure
-- visible focus contract
-- reduced-motion CSS contract
-- minimum touch-oriented control sizes
-- mobile-first grid/layout rules
-- no hover-only catalog action
-- dialog primitive provides focus management and Escape handling
+- mobile menu with state and Escape close
+- visible global focus contract
+- reduced-motion contract
+- touch-oriented control sizes
+- mobile-first responsive layouts
+- safe-area handling for try-on controls
+- no hover-only critical catalog action
+- dialog focus semantics via Radix primitive
+- one-frame-per-screen design revision `DR-001`
 
 Remaining gate:
 
-- human visual/browser verification at required widths and keyboard traversal on the final integrated candidate
+- execute exact viewport/browser/keyboard matrix in `PRE-RUNTIME-RUNBOOK.md`
 
 ### BUILD-006 — SEO + performance hardening
 
@@ -99,21 +119,23 @@ Implemented in code:
 
 - route metadata and Open Graph foundation
 - hero image priority only where justified
-- `sizes` supplied to responsive imagery
+- responsive image `sizes`
 - home mostly Server Components
 - interactive client boundaries constrained
 - virtual try-on dynamically imported
-- TensorFlow/model loading deferred until camera intent
+- TensorFlow/model loading deferred until explicit camera/photo intent
 - legacy public pages converted to redirects
-- obsolete landing implementation removed from the RC tree
+- obsolete landing implementation removed from RC tree
 
 Remaining gate:
 
-- `npm ci`
-- `npm run lint`
-- `npm run build`
+```text
+npm ci
+npm run lint
+npm run build
+```
 
-These commands are intentionally not substituted with a Vercel development preview. The current execution environment cannot resolve the npm registry, so this gate remains visible rather than being falsely marked PASS.
+No Vercel development preview may substitute this gate.
 
 ## Explicit non-goals
 
@@ -137,6 +159,26 @@ Appointment & Capacity
 → acquisition/content automation
 ```
 
+## Next execution sequence
+
+```text
+freeze docs authority
+→ mechanical build
+→ route smoke
+→ responsive matrix
+→ keyboard/accessibility
+→ CTA/catalog interaction
+→ try-on photo protocol
+→ try-on camera/device protocol
+→ motion/reduced-motion
+→ human visual acceptance
+→ evidence freeze
+→ stable integration
+→ main
+→ one production Vercel deploy
+→ production smoke
+```
+
 ## Release gates
 
 ```text
@@ -147,11 +189,17 @@ BUILD_003_CODE_GATE               PASS
 BUILD_004_CODE_GATE               PASS
 BUILD_005_STATIC_GATE             PASS
 BUILD_006_STATIC_GATE             PASS
-STATIC_TS_SYNTAX_GATE             PASS
-INTERNAL_IMPORT_RESOLUTION_GATE   PASS
-CLAIM_SANITIZATION_GATE           PASS
+ONE_FRAME_DESIGN_GATE             PASS_STATIC
 LINT_GATE                         OPEN
 TYPE/PRODUCTION_BUILD_GATE        OPEN
+ROUTE_RUNTIME_GATE                OPEN
+RESPONSIVE_GATE                   OPEN
+KEYBOARD_A11Y_GATE                OPEN
+CTA_INTERACTION_GATE              OPEN
+CATALOG_RUNTIME_GATE              OPEN
+TRYON_PHOTO_GATE                  OPEN
+TRYON_CAMERA_DEVICE_GATE          OPEN
+MOTION_GATE                       OPEN
 HUMAN_VISUAL_GATE                 OPEN
 MAIN_INTEGRATION_GATE             BLOCKED_BY_OPEN_GATES
 PRODUCTION_DEPLOY                 BLOCKED_BY_MAIN
@@ -159,4 +207,4 @@ PRODUCTION_DEPLOY                 BLOCKED_BY_MAIN
 
 ## Release rule
 
-No development Vercel preview is required or desired. Only an accepted stable `main` state is deployed.
+Only the exact stable candidate that passes the frozen runbook may move to `main`. Development Vercel previews are forbidden. Production deploy happens once from accepted `main`.
