@@ -63,7 +63,9 @@ Outputs:
 - camera permission only after explicit click
 - TF/model load only after camera intent
 - photo fallback
-- media stream cleanup
+- media-stream cleanup, including late permission-resolution invalidation
+- frame-overlay preprocessing for neutral light backgrounds
+- stage-relative face-overlay coordinates
 - clear non-diagnostic context
 
 ## BUILD-005 — Responsive + accessibility hardening
@@ -97,11 +99,12 @@ Static/code outputs:
 ## Current detached release candidate
 
 ```text
-RC_PARENT    1a228cc1b37bf869b189a8572231e033c97d1f94
-RC_CODE_SHA  1835a1781a4bdd91c4ce9f97a0cf3350dc160f7e
-RC_CODE_TREE f0ea7277760d40d42f6cc6b1a0f03b446f2614b4
-REF_MOVED    NO
-VERCEL_DEV   NOT_USED
+RC_PARENT_BASE 1a228cc1b37bf869b189a8572231e033c97d1f94
+RC_INITIAL_SHA 1835a1781a4bdd91c4ce9f97a0cf3350dc160f7e
+RC_CODE_SHA    2728c4928ca955aa8f9af3acabad248aec69d636
+RC_CODE_TREE   70e7bd6d8f699c2b50d49d0971f45f4f57ca493f
+REF_MOVED      NO
+VERCEL_DEV     NOT_USED
 ```
 
 The RC is intentionally detached. The PR branch remains unchanged so Git integration cannot create another development preview from this candidate.
@@ -114,9 +117,23 @@ INTERNAL_ALIAS_IMPORTS           PASS
 UNSUPPORTED_PUBLIC_CLAIM_SCAN    PASS
 CLIENT_BOUNDARY_REVIEW           PASS
 DETACHED_GIT_DIFF                PASS
+CAMERA_LIFECYCLE_REVIEW          PASS_STATIC
 ```
 
 Claim scan checked the candidate runtime for legacy brand residue and known invalid commercial promises/actions including fake prices, checkout/cart wording, fabricated customer counts, fixed fast-SLA wording and free-service wording.
+
+## Local execution capability probe
+
+```text
+Node.js      v22.16.0
+npm          10.9.2
+TypeScript   available
+node_modules absent
+next binary  absent
+eslint binary absent
+```
+
+The detached-validation runtime therefore cannot honestly execute the project lint/production-build gates without resolving/installing dependencies.
 
 ## Gates intentionally still open
 
@@ -129,7 +146,7 @@ keyboard/focus traversal pass
 human visual acceptance
 ```
 
-The execution environment used for detached RC validation cannot resolve the npm registry. These gates are therefore not fabricated or replaced by a Vercel development preview.
+Development Vercel previews are not used as a substitute.
 
 ## Release invariant
 

@@ -9,8 +9,8 @@ A green visual impression is not enough. Each release claim must identify whethe
 ## 2. Current detached RC
 
 ```text
-CODE_SHA 1835a1781a4bdd91c4ce9f97a0cf3350dc160f7e
-TREE_SHA f0ea7277760d40d42f6cc6b1a0f03b446f2614b4
+CODE_SHA 2728c4928ca955aa8f9af3acabad248aec69d636
+TREE_SHA 70e7bd6d8f699c2b50d49d0971f45f4f57ca493f
 BRANCH_REF_MOVED NO
 VERCEL_PREVIEW_USED NO
 ```
@@ -70,7 +70,24 @@ Result: `PASS_STATIC`
 - `getUserMedia` is reached only by explicit camera activation
 - TensorFlow/model CDN loading is reached from that activation path
 - media tracks have cleanup paths
+- pending camera requests are invalidated on close/unmount
 - upload fallback exists
+- neutral light frame backgrounds are preprocessed before overlay when possible
+
+### Local execution capability probe
+
+Result: `ENVIRONMENT_LIMITED`
+
+Observed:
+
+```text
+Node.js v22.16.0
+npm 10.9.2
+TypeScript binary available
+node_modules absent
+Next.js binary absent
+ESLint binary absent
+```
 
 ## 4. Required final gates
 
@@ -86,7 +103,7 @@ npm run lint
 npm run build
 ```
 
-Current detached-validation environment cannot resolve the npm registry. Development Vercel previews are disabled by project policy, so no preview is used as a substitute.
+Current detached-validation environment cannot install/resolve the project dependency set. Development Vercel previews are disabled by project policy, so no preview is used as a substitute.
 
 ### Responsive/browser
 
@@ -119,6 +136,7 @@ Verify with a real browser:
 - dialog open/close/focus restoration/Escape
 - camera-denied path
 - upload-photo path
+- late camera-permission close path
 - reduced-motion behavior
 
 ### Human visual acceptance
