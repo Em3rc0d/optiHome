@@ -141,7 +141,6 @@ function faceGeometry({
 
   const leftEye = points.find((point) => point.name === "left_eye") ?? points[33];
   const rightEye = points.find((point) => point.name === "right_eye") ?? points[263];
-  const nose = points.find((point) => point.name === "nose_bridge") ?? points[168];
   if (!leftEye || !rightEye) return null;
 
   const renderScale =
@@ -155,7 +154,7 @@ function faceGeometry({
 
   const midX = (leftEye.x + rightEye.x) / 2;
   const eyeY = (leftEye.y + rightEye.y) / 2;
-  const midY = nose ? eyeY * 0.86 + nose.y * 0.14 : eyeY;
+  const midY = eyeY;
   const eyeDistance = Math.hypot(
     rightEye.x - leftEye.x,
     rightEye.y - leftEye.y
@@ -290,7 +289,44 @@ export function VirtualTryOn({
         }
 
         context.putImageData(imageData, 0, 0);
-        if (!cancelled) setOverlaySource(canvas.toDataURL("image/png"));
+
+        let minX = canvas.width;
+        let minY = canvas.height;
+        let maxX = -1;
+        let maxY = -1;
+        for (let y = 0; y < canvas.height; y += 1) {
+          for (let x = 0; x < canvas.width; x += 1) {
+            const alpha = pixels[(y * canvas.width + x) * 4 + 3];
+            if (alpha > 12) {
+              minX = Math.min(minX, x);
+              minY = Math.min(minY, y);
+              maxX = Math.max(maxX, x);
+              maxY = Math.max(maxY, y);
+            }
+          }
+        }
+
+        if (maxX >= minX && maxY >= minY) {
+          const padding = Math.max(2, Math.round(Math.min(canvas.width, canvas.height) * 0.015));
+          const sx = Math.max(0, minX - padding);
+          const sy = Math.max(0, minY - padding);
+          const ex = Math.min(canvas.width, maxX + padding + 1);
+          const ey = Math.min(canvas.height, maxY + padding + 1);
+          const cropWidth = ex - sx;
+          const cropHeight = ey - sy;
+          const cropped = document.createElement("canvas");
+          cropped.width = cropWidth;
+          cropped.height = cropHeight;
+          const croppedContext = cropped.getContext("2d");
+          if (croppedContext) {
+            croppedContext.drawImage(canvas, sx, sy, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
+            if (!cancelled) setOverlaySource(cropped.toDataURL("image/png"));
+          } else if (!cancelled) {
+            setOverlaySource(canvas.toDataURL("image/png"));
+          }
+        } else if (!cancelled) {
+          setOverlaySource(frameImage);
+        }
       } catch {
         if (!cancelled) setOverlaySource(frameImage);
       }
