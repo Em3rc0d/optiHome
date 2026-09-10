@@ -64,6 +64,8 @@ Planned outputs:
 - trust/FAQ
 - final CTA
 
+Entry condition: BUILD-001 certified on `01bff16741ea4440745856c99a7fa2977f7ae37f`.
+
 ## BUILD-003 — Catalog experience
 
 Status: `BLOCKED_BY_BUILD_002`
