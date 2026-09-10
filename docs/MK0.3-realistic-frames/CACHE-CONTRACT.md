@@ -1,0 +1,3 @@
+## Face detector cache contract
+
+The detector must be stored on a window-scoped OptiHome runtime cache after the first explicit camera/photo action. Dialog close only releases MediaStream tracks and face geometry; it must not dispose or recreate the cached detector. Opening the dialog alone must not initialize the model. A hard page reload is a new JavaScript runtime and may initialize a new detector instance.
