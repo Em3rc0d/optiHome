@@ -15,10 +15,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: 488e2292ae2415c7702d6db878815d9f8a8f12fc
+          ref: e0c3d4339676674fbd41c30fed4a0f89c1f91d89
           fetch-depth: 1
       - name: Assert runtime authority
-        run: test "$(git rev-parse HEAD)" = "488e2292ae2415c7702d6db878815d9f8a8f12fc"
+        run: test "$(git rev-parse HEAD)" = "e0c3d4339676674fbd41c30fed4a0f89c1f91d89"
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -96,7 +96,7 @@ jobs:
               if(i<slugs.length-1){await page.getByRole('button',{name:'Siguiente montura'}).click();await page.waitForTimeout(160);}
             }
             await page.screenshot({path:'/tmp/pw/tryon-realistic.png'});
-            fs.writeFileSync('/tmp/pw/results.json',JSON.stringify({runtime:'488e2292ae2415c7702d6db878815d9f8a8f12fc',total:checks.length,passed:checks.length,checks},null,2));
+            fs.writeFileSync('/tmp/pw/results.json',JSON.stringify({runtime:'e0c3d4339676674fbd41c30fed4a0f89c1f91d89',total:checks.length,passed:checks.length,checks},null,2));
             console.log(`REALISTIC_FRAME_CERT_PASS ${checks.length}/${checks.length}`);
             await browser.close();
           })().catch(e=>{console.error(e);process.exit(1)});
@@ -105,7 +105,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: mk03-realistic-frame-evidence
+          name: mk03a-clean-realistic-frame-evidence
           path: |
             /tmp/pw/results.json
             /tmp/pw/catalog-realistic.png
