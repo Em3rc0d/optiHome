@@ -27,6 +27,7 @@ type FaceDetector = {
     config?: Record<string, unknown>
   ) => Promise<DetectedFace[]>;
   initialize?: () => Promise<void>;
+  reset?: () => void;
 };
 type TfRuntime = {
   setBackend: (name: string) => Promise<boolean> | boolean;
@@ -226,6 +227,7 @@ export function VirtualTryOn({
   const photoRef = useRef<HTMLImageElement>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
+  const cameraFrameRef = useRef<HTMLCanvasElement | null>(null);
   const mountedRef = useRef(true);
   const cameraRequestRef = useRef(0);
   const latestFaceRef = useRef<FaceData | null>(null);
@@ -244,6 +246,7 @@ export function VirtualTryOn({
     setFaceData(null);
     latestFaceRef.current = null;
     lastFaceSeenAtRef.current = 0;
+    cameraFrameRef.current = null;
   };
 
   const closeTryOn = () => {
@@ -374,16 +377,26 @@ export function VirtualTryOn({
 
       detecting = true;
       try {
-        const faces = await detector.estimateFaces(video, { flipHorizontal: true });
+        const cameraFrame = cameraFrameRef.current ?? document.createElement("canvas");
+        cameraFrameRef.current = cameraFrame;
+        if (cameraFrame.width !== video.videoWidth) cameraFrame.width = video.videoWidth;
+        if (cameraFrame.height !== video.videoHeight) cameraFrame.height = video.videoHeight;
+        const cameraContext = cameraFrame.getContext("2d", { willReadFrequently: true });
+        if (!cameraContext) throw new Error("No se pudo preparar el frame de cámara.");
+        cameraContext.drawImage(video, 0, 0, cameraFrame.width, cameraFrame.height);
+
+        const faces = await detector.estimateFaces(cameraFrame, { flipHorizontal: true });
         const points = faces[0]?.keypoints ?? faces[0]?.landmarks ?? [];
         const nextFace = faceGeometry({
           points,
-          sourceWidth: video.videoWidth,
-          sourceHeight: video.videoHeight,
+          sourceWidth: cameraFrame.width,
+          sourceHeight: cameraFrame.height,
           stageWidth: stage.clientWidth,
           stageHeight: stage.clientHeight,
           fit: "cover",
         });
+
+        if (faces[0] && !nextFace) detector.reset?.();
 
         if (nextFace) {
           const smoothed = smoothFace(latestFaceRef.current, nextFace);
