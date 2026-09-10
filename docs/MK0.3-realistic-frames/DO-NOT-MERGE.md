@@ -1,0 +1,1 @@
+Temporary note: branch includes certification harness commits and is not the clean release lineage. Final clean runtime will be reconstructed from the certified asset/code tree before PR.
