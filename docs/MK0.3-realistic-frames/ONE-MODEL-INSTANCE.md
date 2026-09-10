@@ -1,0 +1,1 @@
+Acceptance criterion: within one browser SPA runtime, opening and closing the Try-On repeatedly after first use must not call `faceLandmarksDetection.createDetector` more than once.
