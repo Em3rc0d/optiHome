@@ -1,0 +1,1 @@
+Generated eyewear assets are original OptiHome reference artwork created for the product UI. The final raster overlays use transparent WebP assets that are pre-cropped and should be rendered directly without browser-side background removal.
