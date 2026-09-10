@@ -1,24 +1,30 @@
 "use client";
+
 import { motion } from "framer-motion";
-import { Plus, Minus } from "lucide-react";
+import { Minus, Plus } from "lucide-react";
 import { useState } from "react";
+import { siteConfig } from "@/content/site";
 
 const faqs = [
   {
-    question: "¿Tiene costo el examen visual a domicilio?",
-    answer: "No, el examen visual es completamente gratuito como parte de nuestro servicio integral.",
+    question: "¿Enviar una solicitud confirma mi cita?",
+    answer:
+      "No. La solicitud inicia la coordinación. La fecha y el horario quedan confirmados solo después de revisar disponibilidad.",
   },
   {
-    question: "¿Qué equipos utilizan?",
-    answer: "Utilizamos equipos portátiles de alta precisión (autorefractómetros y lensómetros) iguales a los de una clínica tradicional.",
+    question: "¿Puedo explorar monturas antes de coordinar una visita?",
+    answer:
+      "Sí. Puedes revisar la colección disponible en la experiencia web y usarla como referencia para conversar sobre tus preferencias.",
   },
   {
-    question: "¿Puedo probarme los marcos?",
-    answer: "¡Sí! Llevamos una maleta con más de 50 modelos de marcos para que elijas el que mejor te queda.",
+    question: "¿Cómo funciona la prueba virtual?",
+    answer:
+      "La prueba virtual utiliza la cámara o una foto para ayudarte a visualizar una montura. Es una herramienta de exploración y no sustituye una evaluación profesional ni confirma medidas ópticas.",
   },
   {
-    question: "¿Cuánto demoran en entregar los lentes?",
-    answer: "El tiempo promedio de entrega es de 3 a 5 días hábiles, directamente en tu puerta.",
+    question: "¿Cómo se coordina la atención a domicilio?",
+    answer:
+      "Primero envías tu solicitud. Luego OptiHome revisa capacidad y continúa la coordinación por WhatsApp antes de confirmar una visita.",
   },
 ];
 
@@ -26,42 +32,59 @@ export const FaqSection = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section className="py-24 px-6 md:px-12 bg-gray-50">
-      <div className="max-w-3xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-extrabold text-gray-900 mb-4">
-            Preguntas <span className="text-blue-600">Frecuentes</span>
-          </h2>
-          <p className="text-gray-600 text-lg">
-            Resolvemos tus dudas para que agendes con total confianza.
+    <section id="preguntas-frecuentes" className="bg-surface-soft px-6 py-24 md:px-12">
+      <div className="mx-auto max-w-3xl">
+        <div className="mb-14 text-center">
+          <h2 className="text-3xl font-semibold text-ink md:text-5xl">Preguntas frecuentes</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-lg leading-7 text-ink-muted">
+            Información clara sobre el flujo actual de OptiHome, sin asumir una cita antes de confirmar capacidad.
           </p>
         </div>
 
         <div className="space-y-4">
-          {faqs.map((faq, index) => (
-            <div 
-              key={index}
-              className="bg-white rounded-2xl border border-gray-100 overflow-hidden transition-all duration-300"
-            >
-              <button
-                onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                className="w-full flex items-center justify-between p-6 text-left hover:bg-gray-50 transition-colors"
-              >
-                <span className="text-lg font-bold text-gray-900">{faq.question}</span>
-                {openIndex === index ? <Minus className="text-blue-600" /> : <Plus className="text-gray-400" />}
-              </button>
-              {openIndex === index && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  className="px-6 pb-6 text-gray-600 leading-relaxed"
+          {faqs.map((faq, index) => {
+            const isOpen = openIndex === index;
+            const buttonId = `faq-button-${index}`;
+            const panelId = `faq-panel-${index}`;
+
+            return (
+              <div key={faq.question} className="overflow-hidden rounded-2xl border border-border bg-white">
+                <button
+                  id={buttonId}
+                  type="button"
+                  aria-expanded={isOpen}
+                  aria-controls={panelId}
+                  onClick={() => setOpenIndex(isOpen ? null : index)}
+                  className="flex w-full items-center justify-between gap-6 p-6 text-left text-ink transition-colors hover:bg-surface-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-inset"
                 >
-                  {faq.answer}
-                </motion.div>
-              )}
-            </div>
-          ))}
+                  <span className="text-lg font-semibold">{faq.question}</span>
+                  {isOpen ? (
+                    <Minus className="size-5 shrink-0 text-brand" aria-hidden="true" />
+                  ) : (
+                    <Plus className="size-5 shrink-0 text-ink-muted" aria-hidden="true" />
+                  )}
+                </button>
+
+                {isOpen && (
+                  <motion.div
+                    id={panelId}
+                    role="region"
+                    aria-labelledby={buttonId}
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    className="px-6 pb-6 leading-7 text-ink-muted"
+                  >
+                    {faq.answer}
+                  </motion.div>
+                )}
+              </div>
+            );
+          })}
         </div>
+
+        <p className="mt-6 text-center text-sm text-ink-muted">
+          {siteConfig.appointment.availabilityNotice}
+        </p>
       </div>
     </section>
   );
