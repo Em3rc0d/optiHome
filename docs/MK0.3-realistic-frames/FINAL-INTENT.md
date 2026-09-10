@@ -1,0 +1,1 @@
+Final intent: complete MK0.3 with realistic frame rendering and session-warm face detector reuse while preserving lazy permission/model behavior.
