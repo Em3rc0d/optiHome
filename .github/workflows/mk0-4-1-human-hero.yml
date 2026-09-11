@@ -1,0 +1,77 @@
+name: MK0.4.1 Human Hero
+
+on:
+  push:
+    branches:
+      - "feat/human-hero-20260910"
+  pull_request:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Dependency audit
+        run: npm audit --audit-level=high
+
+      - name: Lint
+        run: npm run lint
+
+      - name: TypeScript
+        run: npx tsc --noEmit
+
+      - name: Human hero contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q '/family1.webp' src/components/home/HeroExperience.tsx
+          grep -q '/family2.webp' src/components/home/HeroExperience.tsx
+          grep -q '/family4.webp' src/components/home/HeroExperience.tsx
+          ! grep -q 'min-h-\[calc(100svh-4rem)\]' src/components/home/Hero.tsx
+          grep -q 'prefers-reduced-motion' src/app/globals.css
+
+      - name: Frozen try-on contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object src/components/try-on/VirtualTryOn.tsx)" = "c211cfc4025a2963fed7ae49b76e218aaeee5cb2"
+
+      - name: Build
+        run: npm run build
+
+      - name: Runtime smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run start -- -p 3000 > /tmp/optihome-next.log 2>&1 &
+          APP_PID=$!
+          trap 'kill $APP_PID || true' EXIT
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:3000/ >/tmp/home.html; then
+              break
+            fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:3000/products >/tmp/products.html
+          grep -q "Cuida tu visión" /tmp/home.html
+          grep -q "Tú decides cuándo avanzar" /tmp/home.html
+          grep -q "Showroom interactivo" /tmp/products.html
+          ! grep -Eiq "error|fatal" /tmp/optihome-next.log
