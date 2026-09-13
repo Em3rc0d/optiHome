@@ -264,8 +264,8 @@ export function SpatialOptics() {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_74%_35%,rgba(91,195,165,.16),transparent_34%),radial-gradient(circle_at_20%_70%,rgba(70,169,210,.10),transparent_30%)]" />
       <div className="content-shell relative grid items-center gap-10 py-16 sm:py-20 lg:grid-cols-[.82fr_1.18fr] lg:gap-16 lg:py-24">
         <motion.div
-          initial={reduceMotion ? false : { opacity: 0, y: 18 }}
-          whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+          initial={reduceMotion ? false : { y: 18 }}
+          whileInView={reduceMotion ? undefined : { y: 0 }}
           viewport={{ once: true, amount: 0.4 }}
           transition={{ duration: motionTokens.duration.slow, ease: [0.22, 1, 0.36, 1] }}
         >
@@ -303,8 +303,8 @@ export function SpatialOptics() {
         </motion.div>
 
         <motion.div
-          initial={reduceMotion ? false : { opacity: 0, scale: 0.96 }}
-          whileInView={reduceMotion ? undefined : { opacity: 1, scale: 1 }}
+          initial={reduceMotion ? false : { scale: 0.96 }}
+          whileInView={reduceMotion ? undefined : { scale: 1 }}
           viewport={{ once: true, amount: 0.32 }}
           transition={{ duration: motionTokens.duration.slow, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
           className="relative min-h-[24rem] overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.035] shadow-[0_30px_100px_rgba(0,0,0,.24)] sm:min-h-[30rem] lg:min-h-[36rem]"

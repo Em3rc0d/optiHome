@@ -59,6 +59,7 @@ jobs:
           grep -q 'SpatialOptics' src/app/page.tsx
           grep -q 'IntersectionObserver' src/components/home/SpatialOptics.tsx
           grep -q 'renderer.setPixelRatio' src/components/home/SpatialOptics.tsx
+          ! grep -q 'initial={reduceMotion ? false : { opacity: 0' src/components/home/SpatialOptics.tsx
           test -f docs/MK0.4.2-low-latency-spatial/PLAN.md
           test -f docs/MK0.4.2-low-latency-spatial/ARCHITECTURE.md
           test -f docs/MK0.4.2-low-latency-spatial/TEST-PLAN.md
