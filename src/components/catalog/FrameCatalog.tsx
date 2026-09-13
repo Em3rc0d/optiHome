@@ -23,8 +23,8 @@ import type { Frame, FrameCategory } from "@/types/frame";
 
 const VirtualTryOn = dynamic(
   () =>
-    import("@/components/try-on/VirtualTryOn").then(
-      (module) => module.VirtualTryOn
+    import("@/components/try-on/VirtualTryOnFast").then(
+      (module) => module.VirtualTryOnFast
     ),
   { ssr: false }
 );
