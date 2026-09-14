@@ -5,6 +5,7 @@ on:
     branches:
       - "feat/mk0-4-3-multi-angle-tryon-20260914"
       - "fix/mk0-4-3-assets-consumer-copy-20260914"
+      - "fix/mk0-4-3-profile-orientation-20260914"
   pull_request:
     branches:
       - master
@@ -75,6 +76,20 @@ jobs:
           grep -q 'EXTERNAL_ASSET_GATE_OPEN' docs/MK0.4.3-multi-angle-tryon/ASSET-CONTRACT.md
           grep -q 'GENERATED_REFERENCE_ACTIVE' docs/MK0.4.3-multi-angle-tryon/GENERATED-ASSET-FALLBACK.md
           grep -q 'PHYSICAL_DEVICE_GATE_OPEN' docs/MK0.4.3-multi-angle-tryon/TEST-PLAN.md
+
+      - name: Profile orientation contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q 'const earRight = yaw < 0' src/lib/try-on/multi-angle.ts
+          grep -q 'nose left => temple right; nose right => temple left' src/lib/try-on/multi-angle.ts
+          grep -q 'leftThreeQuarter: buildThreeQuarter(style, "left")' src/lib/try-on/generated-angle-assets.ts
+          grep -q 'rightThreeQuarter: buildThreeQuarter(style, "right")' src/lib/try-on/generated-angle-assets.ts
+          grep -q 'leftSide: buildSide(style, "left")' src/lib/try-on/generated-angle-assets.ts
+          grep -q 'rightSide: buildSide(style, "right")' src/lib/try-on/generated-angle-assets.ts
+          grep -q 'PROFILE_MAX_VISUAL_SHIFT_PERCENT = 18' src/components/try-on/MultiAngleFrameOverlay.tsx
+          grep -q 'PROFILE_SCALE_GAIN = 0.26' src/components/try-on/MultiAngleFrameOverlay.tsx
+          grep -q 'M535 226 C720 222 905 230 1082 246' src/lib/try-on/generated-angle-assets.ts
 
       - name: Build
         run: npm run build
