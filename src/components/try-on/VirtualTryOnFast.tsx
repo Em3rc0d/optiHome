@@ -384,7 +384,7 @@ export function VirtualTryOnFast({
           latestFaceRef.current = responsiveFace;
           lastFaceSeenAtRef.current = performance.now();
           setFaceData(responsiveFace);
-          setTrackingStatus("Montura ajustada. Muévete con naturalidad para verla desde distintos ángulos.");
+          setTrackingStatus("Montura ajustada. Muévete con naturalidad para comprobar el ajuste.");
         } else {
           const lastSeen = lastFaceSeenAtRef.current;
           const stale = !lastSeen || performance.now() - lastSeen > STALE_TRACKING_MS;
