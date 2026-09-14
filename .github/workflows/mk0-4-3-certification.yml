@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - "feat/mk0-4-3-multi-angle-tryon-20260914"
+      - "fix/mk0-4-3-assets-consumer-copy-20260914"
   pull_request:
     branches:
       - master
@@ -61,14 +62,18 @@ jobs:
           test -f src/lib/try-on/face-pose.ts
           test -f src/lib/try-on/smoothing.ts
           test -f src/lib/try-on/multi-angle.ts
+          test -f src/lib/try-on/generated-angle-assets.ts
           test -f src/components/try-on/MultiAngleFrameOverlay.tsx
           grep -q 'estimateYaw' src/components/try-on/VirtualTryOnFast.tsx
           grep -q 'smoothYaw' src/components/try-on/VirtualTryOnFast.tsx
           grep -q 'MultiAngleFrameOverlay' src/components/try-on/VirtualTryOnFast.tsx
           grep -q 'tryOnAngles?: FrameAngleAssets' src/types/frame.ts
+          grep -q 'tryOnAnglesAuthority?: TryOnAnglesAuthority' src/types/frame.ts
           grep -q 'geometry?: FrameGeometry' src/types/frame.ts
+          grep -q 'GENERATED_REFERENCE' src/content/frames.ts
           grep -q 'frame.tryOnAngles' src/components/try-on/MultiAngleFrameOverlay.tsx
           grep -q 'EXTERNAL_ASSET_GATE_OPEN' docs/MK0.4.3-multi-angle-tryon/ASSET-CONTRACT.md
+          grep -q 'GENERATED_REFERENCE_ACTIVE' docs/MK0.4.3-multi-angle-tryon/GENERATED-ASSET-FALLBACK.md
           grep -q 'PHYSICAL_DEVICE_GATE_OPEN' docs/MK0.4.3-multi-angle-tryon/TEST-PLAN.md
 
       - name: Build
@@ -88,5 +93,7 @@ jobs:
             sleep 1
           done
           curl -fsS http://127.0.0.1:3000/products >/tmp/products.html
+          grep -q "Descubre tus lentes desde todos los ángulos" /tmp/home.html
           grep -q "Showroom interactivo" /tmp/products.html
+          ! grep -Eiq "Three\.js · live|GPU|FPS objetivo desktop|Geometría procedural|Progressive fallback" /tmp/home.html
           ! grep -Eiq "error|fatal" /tmp/optihome-next.log
