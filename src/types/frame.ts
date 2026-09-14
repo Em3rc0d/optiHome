@@ -26,6 +26,8 @@ export type FrameGeometry = {
   maxYaw: number;
 };
 
+export type TryOnAnglesAuthority = "REFERENCE" | "GENERATED_REFERENCE";
+
 export type Frame = {
   id: number;
   slug: string;
@@ -36,6 +38,7 @@ export type Frame = {
   image: string;
   tryOnImage?: string;
   tryOnAngles?: FrameAngleAssets;
+  tryOnAnglesAuthority?: TryOnAnglesAuthority;
   geometry?: FrameGeometry;
   authority: "REFERENCE";
 };

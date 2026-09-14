@@ -1,4 +1,24 @@
+import { buildGeneratedAngleAssets } from "@/lib/try-on/generated-angle-assets";
 import type { Frame } from "@/types/frame";
+
+function generatedAngles(slug: string, front: string) {
+  return {
+    tryOnAngles: buildGeneratedAngleAssets(slug, front),
+    tryOnAnglesAuthority: "GENERATED_REFERENCE" as const,
+    geometry: {
+      opticalCenterX: 0.5,
+      opticalCenterY: 0.48,
+      bridgeX: 0.5,
+      bridgeY: 0.48,
+      nominalWidth: 1,
+      leftTempleAnchorX: 0.05,
+      leftTempleAnchorY: 0.47,
+      rightTempleAnchorX: 0.95,
+      rightTempleAnchorY: 0.47,
+      maxYaw: 42,
+    },
+  };
+}
 
 export const frames: Frame[] = [
   {
@@ -10,6 +30,7 @@ export const frames: Frame[] = [
     color: "Negro",
     image: "/frames/urban-acetate.webp",
     tryOnImage: "/frames/urban-acetate.webp",
+    ...generatedAngles("urban-acetate", "/frames/urban-acetate.webp"),
     authority: "REFERENCE",
   },
   {
@@ -21,6 +42,7 @@ export const frames: Frame[] = [
     color: "Plata",
     image: "/frames/titanium-air.webp",
     tryOnImage: "/frames/titanium-air.webp",
+    ...generatedAngles("titanium-air", "/frames/titanium-air.webp"),
     authority: "REFERENCE",
   },
   {
@@ -32,6 +54,7 @@ export const frames: Frame[] = [
     color: "Transparente",
     image: "/frames/crystal-vision.webp",
     tryOnImage: "/frames/crystal-vision.webp",
+    ...generatedAngles("crystal-vision", "/frames/crystal-vision.webp"),
     authority: "REFERENCE",
   },
   {
@@ -43,6 +66,7 @@ export const frames: Frame[] = [
     color: "Carey",
     image: "/frames/vintage-tortoise.webp",
     tryOnImage: "/frames/vintage-tortoise.webp",
+    ...generatedAngles("vintage-tortoise", "/frames/vintage-tortoise.webp"),
     authority: "REFERENCE",
   },
   {
@@ -54,6 +78,7 @@ export const frames: Frame[] = [
     color: "Negro",
     image: "/frames/solar-noir.webp",
     tryOnImage: "/frames/solar-noir.webp",
+    ...generatedAngles("solar-noir", "/frames/solar-noir.webp"),
     authority: "REFERENCE",
   },
   {
@@ -65,6 +90,7 @@ export const frames: Frame[] = [
     color: "Plata",
     image: "/frames/solar-aviator.webp",
     tryOnImage: "/frames/solar-aviator.webp",
+    ...generatedAngles("solar-aviator", "/frames/solar-aviator.webp"),
     authority: "REFERENCE",
   },
   {
@@ -76,6 +102,7 @@ export const frames: Frame[] = [
     color: "Marrón",
     image: "/frames/circle-brown.webp",
     tryOnImage: "/frames/circle-brown.webp",
+    ...generatedAngles("circle-brown", "/frames/circle-brown.webp"),
     authority: "REFERENCE",
   },
   {
@@ -87,6 +114,7 @@ export const frames: Frame[] = [
     color: "Mixto",
     image: "/frames/solar-color.webp",
     tryOnImage: "/frames/solar-color.webp",
+    ...generatedAngles("solar-color", "/frames/solar-color.webp"),
     authority: "REFERENCE",
   },
 ];

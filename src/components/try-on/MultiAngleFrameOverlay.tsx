@@ -34,6 +34,7 @@ export function MultiAngleFrameOverlay({
     <div
       aria-hidden="true"
       className="absolute max-w-[82vw] transform-gpu"
+      data-angle-authority={frame.tryOnAnglesAuthority ?? "REFERENCE"}
       style={{
         ...style,
         transform: `${baseTransform} scaleX(${perspectiveCompression})`,
@@ -42,7 +43,7 @@ export function MultiAngleFrameOverlay({
       {resolved.layers.map((layer, index) => (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          key={layer.src}
+          key={`${layer.src}-${layer.mirror ? "mirrored" : "native"}`}
           src={layer.src}
           alt=""
           draggable={false}
@@ -53,8 +54,9 @@ export function MultiAngleFrameOverlay({
           }
           style={{
             opacity: layer.opacity,
+            transform: layer.mirror ? "scaleX(-1)" : undefined,
             transition: "opacity 70ms linear",
-            willChange: "opacity",
+            willChange: "opacity, transform",
           }}
         />
       ))}

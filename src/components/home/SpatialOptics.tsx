@@ -26,7 +26,7 @@ function loadThree() {
     const onReady = () => {
       window.removeEventListener(THREE_READY_EVENT, onReady);
       if (runtime.__optiThree) resolve(runtime.__optiThree);
-      else reject(new Error("Three.js no quedó disponible."));
+      else reject(new Error("El motor visual no quedó disponible."));
     };
 
     window.addEventListener(THREE_READY_EVENT, onReady, { once: true });
@@ -38,14 +38,14 @@ function loadThree() {
       script.textContent = `import * as THREE from "${THREE_URL}"; window.__optiThree = THREE; window.dispatchEvent(new Event("${THREE_READY_EVENT}"));`;
       script.addEventListener(
         "error",
-        () => reject(new Error("No se pudo cargar Three.js.")),
+        () => reject(new Error("No se pudo cargar la experiencia visual.")),
         { once: true }
       );
       document.head.appendChild(script);
     }
 
     window.setTimeout(() => {
-      if (!runtime.__optiThree) reject(new Error("Three.js excedió el tiempo de carga."));
+      if (!runtime.__optiThree) reject(new Error("La experiencia visual excedió el tiempo de carga."));
     }, 8000);
   });
 
@@ -261,6 +261,7 @@ export function SpatialOptics() {
 
   return (
     <section className="relative overflow-hidden bg-[linear-gradient(135deg,#07181f_0%,#0d2932_48%,#0b2028_100%)] text-white">
+      <span className="sr-only">Spatial optics</span>
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_74%_35%,rgba(91,195,165,.16),transparent_34%),radial-gradient(circle_at_20%_70%,rgba(70,169,210,.10),transparent_30%)]" />
       <div className="content-shell relative grid items-center gap-10 py-16 sm:py-20 lg:grid-cols-[.82fr_1.18fr] lg:gap-16 lg:py-24">
         <motion.div
@@ -271,20 +272,20 @@ export function SpatialOptics() {
         >
           <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-accent backdrop-blur">
             <Orbit className="size-4" aria-hidden="true" />
-            Spatial optics
+            Explora en detalle
           </div>
           <h2 className="mt-5 max-w-xl text-3xl font-semibold leading-tight text-white sm:text-4xl lg:text-5xl">
-            Una experiencia óptica que también se siente en movimiento.
+            Descubre tus lentes desde todos los ángulos.
           </h2>
           <p className="mt-5 max-w-xl text-base leading-7 text-white/68 sm:text-lg sm:leading-8">
-            El 3D es una capa de exploración, no un obstáculo. Se activa solo cuando el dispositivo puede sostenerlo y nunca compite con el try-on.
+            Gira la vista, compara formas y encuentra una montura que encaje con tu estilo antes de probártela.
           </p>
 
           <div className="mt-8 grid gap-3 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
             {[
-              ["3D", "Geometría procedural"],
-              ["GPU", "Carga adaptativa"],
-              ["60", "FPS objetivo desktop"],
+              ["360°", "Explora distintos ángulos"],
+              ["Detalle", "Compara formas y acabados"],
+              ["Tu estilo", "Encuentra la montura que va contigo"],
             ].map(([value, label]) => (
               <div key={label} className="rounded-2xl border border-white/10 bg-white/[0.05] p-4 backdrop-blur">
                 <p className="text-2xl font-semibold text-white">{value}</p>
@@ -297,7 +298,7 @@ export function SpatialOptics() {
             href="/products"
             className="mt-8 inline-flex min-h-12 items-center gap-2 rounded-xl bg-white px-5 py-3 font-semibold text-ink transition-[transform,background-color] hover:bg-accent-soft motion-safe:active:scale-[0.99]"
           >
-            Explorar el showroom
+            Explorar monturas
             <ArrowUpRight className="size-4" aria-hidden="true" />
           </Link>
         </motion.div>
@@ -321,13 +322,13 @@ export function SpatialOptics() {
           )}
           <div className="pointer-events-none absolute inset-x-5 top-5 flex items-center justify-between gap-3">
             <div className="rounded-full border border-white/10 bg-black/20 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/70 backdrop-blur">
-              {enhanced ? "Three.js · live" : "Progressive fallback"}
+              {enhanced ? "Vista interactiva" : "Vista del producto"}
             </div>
             <Sparkles className="size-5 text-accent" aria-hidden="true" />
           </div>
           <div className="pointer-events-none absolute inset-x-5 bottom-5 rounded-2xl border border-white/10 bg-black/20 p-4 backdrop-blur">
-            <p className="text-sm font-semibold text-white">Mueve el cursor para explorar profundidad.</p>
-            <p className="mt-1 text-xs leading-5 text-white/55">En móvil la escena reduce DPR y partículas automáticamente.</p>
+            <p className="text-sm font-semibold text-white">Mueve el cursor para ver la montura desde otra perspectiva.</p>
+            <p className="mt-1 text-xs leading-5 text-white/55">En móvil, la experiencia se adapta automáticamente para mantenerse fluida.</p>
           </div>
         </motion.div>
       </div>
