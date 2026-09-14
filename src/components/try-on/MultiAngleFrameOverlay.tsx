@@ -17,7 +17,9 @@ export function MultiAngleFrameOverlay({
   style: CSSProperties;
 }) {
   const resolved = resolveFrameAngle(frame, yaw);
-  const perspectiveCompression = 1 - Math.min(Math.abs(yaw) / 42, 1) * 0.07;
+  const perspectiveCompression = frame.tryOnAngles
+    ? 1 - Math.min(Math.abs(yaw) / 42, 1) * 0.07
+    : 1;
   const baseTransform = typeof style.transform === "string" ? style.transform : "";
 
   useEffect(() => {
