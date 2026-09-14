@@ -18,9 +18,15 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { MultiAngleFrameOverlay } from "@/components/try-on/MultiAngleFrameOverlay";
+import {
+  estimateYaw,
+  normalizeYaw,
+  type FacePoint,
+} from "@/lib/try-on/face-pose";
+import { smoothYaw } from "@/lib/try-on/smoothing";
 import type { Frame } from "@/types/frame";
 
-type FacePoint = { x: number; y: number; name?: string };
 type DetectedFace = { keypoints?: FacePoint[]; landmarks?: FacePoint[] };
 type FaceDetector = {
   estimateFaces: (
@@ -46,7 +52,13 @@ type RuntimeWindow = Window &
     tf?: TfRuntime;
     faceLandmarksDetection?: FaceLandmarksRuntime;
   };
-type FaceData = { x: number; y: number; width: number; rotation: number };
+type FaceData = {
+  x: number;
+  y: number;
+  width: number;
+  rotation: number;
+  yaw: number;
+};
 type FitMode = "cover" | "contain";
 
 let detectorCache: FaceDetector | null = null;
@@ -192,6 +204,7 @@ function faceGeometry({
     y: offsetY + midY * renderScale,
     width: clamp(displayedEyeDistance * 2.2, 116, stageWidth * 0.82),
     rotation: normalizeEyeLineRotation(eyeLineAngle),
+    yaw: normalizeYaw(estimateYaw(points)),
   };
 }
 
@@ -204,7 +217,13 @@ function adaptiveSmooth(previous: FaceData | null, next: FaceData): FaceData {
   const rotationDelta = Math.abs(next.rotation - previous.rotation);
 
   const positionWeight =
-    movementRatio > 0.16 ? 0.97 : movementRatio > 0.07 ? 0.82 : movementRatio > 0.03 ? 0.64 : 0.46;
+    movementRatio > 0.16
+      ? 0.97
+      : movementRatio > 0.07
+        ? 0.82
+        : movementRatio > 0.03
+          ? 0.64
+          : 0.46;
   const scaleWeight = scaleRatio > 0.1 ? 0.82 : scaleRatio > 0.04 ? 0.62 : 0.42;
   const rotationWeight = rotationDelta > 2.2 ? 0.72 : 0.42;
 
@@ -215,6 +234,7 @@ function adaptiveSmooth(previous: FaceData | null, next: FaceData): FaceData {
     rotation: normalizeEyeLineRotation(
       previous.rotation + (next.rotation - previous.rotation) * rotationWeight
     ),
+    yaw: normalizeYaw(smoothYaw(previous.yaw, next.yaw)),
   };
 }
 
@@ -265,7 +285,6 @@ export function VirtualTryOnFast({
 
   const canPrevious = frameIndex > 0;
   const canNext = frameIndex < frames.length - 1;
-  const overlaySource = currentFrame.tryOnImage ?? currentFrame.image;
 
   const setTrackingStatus = useCallback((nextStatus: string) => {
     if (statusRef.current === nextStatus) return;
@@ -365,7 +384,7 @@ export function VirtualTryOnFast({
           latestFaceRef.current = responsiveFace;
           lastFaceSeenAtRef.current = performance.now();
           setFaceData(responsiveFace);
-          setTrackingStatus("Seguimiento rápido activo. La montura acompaña tu rostro.");
+          setTrackingStatus("Montura ajustada. Muévete con naturalidad para verla desde distintos ángulos.");
         } else {
           const lastSeen = lastFaceSeenAtRef.current;
           const stale = !lastSeen || performance.now() - lastSeen > STALE_TRACKING_MS;
@@ -479,7 +498,7 @@ export function VirtualTryOnFast({
       }
 
       setStream(nextStream);
-      setTrackingStatus("Cargando seguimiento facial optimizado…");
+      setTrackingStatus("Preparando la prueba virtual…");
       const nextDetector = await loadFaceDetector();
 
       if (!mountedRef.current || requestId !== cameraRequestRef.current) {
@@ -579,7 +598,7 @@ export function VirtualTryOnFast({
                   Prueba una montura cuando tú decidas.
                 </h3>
                 <p className="mt-3 leading-7 text-white/70">
-                  El seguimiento facial usa un frame de inferencia reducido para responder con mayor rapidez en móvil.
+                  Activa la cámara y mueve tu rostro con naturalidad para comparar cómo se ve la montura.
                 </p>
                 <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center">
                   <button
@@ -606,13 +625,10 @@ export function VirtualTryOnFast({
 
           {(stream || photo) && (
             <div className="pointer-events-none absolute inset-0 z-20">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <MultiAngleFrameOverlay
                 key={currentFrame.id}
-                src={overlaySource}
-                alt=""
-                aria-hidden="true"
-                className="frame-switch absolute h-auto max-w-[82vw] object-contain drop-shadow-md"
+                frame={currentFrame}
+                yaw={faceData?.yaw ?? 0}
                 style={overlayStyle}
               />
             </div>
@@ -624,7 +640,7 @@ export function VirtualTryOnFast({
                 <p className="truncate text-sm font-semibold text-white">{currentFrame.name}</p>
                 {stream && (
                   <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-white/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/80">
-                    <Sparkles className="size-3" aria-hidden="true" /> rápido
+                    <Sparkles className="size-3" aria-hidden="true" /> en vivo
                   </span>
                 )}
               </div>
