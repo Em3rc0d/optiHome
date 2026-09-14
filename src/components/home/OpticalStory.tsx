@@ -14,22 +14,22 @@ const chapters = [
   {
     eyebrow: "01 · Explora",
     title: "Descubre una montura que se parezca a ti.",
-    text: "Recorre estilos, materiales y proporciones sin entrar todavía en una decisión de compra.",
+    text: "Recorre estilos, materiales y proporciones con calma antes de elegir.",
   },
   {
     eyebrow: "02 · Compara",
-    title: "Mira el producto como protagonista.",
-    text: "La montura gana escala y contexto para que comparar se sienta más cercano a un showroom que a una grilla de ecommerce.",
+    title: "Mira cada montura con más detalle.",
+    text: "Observa formas, proporciones y acabados para comparar opciones de una manera más clara.",
   },
   {
     eyebrow: "03 · Pruébate",
     title: "Pasa de mirar a verte con ella.",
-    text: "Cuando quieras, la prueba virtual toma prioridad. La experiencia visual nunca compite con la cámara ni con el detector facial.",
+    text: "Cuando quieras, abre la prueba virtual y mira cómo se ve una montura en ti con cámara o foto.",
   },
   {
     eyebrow: "04 · Coordina",
     title: "Cierra el recorrido hablando con una persona.",
-    text: "WhatsApp sigue siendo el CTA principal para confirmar cobertura, disponibilidad y horario.",
+    text: "Cuando encuentres una opción que te guste, escríbenos por WhatsApp para confirmar cobertura, disponibilidad y horario.",
   },
 ] as const;
 
@@ -98,7 +98,7 @@ export function OpticalStory() {
             />
           </motion.div>
           <div className="absolute bottom-5 left-5 right-5 flex items-center justify-between rounded-2xl border border-white/10 bg-black/20 px-4 py-3 backdrop-blur">
-            <span className="text-xs font-semibold uppercase tracking-[0.14em] text-white/60">Story progress</span>
+            <span className="text-xs font-semibold uppercase tracking-[0.14em] text-white/60">Tu recorrido</span>
             <span className="text-sm font-semibold text-white">{String(active + 1).padStart(2, "0")} / 04</span>
           </div>
         </div>
