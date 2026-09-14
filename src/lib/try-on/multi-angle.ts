@@ -8,7 +8,9 @@ export type AngleLayer = {
 
 export type AngleResolution = {
   layers: AngleLayer[];
+  /** Side of the rendered face where the visible temple/ear sits. */
   direction: "front" | "left" | "right";
+  /** Monotonic profile amount from frontal (0) to full profile (1). */
   intensity: number;
 };
 
@@ -47,10 +49,12 @@ export function availableAngleSources(frame: Frame) {
 }
 
 /**
- * Resolves which transparent product views should be blended for the current
- * rendered yaw. Missing directional views may mirror the opposite generated
- * reference asset; missing angle coverage otherwise degrades to the frontal
- * image without breaking the try-on.
+ * FacePose yaw follows nose displacement in rendered-image coordinates.
+ * The visible temple and ear are on the opposite side of that displacement:
+ * nose left => temple right; nose right => temple left.
+ *
+ * That distinction is critical for profile try-on. Selecting by the nose side
+ * makes the glasses arm point toward the nose instead of toward the ear.
  */
 export function resolveFrameAngle(frame: Frame, yaw: number): AngleResolution {
   const fallback = frame.tryOnAngles?.front ?? frame.tryOnImage ?? frame.image;
@@ -65,15 +69,20 @@ export function resolveFrameAngle(frame: Frame, yaw: number): AngleResolution {
   }
 
   const magnitude = Math.abs(yaw);
-  const right = yaw > 0;
+  const maxYaw = clamp(frame.geometry?.maxYaw ?? 42, 30, 50);
+  const profileIntensity = rangeProgress(magnitude, 7, maxYaw);
+
+  // Yaw sign tracks the nose. The visible temple is opposite the nose.
+  const earRight = yaw < 0;
   const threeQuarter = directionalAsset(
-    right ? assets.rightThreeQuarter : assets.leftThreeQuarter,
-    right ? assets.leftThreeQuarter : assets.rightThreeQuarter
+    earRight ? assets.rightThreeQuarter : assets.leftThreeQuarter,
+    earRight ? assets.leftThreeQuarter : assets.rightThreeQuarter
   );
   const side = directionalAsset(
-    right ? assets.rightSide : assets.leftSide,
-    right ? assets.leftSide : assets.rightSide
+    earRight ? assets.rightSide : assets.leftSide,
+    earRight ? assets.leftSide : assets.rightSide
   );
+  const direction = earRight ? "right" : "left";
 
   if (magnitude <= 7 || !threeQuarter) {
     return {
@@ -94,12 +103,11 @@ export function resolveFrameAngle(frame: Frame, yaw: number): AngleResolution {
           mirror: threeQuarter.mirror,
         },
       ],
-      direction: right ? "right" : "left",
-      intensity: blend,
+      direction,
+      intensity: profileIntensity,
     };
   }
 
-  const maxYaw = clamp(frame.geometry?.maxYaw ?? 42, 30, 50);
   const sideBlend = rangeProgress(magnitude, 27, maxYaw);
   return {
     layers: [
@@ -114,7 +122,7 @@ export function resolveFrameAngle(frame: Frame, yaw: number): AngleResolution {
         mirror: side.mirror,
       },
     ],
-    direction: right ? "right" : "left",
-    intensity: sideBlend,
+    direction,
+    intensity: profileIntensity,
   };
 }
