@@ -1,6 +1,7 @@
 import type { FrameAngleAssets } from "@/types/frame";
 
 type Shape = "rect" | "aviator" | "round" | "cat";
+type Direction = "left" | "right";
 
 type Style = {
   stroke: string;
@@ -74,16 +75,16 @@ function lensPaths(shape: Shape, side: boolean) {
     switch (shape) {
       case "aviator":
         return [
-          '<path d="M250 160 C340 150 430 175 500 240 C430 305 340 330 250 320 C220 270 220 210 250 160 Z"/>',
+          '<path d="M195 155 C315 142 445 176 535 240 C450 310 320 338 200 323 C165 272 165 208 195 155 Z"/>',
         ];
       case "round":
-        return ['<ellipse cx="360" cy="240" rx="135" ry="125"/>'];
+        return ['<ellipse cx="350" cy="240" rx="158" ry="135"/>'];
       case "cat":
         return [
-          '<path d="M220 180 Q355 120 510 195 Q480 315 335 320 Q235 300 220 180 Z"/>',
+          '<path d="M175 185 Q350 112 545 195 Q510 320 335 330 Q195 305 175 185 Z"/>',
         ];
       default:
-        return ['<rect x="220" y="150" width="300" height="180" rx="72"/>'];
+        return ['<rect x="175" y="146" width="370" height="194" rx="76"/>'];
     }
   }
 
@@ -115,28 +116,38 @@ function svgDataUri(svg: string) {
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 }
 
-function buildThreeQuarter(style: Style) {
+function orient(body: string, direction: Direction) {
+  return direction === "right"
+    ? body
+    : `<g transform="translate(1200 0) scale(-1 1)">${body}</g>`;
+}
+
+function buildThreeQuarter(style: Style, direction: Direction) {
   const lenses = lensPaths(style.shape, false).join("");
-  return svgDataUri(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 480" fill="none">
-    <g stroke="${style.stroke}" stroke-width="${style.strokeWidth}" stroke-linecap="round" stroke-linejoin="round">
+  const body = `<g stroke="${style.stroke}" stroke-width="${style.strokeWidth}" stroke-linecap="round" stroke-linejoin="round">
       ${lenses}
       <path d="M480 230 Q515 205 548 230"/>
-      <path d="M860 210 L1000 165 L1150 128"/>
-      <path d="M100 210 L58 192" opacity=".55"/>
+      <path d="M858 214 C958 216 1052 224 1148 240"/>
+      <path d="M100 210 L58 202" opacity=".55"/>
     </g>
-    <g fill="${style.fill}" opacity="${style.lensOpacity}" stroke="none">${lenses}</g>
+    <g fill="${style.fill}" opacity="${style.lensOpacity}" stroke="none">${lenses}</g>`;
+
+  return svgDataUri(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 480" fill="none">
+    ${orient(body, direction)}
   </svg>`);
 }
 
-function buildSide(style: Style) {
+function buildSide(style: Style, direction: Direction) {
   const lens = lensPaths(style.shape, true).join("");
-  return svgDataUri(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 480" fill="none">
-    <g stroke="${style.stroke}" stroke-width="${style.strokeWidth}" stroke-linecap="round" stroke-linejoin="round">
+  const body = `<g stroke="${style.stroke}" stroke-width="${style.strokeWidth}" stroke-linecap="round" stroke-linejoin="round">
       ${lens}
-      <path d="M500 225 L715 190 L1040 120 L1150 132"/>
-      <path d="M1040 120 Q1130 110 1160 154"/>
+      <path d="M535 226 C720 222 905 230 1082 246"/>
+      <path d="M1082 246 Q1148 250 1168 280"/>
     </g>
-    <g fill="${style.fill}" opacity="${style.lensOpacity}" stroke="none">${lens}</g>
+    <g fill="${style.fill}" opacity="${style.lensOpacity}" stroke="none">${lens}</g>`;
+
+  return svgDataUri(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 480" fill="none">
+    ${orient(body, direction)}
   </svg>`);
 }
 
@@ -144,7 +155,9 @@ export function buildGeneratedAngleAssets(slug: string, front: string): FrameAng
   const style = STYLES[slug] ?? STYLES["urban-acetate"];
   return {
     front,
-    rightThreeQuarter: buildThreeQuarter(style),
-    rightSide: buildSide(style),
+    leftThreeQuarter: buildThreeQuarter(style, "left"),
+    rightThreeQuarter: buildThreeQuarter(style, "right"),
+    leftSide: buildSide(style, "left"),
+    rightSide: buildSide(style, "right"),
   };
 }
