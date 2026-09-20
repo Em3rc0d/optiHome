@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Camera, Eye, Glasses, ArrowUpRight } from "lucide-react";
+import { Eye, Glasses, MessageCircle, ArrowUpRight } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { intentProps } from "@/lib/analytics-events";
 import { motionTokens } from "@/lib/motion/tokens";
@@ -27,12 +27,12 @@ const paths = [
     accent: false,
   },
   {
-    title: "Quiero ver cómo me queda",
-    description: "Pruébate cualquiera de las monturas con cámara o con una foto.",
-    href: "/products?tryon=1#prueba-virtual",
-    intent: "cta_path_virtual_try_on",
-    label: "Abrir prueba virtual",
-    Icon: Camera,
+    title: "Quiero coordinar una visita",
+    description: "Escríbenos para revisar cobertura, disponibilidad y encontrar un horario contigo.",
+    href: "/#solicitar-evaluacion",
+    intent: "cta_path_contact",
+    label: "Coordinar atención",
+    Icon: MessageCircle,
     accent: true,
   },
 ] as const;
@@ -50,7 +50,7 @@ export function JourneyChooser() {
             Tu siguiente paso depende de lo que necesitas hoy.
           </h2>
           <p className="mt-5 text-lg leading-8 text-ink-muted">
-            Puedes coordinar una evaluación, explorar estilos o probarte una montura antes de escribirnos.
+            Puedes conocer cómo funciona la atención, explorar estilos o pasar directamente a coordinar por WhatsApp.
           </p>
         </div>
 
