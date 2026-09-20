@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MessageCircle, ShieldCheck } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 import { buildWhatsappUrl, siteConfig } from "@/content/site";
 
 export function SiteFooter() {
@@ -37,10 +37,6 @@ export function SiteFooter() {
             <MessageCircle className="size-4" aria-hidden="true" />
             WhatsApp {siteConfig.contact.whatsappDisplay}
           </a>
-          <Link href={siteConfig.privacy.href} className="mt-2 flex min-h-11 items-center gap-2 font-semibold text-brand hover:text-brand-strong">
-            <ShieldCheck className="size-4" aria-hidden="true" />
-            Privacidad del try-on
-          </Link>
         </div>
       </div>
 
