@@ -9,13 +9,12 @@ export const siteConfig = {
   name: "OptiHome",
   url: "https://optihome-v1.vercel.app",
   description:
-    "Atención óptica a domicilio, exploración de monturas y prueba virtual para ayudarte a elegir desde casa.",
+    "Atención óptica a domicilio y selección de monturas para ayudarte a cuidar tu visión desde casa.",
   locale: "es_PE",
   navigation: [
     { label: "Inicio", href: "/" },
     { label: "Monturas", href: "/products" },
     { label: "Cómo funciona", href: "/#proceso" },
-    { label: "Prueba virtual", href: "/products?tryon=1#prueba-virtual" },
     { label: "Preguntas frecuentes", href: "/#preguntas-frecuentes" },
   ] satisfies NavigationItem[],
   contact: {
