@@ -4,7 +4,8 @@ import { ArrowLeft, Camera, ExternalLink, ShieldCheck } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Privacidad de la prueba virtual",
-  description: "Cómo utiliza OptiHome la cámara y las fotos dentro de la prueba virtual.",
+  description: "Información técnica sobre una experiencia experimental no disponible públicamente.",
+  robots: { index: false, follow: false },
 };
 
 export default function PrivacyPage() {
