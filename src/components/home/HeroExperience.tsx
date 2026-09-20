@@ -36,8 +36,8 @@ const steps = [
   },
   {
     number: "02",
-    label: "Pruébate",
-    description: "Mírate antes de elegir",
+    label: "Elige",
+    description: "Compara antes de decidir",
     Icon: Glasses,
   },
   {

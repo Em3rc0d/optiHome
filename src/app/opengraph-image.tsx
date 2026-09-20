@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "OptiHome — óptica a domicilio, monturas y prueba virtual";
+export const alt = "OptiHome — atención óptica a domicilio y monturas";
 export const size = {
   width: 1200,
   height: 630,
@@ -44,7 +44,7 @@ export default function Image() {
 
         <div style={{ display: "flex", flexDirection: "column", maxWidth: 900 }}>
           <div style={{ fontSize: 68, lineHeight: 1.04, fontWeight: 700 }}>
-            Explora. Pruébate. Coordina.
+            Explora. Elige. Coordina.
           </div>
           <div style={{ marginTop: 24, fontSize: 30, lineHeight: 1.3, color: "#53646d" }}>
             Atención óptica a domicilio con una experiencia digital pensada para elegir desde casa.
