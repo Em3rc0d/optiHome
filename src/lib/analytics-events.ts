@@ -4,6 +4,7 @@ export const WEB_INTENT_EVENTS = [
   "cta_hero_explore_frames",
   "cta_path_evaluation",
   "cta_path_frames",
+  "cta_path_contact",
   "cta_path_virtual_try_on",
   "cta_catalog_try_on",
   "cta_request_whatsapp",
