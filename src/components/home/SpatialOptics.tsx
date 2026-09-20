@@ -275,16 +275,16 @@ export function SpatialOptics() {
             Explora en detalle
           </div>
           <h2 className="mt-5 max-w-xl text-3xl font-semibold leading-tight text-white sm:text-4xl lg:text-5xl">
-            Descubre tus lentes desde todos los ángulos.
+            Mira cada montura con más detalle.
           </h2>
           <p className="mt-5 max-w-xl text-base leading-7 text-white/68 sm:text-lg sm:leading-8">
-            Gira la vista, compara formas y encuentra una montura que encaje con tu estilo antes de probártela.
+            Compara formas, proporciones y acabados para encontrar una montura que encaje con tu estilo.
           </p>
 
           <div className="mt-8 grid gap-3 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
             {[
-              ["360°", "Explora distintos ángulos"],
-              ["Detalle", "Compara formas y acabados"],
+              ["Detalle", "Observa formas y proporciones"],
+              ["Acabados", "Compara materiales y estilo"],
               ["Tu estilo", "Encuentra la montura que va contigo"],
             ].map(([value, label]) => (
               <div key={label} className="rounded-2xl border border-white/10 bg-white/[0.05] p-4 backdrop-blur">
@@ -327,7 +327,7 @@ export function SpatialOptics() {
             <Sparkles className="size-5 text-accent" aria-hidden="true" />
           </div>
           <div className="pointer-events-none absolute inset-x-5 bottom-5 rounded-2xl border border-white/10 bg-black/20 p-4 backdrop-blur">
-            <p className="text-sm font-semibold text-white">Mueve el cursor para ver la montura desde otra perspectiva.</p>
+            <p className="text-sm font-semibold text-white">Explora una vista interactiva de la montura.</p>
             <p className="mt-1 text-xs leading-5 text-white/55">En móvil, la experiencia se adapta automáticamente para mantenerse fluida.</p>
           </div>
         </motion.div>
