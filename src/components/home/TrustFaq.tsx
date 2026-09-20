@@ -1,5 +1,4 @@
-import Link from "next/link";
-import { CheckCircle2, ChevronDown, ShieldCheck } from "lucide-react";
+import { CheckCircle2, ChevronDown } from "lucide-react";
 
 const faqs = [
   {
@@ -11,8 +10,8 @@ const faqs = [
     answer: "La cobertura se confirma al coordinar tu solicitud por WhatsApp, antes de acordar una visita.",
   },
   {
-    question: "¿La prueba virtual reemplaza una evaluación visual?",
-    answer: "No. Sirve para orientarte sobre estilo y proporción; no realiza diagnósticos ni reemplaza una evaluación profesional.",
+    question: "¿Cómo empiezo a coordinar una atención?",
+    answer: "Escríbenos por WhatsApp. Primero revisamos contigo cobertura, disponibilidad, fecha y horario antes de confirmar la visita.",
   },
   {
     question: "¿La disponibilidad de una montura está garantizada?",
@@ -31,8 +30,8 @@ export function TrustFaq() {
             {[
               "La cita se confirma contigo antes de la visita.",
               "La cobertura por zona se revisa antes de coordinar.",
-              "La prueba virtual es orientativa, no diagnóstica.",
-              "La cámara solo se activa cuando tú la autorizas.",
+              "La disponibilidad de monturas se confirma antes de coordinar.",
+              "La atención se organiza contigo por WhatsApp.",
             ].map((item) => (
               <div key={item} className="flex items-start gap-3">
                 <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-accent" aria-hidden="true" />
@@ -40,10 +39,6 @@ export function TrustFaq() {
               </div>
             ))}
           </div>
-          <Link href="/privacy" className="mt-7 inline-flex min-h-11 items-center gap-2 rounded-lg font-semibold text-brand hover:text-brand-strong">
-            <ShieldCheck className="size-5" aria-hidden="true" />
-            Cómo cuidamos tu privacidad en el try-on
-          </Link>
         </div>
 
         <div className="space-y-3">
