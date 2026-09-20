@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Heart, Home, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, Heart, Home, ShieldCheck } from "lucide-react";
 import { HeroExperience } from "@/components/home/HeroExperience";
 import { Reveal } from "@/components/motion/Reveal";
 import { intentProps } from "@/lib/analytics-events";
@@ -34,7 +34,7 @@ export function Hero() {
           </h1>
 
           <p className="mt-5 max-w-2xl text-lg leading-8 text-ink-muted">
-            Explora monturas, pruébate estilos virtualmente y coordina una evaluación óptica a domicilio sin perder el control del proceso.
+            Explora monturas y coordina una evaluación óptica a domicilio con una atención pensada para acompañarte desde el primer contacto.
           </p>
 
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
@@ -55,15 +55,6 @@ export function Hero() {
             </Link>
           </div>
 
-          <Link
-            href="/products?tryon=1#prueba-virtual"
-            {...intentProps("cta_path_virtual_try_on")}
-            className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-lg px-1 text-sm font-semibold text-brand transition-colors hover:text-brand-strong"
-          >
-            <Sparkles className="size-4" aria-hidden="true" />
-            Probar una montura virtualmente
-          </Link>
-
           <div className="mt-6 grid grid-cols-3 gap-2 border-t border-border pt-5 sm:gap-4">
             {benefits.map(({ label, Icon }) => (
               <div key={label} className="flex min-w-0 items-start gap-2 sm:gap-3">
@@ -76,7 +67,7 @@ export function Hero() {
           </div>
 
           <p className="mt-4 text-xs leading-5 text-ink-muted sm:text-sm">
-            Explora → Pruébate → Coordina. Tú decides cuándo avanzar.
+            Explora → Elige → Coordina. Tú decides cuándo avanzar.
           </p>
         </Reveal>
 

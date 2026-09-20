@@ -22,9 +22,9 @@ const chapters = [
     text: "Observa formas, proporciones y acabados para comparar opciones de una manera más clara.",
   },
   {
-    eyebrow: "03 · Pruébate",
-    title: "Pasa de mirar a verte con ella.",
-    text: "Cuando quieras, abre la prueba virtual y mira cómo se ve una montura en ti con cámara o foto.",
+    eyebrow: "03 · Elige",
+    title: "Reduce opciones hasta encontrar tus favoritas.",
+    text: "Quédate con las monturas que mejor encajen con tu estilo y consulta disponibilidad antes de coordinar.",
   },
   {
     eyebrow: "04 · Coordina",

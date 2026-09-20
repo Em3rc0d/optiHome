@@ -1,8 +1,7 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   AnimatePresence,
   LayoutGroup,
@@ -10,7 +9,6 @@ import {
   useReducedMotion,
 } from "framer-motion";
 import {
-  Camera,
   ChevronLeft,
   ChevronRight,
   MessageCircle,
@@ -21,22 +19,12 @@ import { intentProps } from "@/lib/analytics-events";
 import { motionTokens } from "@/lib/motion/tokens";
 import type { Frame, FrameCategory } from "@/types/frame";
 
-const VirtualTryOn = dynamic(
-  () =>
-    import("@/components/try-on/VirtualTryOnFast").then(
-      (module) => module.VirtualTryOnFast
-    ),
-  { ssr: false }
-);
-
 type Filter = "Todas" | FrameCategory;
 
 export function FrameCatalog({ frames }: { frames: Frame[] }) {
   const [filter, setFilter] = useState<Filter>("Todas");
   const [activeIndex, setActiveIndex] = useState(0);
   const [direction, setDirection] = useState(1);
-  const [selectedFrame, setSelectedFrame] = useState<Frame | null>(null);
-  const intentHandledRef = useRef(false);
   const reduceMotion = useReducedMotion();
 
   const categories = useMemo(
@@ -53,33 +41,8 @@ export function FrameCatalog({ frames }: { frames: Frame[] }) {
     [filter, frames]
   );
 
-  const tryOnFrames = useMemo(
-    () => frames.filter((frame) => Boolean(frame.tryOnImage)),
-    [frames]
-  );
-
   const safeIndex = Math.min(activeIndex, Math.max(filtered.length - 1, 0));
   const activeFrame = filtered[safeIndex];
-
-  useEffect(() => {
-    if (intentHandledRef.current) return;
-    intentHandledRef.current = true;
-
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("tryon") !== "1") return;
-
-    const firstTryOnIndex = frames.findIndex((frame) => Boolean(frame.tryOnImage));
-    if (firstTryOnIndex < 0) return;
-
-    const initialTryOnFrame = frames[firstTryOnIndex];
-    const animationFrame = window.requestAnimationFrame(() => {
-      setFilter("Todas");
-      setActiveIndex(firstTryOnIndex);
-      setSelectedFrame(initialTryOnFrame);
-    });
-
-    return () => window.cancelAnimationFrame(animationFrame);
-  }, [frames]);
 
   const changeFilter = (nextFilter: Filter) => {
     setFilter(nextFilter);
@@ -146,7 +109,7 @@ export function FrameCatalog({ frames }: { frames: Frame[] }) {
 
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-ink-muted">
-          {filtered.length} estilos para explorar. Selecciona uno para verlo en detalle o probarlo virtualmente.
+          {filtered.length} estilos para explorar. Selecciona uno para verlo en detalle y consultar disponibilidad.
         </p>
         <p className="text-sm font-semibold text-ink" aria-live="polite">
           {safeIndex + 1} de {filtered.length}
@@ -258,17 +221,6 @@ export function FrameCatalog({ frames }: { frames: Frame[] }) {
               </p>
 
               <div className="mt-7 flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
-                {activeFrame.tryOnImage && (
-                  <button
-                    type="button"
-                    onClick={() => setSelectedFrame(activeFrame)}
-                    {...intentProps("cta_catalog_try_on")}
-                    className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-brand px-5 py-3 font-semibold text-white transition-[background-color,transform] duration-200 hover:bg-brand-strong motion-safe:active:scale-[0.99]"
-                  >
-                    <Camera className="size-5" aria-hidden="true" />
-                    Probar virtualmente
-                  </button>
-                )}
                 <a
                   href={whatsappHref}
                   target="_blank"
@@ -320,14 +272,6 @@ export function FrameCatalog({ frames }: { frames: Frame[] }) {
         </div>
       </div>
 
-      {selectedFrame && (
-        <VirtualTryOn
-          open={Boolean(selectedFrame)}
-          onOpenChange={(nextOpen) => !nextOpen && setSelectedFrame(null)}
-          initialFrame={selectedFrame}
-          frames={tryOnFrames}
-        />
-      )}
     </LayoutGroup>
   );
 }

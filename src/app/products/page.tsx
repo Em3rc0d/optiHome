@@ -5,19 +5,19 @@ import { FrameCatalog } from "@/components/catalog/FrameCatalog";
 import { frames } from "@/content/frames";
 
 const description =
-  "Explora monturas, compara estilos y pruébatelas virtualmente con cámara o foto antes de consultar disponibilidad.";
+  "Explora monturas, compara estilos, materiales y colores, y consulta disponibilidad directamente con OptiHome.";
 
 export const metadata: Metadata = {
-  title: "Monturas y prueba virtual",
+  title: "Monturas",
   description,
   openGraph: {
-    title: "Monturas y prueba virtual | OptiHome",
+    title: "Monturas | OptiHome",
     description,
     images: ["/opengraph-image"],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Monturas y prueba virtual | OptiHome",
+    title: "Monturas | OptiHome",
     description,
     images: ["/opengraph-image"],
   },
@@ -37,18 +37,18 @@ export default function ProductsPage() {
             Encuentra una montura que vaya contigo.
           </h1>
           <p className="mt-5 max-w-2xl text-lg leading-8 text-ink-muted">
-            Explora estilos, compara formas y prueba cualquier montura virtualmente. La disponibilidad se confirma al contactarnos.
+            Explora estilos, compara formas, materiales y colores. La disponibilidad se confirma directamente al contactarnos.
           </p>
         </div>
       </section>
 
       <section className="bg-white">
         <div className="content-shell section-pad">
-          <div id="prueba-virtual" className="scroll-mt-24">
+          <div>
             <p className="text-sm font-semibold uppercase tracking-[0.16em] text-brand">Showroom interactivo</p>
-            <h2 className="mt-3 text-3xl font-semibold md:text-5xl">Explora y pruébate monturas</h2>
+            <h2 className="mt-3 text-3xl font-semibold md:text-5xl">Explora monturas con calma</h2>
             <p className="mt-3 max-w-2xl leading-7 text-ink-muted">
-              Selecciona un modelo para verlo en detalle. Puedes probarlo con cámara o foto antes de consultar disponibilidad.
+              Selecciona un modelo para ver sus detalles y consultar disponibilidad o alternativas similares por WhatsApp.
             </p>
           </div>
           <div className="mt-8">

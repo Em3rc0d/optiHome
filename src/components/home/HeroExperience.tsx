@@ -23,7 +23,7 @@ const scenes = [
     src: "/family4.webp",
     alt: "Familia sonriendo durante un momento en casa",
     eyebrow: "A tu ritmo",
-    title: "Explora, pruébate y coordina sin apuros.",
+    title: "Explora, elige y coordina sin apuros.",
   },
 ] as const;
 

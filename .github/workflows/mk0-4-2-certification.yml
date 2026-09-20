@@ -43,7 +43,9 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git hash-object src/components/try-on/VirtualTryOn.tsx)" = "c211cfc4025a2963fed7ae49b76e218aaeee5cb2"
-          grep -q 'VirtualTryOnFast' src/components/catalog/FrameCatalog.tsx
+          test -f src/components/try-on/VirtualTryOnFast.tsx
+          ! grep -q 'VirtualTryOnFast' src/components/catalog/FrameCatalog.tsx
+          ! grep -q 'cta_catalog_try_on' src/components/catalog/FrameCatalog.tsx
           grep -q 'TRACKING_MAX_WIDTH = 480' src/components/try-on/VirtualTryOnFast.tsx
           grep -q 'TRACKING_CONSTRAINED_WIDTH = 384' src/components/try-on/VirtualTryOnFast.tsx
           grep -q 'STALE_TRACKING_MS = 420' src/components/try-on/VirtualTryOnFast.tsx
