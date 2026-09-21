@@ -1,0 +1,62 @@
+[
+  {
+    "workflow": "mk0-4-1-human-hero.yml",
+    "step": "Human hero contract",
+    "pass": true,
+    "output": ""
+  },
+  {
+    "workflow": "mk0-4-1-human-hero.yml",
+    "step": "Frozen try-on contract",
+    "pass": true,
+    "output": ""
+  },
+  {
+    "workflow": "mk0-4-2-certification.yml",
+    "step": "Tracking contracts",
+    "pass": true,
+    "output": ""
+  },
+  {
+    "workflow": "mk0-4-2-certification.yml",
+    "step": "Spatial 3D contracts",
+    "pass": true,
+    "output": ""
+  },
+  {
+    "workflow": "mk0-4-3-certification.yml",
+    "step": "Frozen rollback baseline",
+    "pass": true,
+    "output": ""
+  },
+  {
+    "workflow": "mk0-4-3-certification.yml",
+    "step": "Low-latency tracking contracts",
+    "pass": true,
+    "output": ""
+  },
+  {
+    "workflow": "mk0-4-3-certification.yml",
+    "step": "Multi-angle contracts",
+    "pass": true,
+    "output": ""
+  },
+  {
+    "workflow": "mk0-4-3-certification.yml",
+    "step": "Profile orientation contracts",
+    "pass": true,
+    "output": ""
+  },
+  {
+    "workflow": "mk0-4-certification.yml",
+    "step": "Frozen try-on contract",
+    "pass": true,
+    "output": ""
+  },
+  {
+    "workflow": "mk0-4-certification.yml",
+    "step": "MK0.4 source contracts",
+    "pass": true,
+    "output": ""
+  }
+]

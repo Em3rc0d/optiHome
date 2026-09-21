@@ -1,31 +1,24 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist } from "next/font/google";
 import "./globals.css";
-import { MotionProvider } from "@/components/motion/MotionProvider";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { siteConfig } from "@/content/site";
-
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
 });
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default: "OptiHome | Óptica a domicilio",
+    default: "OptiHome | Óptica a domicilio y monturas",
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
-  icons: "/favicon.ico",
+  icons: { icon: "/icon.svg" },
   openGraph: {
-    title: "OptiHome | Óptica a domicilio",
+    title: "OptiHome | Óptica a domicilio y monturas",
     description: siteConfig.description,
     locale: siteConfig.locale,
     type: "website",
@@ -35,27 +28,38 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "OptiHome | Óptica a domicilio",
+    title: "OptiHome | Óptica a domicilio y monturas",
     description: siteConfig.description,
     images: ["/opengraph-image"],
   },
 };
-
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: siteConfig.name,
+  url: siteConfig.url,
+  telephone: `+${siteConfig.contact.whatsappNumber}`,
+};
+export default function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body className="min-h-screen bg-background font-sans text-foreground antialiased">
-        <MotionProvider>
-          <a
-            href="#main-content"
-            className="sr-only fixed left-4 top-4 z-[100] rounded-lg bg-brand px-4 py-3 font-semibold text-white focus:not-sr-only"
-          >
-            Saltar al contenido
-          </a>
-          <SiteHeader />
-          <main id="main-content">{children}</main>
-          <SiteFooter />
-        </MotionProvider>
+    <html lang="es-PE" className={geistSans.variable}>
+      <body>
+        <a href="#main-content" className="skip-link">
+          Saltar al contenido
+        </a>
+        <SiteHeader />
+        <main id="main-content" tabIndex={-1}>
+          {children}
+        </main>
+        <SiteFooter />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(structuredData).replace(/</g, "\\u003c"),
+          }}
+        />
       </body>
     </html>
   );

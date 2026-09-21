@@ -1,23 +1,24 @@
-import { Hero } from "@/components/home/Hero";
-import { OpticalStory } from "@/components/home/OpticalStory";
-import { SpatialOptics } from "@/components/home/SpatialOptics";
-import { JourneyChooser } from "@/components/home/JourneyChooser";
-import { HowItWorks } from "@/components/home/HowItWorks";
-import { FeaturedFrames } from "@/components/home/FeaturedFrames";
-import { TrustFaq } from "@/components/home/TrustFaq";
-import { FinalCta } from "@/components/home/FinalCta";
-
+import type { Metadata } from "next";
+import {
+  CommercialHero,
+  CommercialFrames,
+  EditorialStory,
+  OpticalCare,
+  CommercialProcess,
+  CommercialFaq,
+  CommercialClosing,
+} from "@/components/home/CommercialHome";
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 export default function Home() {
   return (
     <>
-      <Hero />
-      <OpticalStory />
-      <SpatialOptics />
-      <JourneyChooser />
-      <HowItWorks />
-      <FeaturedFrames />
-      <TrustFaq />
-      <FinalCta />
+      <CommercialHero />
+      <CommercialFrames />
+      <EditorialStory />
+      <OpticalCare />
+      <CommercialProcess />
+      <CommercialFaq />
+      <CommercialClosing />
     </>
   );
 }
