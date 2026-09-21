@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-export const alt = "OptiHome — Tu óptica, más cerca de ti.";
+export const alt = "Lenteva — Tu óptica, más cerca de ti.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 export default function OpenGraphImage() {
@@ -18,7 +18,7 @@ export default function OpenGraphImage() {
       }}
     >
       <div style={{ display: "flex", fontSize: 40, fontWeight: 700 }}>
-        OptiHome.
+        Lenteva.
       </div>
       <div
         style={{
