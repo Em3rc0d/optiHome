@@ -69,7 +69,7 @@ export function CommercialHero() {
           <span className="portrait-credit">Inspiración de estilo</span>
         </div>
       </section>
-      <div className="trust-strip" aria-label="La atención de OptiHome">
+      <div className="trust-strip" aria-label="La atención de Lenteva">
         <span>Atención a domicilio</span>
         <span>Selección de monturas</span>
         <span>Contacto directo por WhatsApp</span>
@@ -274,7 +274,7 @@ export function CommercialFaq() {
           </p>
           <WhatsappLink
             className="text-link"
-            message="Hola, tengo una consulta sobre la atención de OptiHome."
+            message="Hola, tengo una consulta sobre la atención de Lenteva."
           >
             Preguntar por WhatsApp <span aria-hidden="true">↗</span>
           </WhatsappLink>
