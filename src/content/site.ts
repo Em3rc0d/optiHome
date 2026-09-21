@@ -18,8 +18,8 @@ export const siteConfig = {
     { label: "Preguntas frecuentes", href: "/#preguntas-frecuentes" },
   ] satisfies NavigationItem[],
   contact: {
-    whatsappNumber: "51933075200",
-    whatsappDisplay: "+51 933 075 200",
+    whatsappNumber: "51992206266",
+    whatsappDisplay: "+51 992 206 266",
     authority: "AUTHORITATIVE" as ContentAuthority,
   },
   appointment: {
