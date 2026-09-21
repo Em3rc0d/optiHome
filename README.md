@@ -1,8 +1,8 @@
-# OptiHome
+# Lenteva
 
-Web comercial de óptica a domicilio, con catálogo de estilos y coordinación directa por WhatsApp.
+Lenteva es una web comercial de óptica a domicilio, con catálogo de estilos y coordinación directa por WhatsApp.
 
-- Producción: https://optihome-v1.vercel.app
+- Producción temporal: https://optihome-v1.vercel.app
 - Contacto configurado: +51 933 075 200
 - Las imágenes del catálogo son referencias; no representan stock, precios ni materiales confirmados.
 - Cobertura y condiciones se consultan antes de confirmar una atención.
@@ -40,7 +40,7 @@ La verificación visual usa Chromium a 360, 390, 430 y 1440 px. Guarda capturas,
 
 El probador interno se conserva en `src/components/try-on` y `src/lib/try-on`. No se importa desde la experiencia pública y no puede habilitarse con parámetros de URL. El componente SpatialOptics se conserva fuera de las rutas comerciales. Los contratos comprueban esta separación y la integridad del código interno.
 
-## Documentación del candidato
+## Documentación comercial
 
 - [Auditoría y referencias](docs/MK1-commercial-eyewear/AUDIT.md)
 - [Dirección y sistema visual](docs/MK1-commercial-eyewear/DESIGN.md)
