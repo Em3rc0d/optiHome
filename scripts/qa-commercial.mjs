@@ -197,7 +197,7 @@ try {
     );
   for (const link of wa) {
     const url = new URL(link.href);
-    assert.equal(url.pathname, "/51933075200");
+    assert.equal(url.pathname, "/51992206266");
     assert.ok(url.searchParams.get("text").length > 10);
     assert.ok(link.rel.includes("noopener"));
     assert.equal(link.target, "_blank");

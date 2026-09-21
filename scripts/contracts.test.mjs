@@ -59,7 +59,7 @@ test("Commercial references cannot be mistaken for confirmed stock or material",
   assert.match(source, /Imágenes referenciales/);
 });
 test("WhatsApp number and appointment confirmation semantics stay intact", () => {
-  assert.match(read("src/content/site.ts"), /51933075200/);
+  assert.match(read("src/content/site.ts"), /51992206266/);
   assert.match(
     read("src/components/home/CommercialHome.tsx"),
     /La cita queda confirmada cuando acordamos/,

@@ -3,7 +3,7 @@
 Lenteva es una web comercial de óptica a domicilio, con catálogo de estilos y coordinación directa por WhatsApp.
 
 - Producción temporal: https://optihome-v1.vercel.app
-- Contacto configurado: +51 933 075 200
+- Contacto configurado: +51 992 206 266
 - Las imágenes del catálogo son referencias; no representan stock, precios ni materiales confirmados.
 - Cobertura y condiciones se consultan antes de confirmar una atención.
 
