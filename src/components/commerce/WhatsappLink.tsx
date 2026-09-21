@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { buildWhatsappUrl } from "@/content/site";
 import { intentProps, type WebIntentEvent } from "@/lib/analytics-events";
 export const appointmentMessage =
-  "Hola, quiero coordinar una atención con OptiHome. ¿Podemos revisar cobertura, fecha y horario?";
+  "Hola, quiero coordinar una atención con Lenteva. ¿Podemos revisar cobertura, fecha y horario?";
 export function WhatsappLink({
   children,
   message = appointmentMessage,
