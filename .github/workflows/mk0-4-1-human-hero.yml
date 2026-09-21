@@ -71,7 +71,7 @@ jobs:
             sleep 1
           done
           curl -fsS http://127.0.0.1:3000/products >/tmp/products.html
-          grep -q "Cuida tu visión" /tmp/home.html
-          grep -q "Tú decides cuándo avanzar" /tmp/home.html
-          grep -q "Showroom interactivo" /tmp/products.html
+          grep -q "Tu óptica" /tmp/home.html
+          grep -q "Coordinar por WhatsApp" /tmp/home.html
+          grep -q "Catálogo de estilos" /tmp/products.html
           ! grep -Eiq "error|fatal" /tmp/optihome-next.log

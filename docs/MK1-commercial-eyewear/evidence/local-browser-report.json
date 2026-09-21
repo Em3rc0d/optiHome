@@ -1,0 +1,379 @@
+{
+  "routes": [
+    {
+      "width": 360,
+      "route": "/",
+      "status": 200,
+      "h1": 1,
+      "overflow": false,
+      "broken": 0
+    },
+    {
+      "width": 360,
+      "route": "/products",
+      "status": 200,
+      "h1": 1,
+      "overflow": false,
+      "broken": 0
+    },
+    {
+      "width": 360,
+      "route": "/privacy",
+      "status": 200,
+      "h1": 1,
+      "overflow": false,
+      "broken": 0
+    },
+    {
+      "width": 360,
+      "route": "/missing",
+      "status": 404,
+      "h1": 1,
+      "overflow": false,
+      "broken": 0
+    },
+    {
+      "width": 390,
+      "route": "/",
+      "status": 200,
+      "h1": 1,
+      "overflow": false,
+      "broken": 0
+    },
+    {
+      "width": 390,
+      "route": "/products",
+      "status": 200,
+      "h1": 1,
+      "overflow": false,
+      "broken": 0
+    },
+    {
+      "width": 390,
+      "route": "/privacy",
+      "status": 200,
+      "h1": 1,
+      "overflow": false,
+      "broken": 0
+    },
+    {
+      "width": 390,
+      "route": "/missing",
+      "status": 404,
+      "h1": 1,
+      "overflow": false,
+      "broken": 0
+    },
+    {
+      "width": 430,
+      "route": "/",
+      "status": 200,
+      "h1": 1,
+      "overflow": false,
+      "broken": 0
+    },
+    {
+      "width": 430,
+      "route": "/products",
+      "status": 200,
+      "h1": 1,
+      "overflow": false,
+      "broken": 0
+    },
+    {
+      "width": 430,
+      "route": "/privacy",
+      "status": 200,
+      "h1": 1,
+      "overflow": false,
+      "broken": 0
+    },
+    {
+      "width": 430,
+      "route": "/missing",
+      "status": 404,
+      "h1": 1,
+      "overflow": false,
+      "broken": 0
+    },
+    {
+      "width": 1440,
+      "route": "/",
+      "status": 200,
+      "h1": 1,
+      "overflow": false,
+      "broken": 0
+    },
+    {
+      "width": 1440,
+      "route": "/products",
+      "status": 200,
+      "h1": 1,
+      "overflow": false,
+      "broken": 0
+    },
+    {
+      "width": 1440,
+      "route": "/privacy",
+      "status": 200,
+      "h1": 1,
+      "overflow": false,
+      "broken": 0
+    },
+    {
+      "width": 1440,
+      "route": "/missing",
+      "status": 404,
+      "h1": 1,
+      "overflow": false,
+      "broken": 0
+    }
+  ],
+  "accessibility": [
+    {
+      "width": 390,
+      "route": "/",
+      "violations": []
+    },
+    {
+      "width": 390,
+      "route": "/products",
+      "violations": []
+    },
+    {
+      "width": 390,
+      "route": "/privacy",
+      "violations": []
+    },
+    {
+      "width": 390,
+      "route": "/missing",
+      "violations": []
+    },
+    {
+      "width": 1440,
+      "route": "/",
+      "violations": []
+    },
+    {
+      "width": 1440,
+      "route": "/products",
+      "violations": []
+    },
+    {
+      "width": 1440,
+      "route": "/privacy",
+      "violations": []
+    },
+    {
+      "width": 1440,
+      "route": "/missing",
+      "violations": []
+    }
+  ],
+  "interactions": [
+    "mobile menu, Escape, focus return, navigation",
+    "category + color + empty state + reset",
+    "21 WhatsApp destinations + contextual frame message (no message sent)",
+    "FAQ keyboard/native disclosure",
+    "public paths and query parameters cannot activate try-on",
+    "reduced motion"
+  ],
+  "performance": [
+    {
+      "width": 360,
+      "route": "/",
+      "cls": 0,
+      "lcp": 172
+    },
+    {
+      "width": 360,
+      "route": "/products",
+      "cls": 0,
+      "lcp": 112
+    },
+    {
+      "width": 360,
+      "route": "/privacy",
+      "cls": 0,
+      "lcp": 64
+    },
+    {
+      "width": 360,
+      "route": "/missing",
+      "cls": 0,
+      "lcp": 72
+    },
+    {
+      "width": 390,
+      "route": "/",
+      "cls": 0,
+      "lcp": 112
+    },
+    {
+      "width": 390,
+      "route": "/products",
+      "cls": 0,
+      "lcp": 88
+    },
+    {
+      "width": 390,
+      "route": "/privacy",
+      "cls": 0,
+      "lcp": 68
+    },
+    {
+      "width": 390,
+      "route": "/missing",
+      "cls": 0.0038170405322985003,
+      "lcp": 108
+    },
+    {
+      "width": 430,
+      "route": "/",
+      "cls": 0,
+      "lcp": 104
+    },
+    {
+      "width": 430,
+      "route": "/products",
+      "cls": 0,
+      "lcp": 88
+    },
+    {
+      "width": 430,
+      "route": "/privacy",
+      "cls": 0,
+      "lcp": 68
+    },
+    {
+      "width": 430,
+      "route": "/missing",
+      "cls": 0,
+      "lcp": 72
+    },
+    {
+      "width": 1440,
+      "route": "/",
+      "cls": 0,
+      "lcp": 104
+    },
+    {
+      "width": 1440,
+      "route": "/products",
+      "cls": 0,
+      "lcp": 88
+    },
+    {
+      "width": 1440,
+      "route": "/privacy",
+      "cls": 0,
+      "lcp": 64
+    },
+    {
+      "width": 1440,
+      "route": "/missing",
+      "cls": 0.0024428288966049385,
+      "lcp": 112
+    }
+  ],
+  "errors": [],
+  "assets": [
+    {
+      "route": "/robots.txt",
+      "status": 200,
+      "type": "text/plain"
+    },
+    {
+      "route": "/sitemap.xml",
+      "status": 200,
+      "type": "application/xml"
+    },
+    {
+      "route": "/icon.svg",
+      "status": 200,
+      "type": "image/svg+xml"
+    },
+    {
+      "route": "/opengraph-image",
+      "status": 200,
+      "type": "image/png"
+    }
+  ],
+  "links": [
+    {
+      "route": "/contact",
+      "target": "/#solicitar-evaluacion",
+      "pass": true
+    },
+    {
+      "route": "/finalCTA",
+      "target": "/#solicitar-evaluacion",
+      "pass": true
+    },
+    {
+      "route": "/services",
+      "target": "/#proceso",
+      "pass": true
+    },
+    {
+      "route": "/testimonials",
+      "target": "/",
+      "pass": true
+    },
+    {
+      "route": "/us",
+      "target": "/",
+      "pass": true
+    },
+    {
+      "href": "/#main-content",
+      "pass": true
+    },
+    {
+      "href": "/",
+      "pass": true
+    },
+    {
+      "href": "/products",
+      "pass": true
+    },
+    {
+      "href": "/#proceso",
+      "pass": true
+    },
+    {
+      "href": "/#preguntas-frecuentes",
+      "pass": true
+    },
+    {
+      "href": "/privacy",
+      "pass": true
+    },
+    {
+      "href": "/products#main-content",
+      "pass": true
+    },
+    {
+      "href": "/privacy#main-content",
+      "pass": true
+    }
+  ],
+  "bundle": {
+    "route": "/",
+    "files": [
+      "/_next/static/chunks/19mx3mg6lkumu.js",
+      "/_next/static/chunks/1j_9b-l0n6u-t.js",
+      "/_next/static/chunks/2-rtuqsgzmno4.js",
+      "/_next/static/chunks/turbopack-0h-lqfav4xxyi.js",
+      "/_next/static/chunks/1fd4ru0xjg-8x.js",
+      "/_next/static/chunks/3fntmmi971322.js",
+      "/_next/static/chunks/3y6ph63zgg15-.js",
+      "/_next/static/chunks/0cz1d0mv5g_q7.js",
+      "/_next/static/chunks/3s6nzrbk-8mnv.js"
+    ],
+    "total": 593817,
+    "gzip": 184357
+  },
+  "result": "PASS"
+}

@@ -108,7 +108,7 @@ jobs:
             sleep 1
           done
           curl -fsS http://127.0.0.1:3000/products >/tmp/products.html
-          grep -q "Mira cada montura con más detalle" /tmp/home.html
-          grep -q "Showroom interactivo" /tmp/products.html
+          grep -q "Tu óptica" /tmp/home.html
+          grep -q "Catálogo de estilos" /tmp/products.html
           ! grep -Eiq "Three\.js · live|GPU|FPS objetivo desktop|Geometría procedural|Progressive fallback" /tmp/home.html
           ! grep -Eiq "error|fatal" /tmp/optihome-next.log

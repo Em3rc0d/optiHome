@@ -58,7 +58,7 @@ jobs:
           set -euo pipefail
           grep -q 'three@0.186.0' src/components/home/SpatialOptics.tsx
           grep -q 'useMotionCapability' src/components/home/SpatialOptics.tsx
-          grep -q 'SpatialOptics' src/app/page.tsx
+          ! grep -q 'SpatialOptics' src/app/page.tsx
           grep -q 'IntersectionObserver' src/components/home/SpatialOptics.tsx
           grep -q 'renderer.setPixelRatio' src/components/home/SpatialOptics.tsx
           ! grep -q 'initial={reduceMotion ? false : { opacity: 0' src/components/home/SpatialOptics.tsx
@@ -83,6 +83,6 @@ jobs:
             sleep 1
           done
           curl -fsS http://127.0.0.1:3000/products >/tmp/products.html
-          grep -q "Spatial optics" /tmp/home.html
-          grep -q "Showroom interactivo" /tmp/products.html
+          ! grep -q "Spatial optics" /tmp/home.html
+          grep -q "Catálogo de estilos" /tmp/products.html
           ! grep -Eiq "error|fatal" /tmp/optihome-next.log
