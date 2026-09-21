@@ -27,10 +27,10 @@ export function SiteHeader() {
           <Link
             href="/"
             className="wordmark"
-            aria-label="OptiHome, inicio"
+            aria-label={`${siteConfig.name}, inicio`}
             onClick={close}
           >
-            OptiHome<span className="brand-period">.</span>
+            {siteConfig.name}<span className="brand-period">.</span>
           </Link>
           <nav className="desktop-navigation" aria-label="Navegación principal">
             {siteConfig.navigation
