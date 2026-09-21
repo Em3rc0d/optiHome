@@ -8,7 +8,7 @@ export function SiteFooter() {
         <div className="content-shell footer-main">
           <div>
             <Link className="wordmark" href="/">
-              OptiHome<span className="brand-period">.</span>
+              {siteConfig.name}<span className="brand-period">.</span>
             </Link>
             <p>Tu óptica, más cerca de ti.</p>
             <p className="footer-small">
@@ -29,11 +29,11 @@ export function SiteFooter() {
               {siteConfig.contact.whatsappDisplay}{" "}
               <span aria-hidden="true">↗</span>
             </WhatsappLink>
-            <p>WhatsApp de OptiHome</p>
+            <p>WhatsApp de {siteConfig.name}</p>
           </div>
         </div>
         <div className="content-shell footer-bottom">
-          <p>© {new Date().getFullYear()} OptiHome</p>
+          <p>© {new Date().getFullYear()} {siteConfig.name}</p>
           <Link href="/privacy">Privacidad</Link>
         </div>
       </footer>

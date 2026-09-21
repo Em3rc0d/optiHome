@@ -4,23 +4,23 @@ import { FrameCatalog } from "@/components/catalog/FrameCatalog";
 import { WhatsappLink } from "@/components/commerce/WhatsappLink";
 import { catalogFrames, catalogNotice } from "@/content/catalog";
 const description =
-  "Explora estilos de monturas, compara colores y consulta modelos, materiales y precios directamente con OptiHome por WhatsApp.";
+  "Explora estilos de monturas, compara colores y consulta modelos, materiales y precios directamente con Lenteva por WhatsApp.";
 export const metadata: Metadata = {
   title: "Monturas para tu día a día",
   description,
   alternates: { canonical: "/products" },
   openGraph: {
-    title: "Monturas para tu día a día | OptiHome",
+    title: "Monturas para tu día a día | Lenteva",
     description,
     url: "/products",
     type: "website",
     locale: "es_PE",
-    siteName: "OptiHome",
+    siteName: "Lenteva",
     images: ["/opengraph-image"],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Monturas para tu día a día | OptiHome",
+    title: "Monturas para tu día a día | Lenteva",
     description,
     images: ["/opengraph-image"],
   },

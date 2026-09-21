@@ -12,13 +12,13 @@ const geistSans = Geist({
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default: "OptiHome | Óptica a domicilio y monturas",
+    default: "Lenteva | Óptica a domicilio y monturas",
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
   icons: { icon: "/icon.svg" },
   openGraph: {
-    title: "OptiHome | Óptica a domicilio y monturas",
+    title: "Lenteva | Óptica a domicilio y monturas",
     description: siteConfig.description,
     locale: siteConfig.locale,
     type: "website",
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "OptiHome | Óptica a domicilio y monturas",
+    title: "Lenteva | Óptica a domicilio y monturas",
     description: siteConfig.description,
     images: ["/opengraph-image"],
   },

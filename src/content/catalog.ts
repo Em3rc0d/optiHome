@@ -76,5 +76,5 @@ export const catalogFrames: CatalogFrame[] = [
 export const catalogNotice =
   "Imágenes referenciales para ayudarte a elegir un estilo. Consulta los modelos, materiales y precios disponibles por WhatsApp.";
 export function frameInquiry(frame: CatalogFrame) {
-  return `Hola, me gusta el estilo de la referencia ${frame.name} (${frame.color}) que vi en OptiHome. ¿Qué modelos similares tienen y cuáles son sus materiales y precios?`;
+  return `Hola, me gusta el estilo de la referencia ${frame.name} (${frame.color}) que vi en Lenteva. ¿Qué modelos similares tienen y cuáles son sus materiales y precios?`;
 }

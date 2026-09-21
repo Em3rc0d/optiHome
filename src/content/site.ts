@@ -6,7 +6,7 @@ type NavigationItem = {
 };
 
 export const siteConfig = {
-  name: "OptiHome",
+  name: "Lenteva",
   url: "https://optihome-v1.vercel.app",
   description:
     "Atención óptica a domicilio y selección de monturas para ayudarte a cuidar tu visión desde casa.",
