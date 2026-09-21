@@ -4,7 +4,7 @@ import { WhatsappLink } from "@/components/commerce/WhatsappLink";
 export const metadata: Metadata = {
   title: "Privacidad",
   description:
-    "Información sobre el uso del sitio web y el contacto por WhatsApp de OptiHome.",
+    "Información sobre el uso del sitio web y el contacto por WhatsApp de Lenteva.",
   alternates: { canonical: "/privacy" },
   robots: { index: false, follow: true },
 };
@@ -29,7 +29,7 @@ export default function PrivacyPage() {
       </p>
       <h2>Consultas sobre tu información</h2>
       <p>
-        Si has compartido información con OptiHome por WhatsApp y tienes una
+        Si has compartido información con Lenteva por WhatsApp y tienes una
         consulta sobre su uso, comunícate por el mismo canal.
       </p>
       <WhatsappLink>
